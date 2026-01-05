@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#4a6fa5">
-    <title>智能記帳程式 (編輯版)</title>
+    <title>智能記帳程式</title>
     <style>
         :root {
             --primary-color: #4a6fa5;
@@ -72,6 +72,8 @@
             gap: 10px;
             margin-bottom: 20px;
             flex-wrap: wrap;
+            overflow-x: auto;
+            padding-bottom: 5px;
         }
 
         .tab-btn {
@@ -83,6 +85,7 @@
             font-weight: 600;
             transition: var(--transition);
             box-shadow: var(--box-shadow);
+            white-space: nowrap;
         }
 
         .tab-btn.active {
@@ -120,22 +123,16 @@
             margin-bottom: 20px;
         }
 
-        /* 新增：並排佈局 Utility Class */
-        .form-row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .form-row .form-group {
-            flex: 1; /* 讓子元素平均分配寬度 */
-            margin-bottom: 0; /* 移除原本 form-group 的下方 margin */
-        }
-
         .form-group {
             display: flex;
             flex-direction: column;
-            margin-bottom: 15px;
+        }
+
+        /* 默認桌面版樣式 */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
         }
 
         label {
@@ -144,48 +141,19 @@
             color: var(--dark-color);
         }
 
-        input[type="text"],
-        input[type="number"],
-        input[type="date"],
-        input[type="time"],
-        select, 
-        textarea {
+        input, select, textarea {
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: var(--border-radius);
             font-size: 1rem;
             transition: var(--transition);
-            width: 100%; /* 確保填滿容器 */
+            width: 100%; /* 確保寬度填滿 */
         }
 
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.2);
-        }
-
-        /* Radio Group 樣式 */
-        .radio-group {
-            display: flex;
-            gap: 15px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: var(--border-radius);
-            background: #fafafa;
-        }
-
-        .radio-label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            margin: 0; /* 重置 */
-        }
-
-        .radio-label input[type="radio"] {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--primary-color);
         }
 
         textarea {
@@ -234,19 +202,6 @@
 
         .btn-warning:hover {
             background-color: #e0a800;
-        }
-        
-        .btn-info {
-            background-color: #17a2b8;
-        }
-        
-        .btn-info:hover {
-            background-color: #138496;
-        }
-
-        .btn-sm {
-            padding: 5px 10px;
-            font-size: 0.85rem;
         }
 
         .btn-group {
@@ -310,10 +265,16 @@
             margin-bottom: 15px;
             border: 1px solid #d0d8e0;
         }
-        
-        /* 調整 Filter Grid 適應新佈局 */
+
         .filter-grid {
-            display: block; /* 改為 block 讓 form-row 生效 */
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .filter-grid .form-group {
+            margin: 0;
         }
 
         .filter-actions {
@@ -321,7 +282,6 @@
             gap: 10px;
             flex-wrap: wrap;
             justify-content: flex-end;
-            margin-top: 10px;
         }
 
         .record-list {
@@ -401,6 +361,7 @@
             display: flex;
             gap: 10px;
             justify-content: flex-end;
+            flex-wrap: wrap;
         }
 
         .record-actions button {
@@ -424,41 +385,76 @@
             margin-top: 15px;
         }
 
-        /* 巢狀科目管理樣式 */
-        .category-item {
-            background-color: #f8f9fa;
-            border-radius: var(--border-radius);
-            padding: 10px;
-            border: 1px solid #e9ecef;
-        }
-
-        .category-header {
+        .management-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-weight: bold;
-            color: var(--primary-color);
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        /* 科目管理樣式 */
+        .category-management {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
         }
 
         .subcategory-list {
             margin-top: 10px;
-            padding-left: 15px;
-            border-left: 2px solid #ddd;
+            padding-left: 20px;
         }
 
         .subcategory-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 5px 0;
-            border-bottom: 1px dashed #eee;
+            padding: 8px;
+            margin-bottom: 5px;
+            background-color: #f0f4f8;
+            border-radius: 4px;
+            transition: var(--transition);
         }
 
-        .subcategory-add-row {
+        .subcategory-actions {
             display: flex;
             gap: 5px;
-            margin-top: 10px;
-            padding-left: 15px;
+        }
+
+        .category-section {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            border: 1px solid #e0e0e0;
+        }
+
+        .main-category-item.selected {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .main-category-item.selected span {
+            color: white;
+        }
+
+        .main-category-item.selected .btn-danger {
+            background-color: white;
+            color: var(--accent-color);
+        }
+
+        .main-category-item.selected .btn-danger:hover {
+            background-color: #ffebee;
+        }
+
+        .main-category-item {
+            cursor: pointer;
+        }
+
+        .main-category-item:hover {
+            background-color: #e9ecef;
         }
 
         /* 統計分析專用樣式 */
@@ -468,6 +464,17 @@
             border-radius: var(--border-radius);
             margin-bottom: 20px;
             border: 1px solid #d0d8e0;
+        }
+
+        .summary-filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            align-items: end;
+        }
+
+        .summary-filter-grid .form-group {
+            margin: 0;
         }
 
         .summary-filter-actions {
@@ -536,7 +543,6 @@
             margin-bottom: 10px;
         }
 
-        /* 匯入/匯出專用樣式 */
         .import-export-section {
             background: #f0f4f8;
             padding: 20px;
@@ -589,6 +595,18 @@
             gap: 15px;
             margin: 10px 0;
             flex-wrap: wrap;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+        }
+
+        .radio-label input[type="radio"] {
+            width: auto;
+            cursor: pointer;
         }
 
         .file-input-wrapper {
@@ -648,7 +666,6 @@
             color: #004085;
         }
 
-        /* 模態框樣式 */
         .modal {
             position: fixed;
             top: 0;
@@ -672,7 +689,7 @@
             background-color: white;
             padding: 25px;
             border-radius: var(--border-radius);
-            max-width: 600px;
+            max-width: 500px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
@@ -743,11 +760,176 @@
             color: #333;
         }
 
+        .type-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .type-option {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            border: 2px solid #ddd;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+        }
+
+        .type-option:hover {
+            background-color: #f8f9fa;
+        }
+
+        .type-option.selected {
+            border-color: var(--primary-color);
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .type-option.income.selected {
+            border-color: var(--success-color);
+            background-color: var(--success-color);
+        }
+
+        .type-option.expense.selected {
+            border-color: var(--accent-color);
+            background-color: var(--accent-color);
+        }
+
+        .form-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .form-title h2 {
+            color: var(--primary-color);
+        }
+
+        .edit-btn {
+            background-color: var(--warning-color);
+            color: #333;
+        }
+
+        .edit-btn:hover {
+            background-color: #e0a800;
+        }
+
+        .btn-cancel {
+            background-color: #6c757d;
+        }
+
+        .btn-cancel:hover {
+            background-color: #5a6268;
+        }
+
+        .category-count {
+            display: inline-block;
+            padding: 2px 8px;
+            background-color: #e9ecef;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin-left: 8px;
+            color: #666;
+        }
+
+        .main-category-item.selected .category-count {
+            background-color: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .selected-category-indicator {
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #e3f2fd;
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary-color);
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .selected-category-indicator .category-name {
+            font-size: 1.1rem;
+            color: var(--primary-color);
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .export-buttons .btn {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .copy-textarea {
+            width: 100%;
+            height: 150px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            padding: 10px;
+            margin-top: 10px;
+            resize: vertical;
+        }
+
+        /* 手機版專用樣式 - 主要調整 */
         @media (max-width: 768px) {
+            /* 通用調整 */
             .header-content {
                 flex-direction: column;
                 align-items: flex-start;
             }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            /* --- 關鍵修改開始 --- */
+            
+            /* 讓篩選區塊的大容器變單欄 */
+            .filter-grid, .summary-filter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            /* 強制 日期/時間, 科目/子科目, 年份/月份 保持雙欄 (並排) */
+            /* 針對記帳頁面的 .form-row */
+            #record-tab .form-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 10px;
+            }
+            
+            /* 針對記錄列表與統計分析的篩選器中的 .form-row */
+            #records-tab .filter-grid .form-row,
+            #summary-tab .summary-filter-grid .form-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 10px;
+            }
+            
+            /* 確保這兩個 row 內部的 form-group margin 歸零 */
+            #record-tab .form-row .form-group,
+            #records-tab .filter-grid .form-row .form-group,
+            #summary-tab .summary-filter-grid .form-row .form-group {
+                margin: 0;
+            }
+
+            /* 確保收支別 (收入/支出) 按鈕並排顯示 */
+            .type-selector {
+                flex-direction: row !important;
+            }
+
+            /* --- 關鍵修改結束 --- */
 
             .record-header {
                 flex-direction: column;
@@ -780,31 +962,65 @@
             .export-buttons .btn {
                 width: 100%;
             }
+
+            .category-management {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+
+            .tabs::-webkit-scrollbar {
+                display: none;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn-group .btn {
+                width: 100%;
+            }
         }
 
-        .export-buttons {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 10px;
+        /* 小螢幕手機專用樣式 (480px以下) */
+        @media (max-width: 480px) {
+            .container {
+                padding: 10px;
+            }
+
+            .tab-btn {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+
+            .photo-controls {
+                flex-direction: column;
+            }
+
+            .photo-controls .btn {
+                width: 100%;
+            }
+
+            /* 這裡原本會強制單欄，現在覆蓋它以保持雙欄 */
+            #record-tab .form-row,
+            #records-tab .filter-grid .form-row,
+            #summary-tab .summary-filter-grid .form-row {
+                grid-template-columns: 1fr 1fr !important;
+            }
+
+            .type-selector {
+                flex-direction: row !important;
+            }
         }
 
-        .export-buttons .btn {
-            flex: 1;
-            min-width: 150px;
-        }
-
-        .copy-textarea {
-            width: 100%;
-            height: 150px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.85rem;
-            background: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: var(--border-radius);
-            padding: 10px;
-            margin-top: 10px;
-            resize: vertical;
+        @media (min-width: 769px) {
+            .mobile-only {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -829,55 +1045,56 @@
         </div>
 
         <div class="tab-content active" id="record-tab">
+            <div class="form-title">
+                <h2 id="formModeTitle">新增記錄</h2>
+                <button id="cancelEditBtn" class="btn btn-cancel hidden">取消編輯</button>
+            </div>
+            
             <form id="recordForm">
-                <input type="hidden" id="editRecordId" value="">
-                
-                <div class="form-grid" style="grid-template-columns: 1fr;">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="recordDate">日期</label>
-                            <input type="date" id="recordDate" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="recordTime">時間</label>
-                            <input type="time" id="recordTime" required>
-                        </div>
-                    </div>
-
+                <div class="form-row">
                     <div class="form-group">
-                        <label>收支別</label>
-                        <div class="radio-group">
-                            <label class="radio-label">
-                                <input type="radio" name="recordType" value="expense" checked>
-                                <span>💸 支出</span>
-                            </label>
-                            <label class="radio-label">
-                                <input type="radio" name="recordType" value="income">
-                                <span>💰 收入</span>
-                            </label>
-                        </div>
+                        <label for="recordDate">日期</label>
+                        <input type="date" id="recordDate" required>
                     </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="recordCategory">科目 (主)</label>
-                            <select id="recordCategory" required>
-                                <option value="">請選擇科目</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="recordSubCategory">子科目</label>
-                            <select id="recordSubCategory">
-                                <option value="">請選擇子科目</option>
-                            </select>
-                        </div>
-                    </div>
-
                     <div class="form-group">
-                        <label for="recordAmount">金額</label>
-                        <input type="number" id="recordAmount" min="0" step="0.01" placeholder="0.00" required>
+                        <label for="recordTime">時間</label>
+                        <input type="time" id="recordTime" required>
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <label>收支別</label>
+                    <div class="type-selector">
+                        <div class="type-option expense selected" data-type="expense">
+                            支出
+                        </div>
+                        <div class="type-option income" data-type="income">
+                            收入
+                        </div>
+                    </div>
+                    <input type="hidden" id="recordType" value="expense" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="recordMainCategory">主科目</label>
+                        <select id="recordMainCategory" required>
+                            <option value="">請選擇</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="recordSubCategory">子科目</label>
+                        <select id="recordSubCategory" required>
+                            <option value="">請先選擇主科目</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="recordAmount">金額</label>
+                    <input type="number" id="recordAmount" min="0" step="0.01" placeholder="0.00" required>
+                </div>
+                
                 <div class="form-group">
                     <label for="recordSummary">收支摘要</label>
                     <textarea id="recordSummary" placeholder="請輸入收支摘要說明..."></textarea>
@@ -899,8 +1116,7 @@
                 </div>
 
                 <div class="btn-group">
-                    <button type="submit" class="btn btn-success" id="submitBtn">💾 保存記錄</button>
-                    <button type="button" class="btn btn-warning hidden" id="cancelEditBtn">✖️ 取消編輯</button>
+                    <button type="submit" class="btn btn-success" id="submitFormBtn">💾 保存記錄</button>
                     <button type="button" class="btn" id="resetFormBtn">🔄 重置表單</button>
                 </div>
             </form>
@@ -936,25 +1152,11 @@
                             </select>
                         </div>
                     </div>
-
-                    <div class="form-group">
-                        <label for="filterSummary">摘要搜尋</label>
-                        <input type="text" id="filterSummary" placeholder="輸入關鍵字...">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="filterType">收支別</label>
-                        <select id="filterType">
-                            <option value="">全部</option>
-                            <option value="income">收入</option>
-                            <option value="expense">支出</option>
-                        </select>
-                    </div>
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="filterCategory">科目</label>
-                            <select id="filterCategory">
+                            <label for="filterMainCategory">主科目</label>
+                            <select id="filterMainCategory">
                                 <option value="">全部</option>
                             </select>
                         </div>
@@ -964,6 +1166,19 @@
                                 <option value="">全部</option>
                             </select>
                         </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="filterSummary">摘要搜尋</label>
+                        <input type="text" id="filterSummary" placeholder="輸入關鍵字...">
+                    </div>
+                    <div class="form-group">
+                        <label for="filterType">收支別</label>
+                        <select id="filterType">
+                            <option value="">全部</option>
+                            <option value="income">收入</option>
+                            <option value="expense">支出</option>
+                        </select>
                     </div>
                 </div>
                 <div class="filter-actions">
@@ -976,22 +1191,40 @@
         </div>
 
         <div class="tab-content" id="categories-tab">
-            <div class="form-group">
-                <label for="newCategory">新增主科目</label>
-                <div style="display: flex; gap: 10px;">
-                    <input type="text" id="newCategory" placeholder="輸入新主科目名稱">
-                    <button class="btn btn-success" id="addCategoryBtn">新增主科目</button>
+            <div class="category-management">
+                <div class="category-section">
+                    <h3>主科目管理</h3>
+                    <div class="form-group">
+                        <label for="newMainCategory">新增主科目</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="newMainCategory" placeholder="輸入主科目名稱">
+                            <button class="btn btn-success" id="addMainCategoryBtn">新增</button>
+                        </div>
+                    </div>
+                    <div class="management-list" id="mainCategoriesList"></div>
+                </div>
+                
+                <div class="category-section">
+                    <h3>子科目管理</h3>
+                    <div id="selectedCategoryIndicator" class="selected-category-indicator hidden">
+                        當前選擇: <span class="category-name" id="selectedCategoryName"></span>
+                    </div>
+                    <div class="form-group">
+                        <label for="newSubCategory">新增子科目</label>
+                        <div style="display: flex; gap: 10px;">
+                            <input type="text" id="newSubCategory" placeholder="請先選擇主科目">
+                            <button class="btn btn-success" id="addSubCategoryBtn" disabled>新增</button>
+                        </div>
+                    </div>
+                    <div class="management-list" id="subCategoriesList"></div>
                 </div>
             </div>
-            <hr style="margin: 20px 0; border: 0; border-top: 1px solid #ddd;">
-            <div class="management-list" id="categoriesList">
-                </div>
         </div>
 
         <div class="tab-content" id="summary-tab">
             <div class="summary-filter-section">
                 <h3>🔍 篩選條件</h3>
-                <div class="summary-filter-grid" style="display: block;">
+                <div class="summary-filter-grid">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="summaryYear">年份</label>
@@ -1017,6 +1250,19 @@
                                 <option value="12">12月</option>
                             </select>
                         </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="summaryMainCategory">主科目</label>
+                        <select id="summaryMainCategory">
+                            <option value="">全部</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="summarySubCategory">子科目</label>
+                        <select id="summarySubCategory">
+                            <option value="">全部</option>
+                        </select>
                     </div>
                 </div>
                 <div class="summary-filter-actions">
@@ -1063,13 +1309,8 @@
                 </div>
 
                 <div class="summary-card">
-                    <h3>📊 主科目統計</h3>
+                    <h3>📊 科目統計</h3>
                     <div id="categorySummary"></div>
-                </div>
-
-                <div class="summary-card">
-                    <h3>📑 子科目統計</h3>
-                    <div id="subCategorySummary"></div>
                 </div>
             </div>
         </div>
@@ -1078,7 +1319,13 @@
             <div class="import-export-section">
                 <div class="export-section">
                     <div class="section-title">📤 匯出資料</div>
-                    <p>將所有記帳資料、科目匯出為 JSON 檔案，用於備份或轉移資料。</p>
+                    <p>將所有記帳資料、科目、子科目匯出為 JSON 檔案，用於備份或轉移資料。</p>
+                    <div class="export-info">
+                        <strong>💡 匯出方式說明：</strong><br>
+                        • 現代瀏覽器（Chrome/Edge）：可選擇儲存路徑和檔名<br>
+                        • 其他瀏覽器：會下載到預設下載資料夾<br>
+                        • 複製方式：可直接複製 JSON 內容
+                    </div>
                     <div class="export-buttons">
                         <button class="btn btn-success" id="exportBtn">📥 選擇路徑匯出</button>
                         <button class="btn btn-warning" id="copyJsonBtn">📋 複製 JSON</button>
@@ -1094,7 +1341,7 @@
 
                 <div class="import-section">
                     <div class="section-title">📥 匯入資料</div>
-                    <p>從 JSON 檔案匯入資料。</p>
+                    <p>從 JSON 檔案匯入資料。請選擇匯入模式：</p>
                     
                     <div class="import-mode-selector">
                         <label class="radio-label">
@@ -1162,22 +1409,26 @@
         </div>
     </div>
 
+    <div id="categoryDeleteModal" class="modal hidden" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>確認刪除科目</h3>
+                <button class="modal-close" id="closeCategoryDeleteModal">&times;</button>
+            </div>
+            <p id="categoryDeleteModalMessage"></p>
+            <div class="btn-group">
+                <button class="btn btn-danger" id="confirmCategoryDeleteBtn">確定刪除</button>
+                <button class="btn" id="cancelCategoryDeleteBtn">取消</button>
+            </div>
+        </div>
+    </div>
+
     <div id="notification" class="notification"></div>
 
     <script>
-        // 預設分類資料
-        const defaultCategories = {
-            '餐飲': ['早餐', '午餐', '晚餐', '飲料', '零食'],
-            '交通': ['捷運', '公車', '計程車', '加油', '停車費'],
-            '娛樂': ['電影', '遊戲', '聚餐', '旅遊'],
-            '生活': ['房租', '水電', '電話費', '日用品'],
-            '收入': ['薪資', '獎金', '投資', '其他'],
-            '其他': ['雜支', '醫療']
-        };
-
         // 數據存儲
         const storage = {
-            get: (key, defaultValue) => {
+            get: (key, defaultValue = []) => {
                 try {
                     const data = localStorage.getItem(key);
                     return data ? JSON.parse(data) : defaultValue;
@@ -1197,49 +1448,46 @@
             }
         };
 
-        // 檢查並遷移舊資料格式（如果存在）
-        let storedCategories = storage.get('categories', null);
-        if (storedCategories && Array.isArray(storedCategories)) {
-            // 如果舊資料是陣列（只有主科目），轉換為物件格式
-            const convertedCategories = {};
-            storedCategories.forEach(cat => {
-                convertedCategories[cat] = [];
-            });
-            storedCategories = convertedCategories;
-            // 合併預設值以確保有基礎子科目
-            for(let key in defaultCategories) {
-                if(!storedCategories[key]) {
-                    storedCategories[key] = defaultCategories[key];
-                }
-            }
-        } else if (!storedCategories) {
-            storedCategories = defaultCategories;
-        }
-
         // 應用狀態
         const appState = {
             records: storage.get('records', []),
-            categories: storedCategories, 
+            // 新的資料結構：主科目 -> 子科目陣列
+            categories: storage.get('categories', {
+                '飲食': ['早餐', '午餐', '晚餐', '飲料', '零食'],
+                '交通': ['公車', '捷運', '計程車', '油資', '停車費'],
+                '娛樂': ['電影', 'KTV', '旅遊', '運動', '遊戲'],
+                '生活': ['房租', '水電', '網路', '手機', '日用品'],
+                '收入': ['薪水', '獎金', '投資', '兼職', '其他收入'],
+                '其他': ['醫療', '教育', '禮物', '捐款', '其他']
+            }),
             currentPhoto: null,
             deleteTargetId: null,
-            editingId: null, // 用於追蹤正在編輯的記錄 ID
+            editingRecordId: null, // 新增：編輯中的記錄ID
+            currentViewingRecordId: null,
             summaryFilter: {
                 year: '',
-                month: ''
+                month: '',
+                mainCategory: '',
+                subCategory: ''
             },
-            importData: null,
-            importMode: 'merge'
+            importData: null, // 暫存匯入的資料
+            importMode: 'merge', // 預設合併模式
+            selectedMainCategory: null, // 當前選中的主科目
+            categoryDeleteTarget: { // 科目刪除目標
+                type: '', // 'main' 或 'sub'
+                mainCategory: '',
+                subCategory: ''
+            }
         };
 
         // DOM 元素
         const elements = {
             // 表單元素
             recordForm: document.getElementById('recordForm'),
-            editRecordId: document.getElementById('editRecordId'),
             recordDate: document.getElementById('recordDate'),
             recordTime: document.getElementById('recordTime'),
-            // recordType 改為 radio, 使用 querySelector 獲取
-            recordCategory: document.getElementById('recordCategory'),
+            recordType: document.getElementById('recordType'),
+            recordMainCategory: document.getElementById('recordMainCategory'),
             recordSubCategory: document.getElementById('recordSubCategory'),
             recordAmount: document.getElementById('recordAmount'),
             recordSummary: document.getElementById('recordSummary'),
@@ -1255,27 +1503,28 @@
             removePhotoBtn: document.getElementById('removePhotoBtn'),
             
             // 按鈕
-            submitBtn: document.getElementById('submitBtn'),
-            cancelEditBtn: document.getElementById('cancelEditBtn'),
             resetFormBtn: document.getElementById('resetFormBtn'),
-            addCategoryBtn: document.getElementById('addCategoryBtn'),
+            addMainCategoryBtn: document.getElementById('addMainCategoryBtn'),
+            addSubCategoryBtn: document.getElementById('addSubCategoryBtn'),
             applyFilterBtn: document.getElementById('applyFilterBtn'),
             clearFilterBtn: document.getElementById('clearFilterBtn'),
             
             // 選項輸入
-            newCategory: document.getElementById('newCategory'),
+            newMainCategory: document.getElementById('newMainCategory'),
+            newSubCategory: document.getElementById('newSubCategory'),
             
             // 記錄列表篩選器
             filterYear: document.getElementById('filterYear'),
             filterMonth: document.getElementById('filterMonth'),
             filterSummary: document.getElementById('filterSummary'),
             filterType: document.getElementById('filterType'),
-            filterCategory: document.getElementById('filterCategory'),
+            filterMainCategory: document.getElementById('filterMainCategory'),
             filterSubCategory: document.getElementById('filterSubCategory'),
             
             // 列表容器
             recordsList: document.getElementById('recordsList'),
-            categoriesList: document.getElementById('categoriesList'),
+            mainCategoriesList: document.getElementById('mainCategoriesList'),
+            subCategoriesList: document.getElementById('subCategoriesList'),
             
             // 標籤按鈕
             tabBtns: document.querySelectorAll('.tab-btn'),
@@ -1283,6 +1532,8 @@
             // 統計元素
             summaryYear: document.getElementById('summaryYear'),
             summaryMonth: document.getElementById('summaryMonth'),
+            summaryMainCategory: document.getElementById('summaryMainCategory'),
+            summarySubCategory: document.getElementById('summarySubCategory'),
             applySummaryFilterBtn: document.getElementById('applySummaryFilterBtn'),
             clearSummaryFilterBtn: document.getElementById('clearSummaryFilterBtn'),
             
@@ -1298,7 +1549,6 @@
             totalExpense: document.getElementById('totalExpense'),
             netIncome: document.getElementById('netIncome'),
             categorySummary: document.getElementById('categorySummary'),
-            subCategorySummary: document.getElementById('subCategorySummary'),
             totalSummary: document.getElementById('totalSummary'),
             
             // 匯入/匯出元素
@@ -1331,11 +1581,30 @@
             finalImportBtn: document.getElementById('finalImportBtn'),
             cancelImportBtn: document.getElementById('cancelImportBtn'),
             
+            // 科目刪除模態框
+            categoryDeleteModal: document.getElementById('categoryDeleteModal'),
+            closeCategoryDeleteModal: document.getElementById('closeCategoryDeleteModal'),
+            confirmCategoryDeleteBtn: document.getElementById('confirmCategoryDeleteBtn'),
+            cancelCategoryDeleteBtn: document.getElementById('cancelCategoryDeleteBtn'),
+            categoryDeleteModalMessage: document.getElementById('categoryDeleteModalMessage'),
+            
             // 通知
             notification: document.getElementById('notification'),
             
             // 日期顯示
-            currentDate: document.getElementById('currentDate')
+            currentDate: document.getElementById('currentDate'),
+            
+            // 編輯功能相關
+            formModeTitle: document.getElementById('formModeTitle'),
+            cancelEditBtn: document.getElementById('cancelEditBtn'),
+            submitFormBtn: document.getElementById('submitFormBtn'),
+            
+            // 收支別選擇器
+            typeOptions: document.querySelectorAll('.type-option'),
+            
+            // 科目管理相關
+            selectedCategoryIndicator: document.getElementById('selectedCategoryIndicator'),
+            selectedCategoryName: document.getElementById('selectedCategoryName')
         };
 
         // 工具函數
@@ -1394,12 +1663,16 @@
                     totalIncome: 0,
                     totalExpense: 0,
                     netIncome: 0,
-                    byCategory: {},
-                    bySubCategory: {}
+                    byMainCategory: {},
+                    bySubCategory: {},
+                    byCategoryFull: {} // 主科目:子科目
                 };
                 
                 records.forEach(record => {
                     const amount = parseFloat(record.amount);
+                    const mainCategory = record.mainCategory;
+                    const subCategory = record.subCategory;
+                    const categoryFull = `${mainCategory}:${subCategory}`;
                     
                     if (record.type === 'income') {
                         summary.totalIncome += amount;
@@ -1408,25 +1681,33 @@
                     }
                     
                     // 主科目統計
-                    if (!summary.byCategory[record.category]) {
-                        summary.byCategory[record.category] = { income: 0, expense: 0 };
+                    if (!summary.byMainCategory[mainCategory]) {
+                        summary.byMainCategory[mainCategory] = { income: 0, expense: 0 };
                     }
                     if (record.type === 'income') {
-                        summary.byCategory[record.category].income += amount;
+                        summary.byMainCategory[mainCategory].income += amount;
                     } else {
-                        summary.byCategory[record.category].expense += amount;
+                        summary.byMainCategory[mainCategory].expense += amount;
                     }
                     
                     // 子科目統計
-                    const subKey = record.subCategory ? `${record.category} - ${record.subCategory}` : `${record.category} (無子科目)`;
-                    
-                    if (!summary.bySubCategory[subKey]) {
-                        summary.bySubCategory[subKey] = { income: 0, expense: 0 };
+                    if (!summary.bySubCategory[subCategory]) {
+                        summary.bySubCategory[subCategory] = { income: 0, expense: 0, mainCategory: mainCategory };
                     }
                     if (record.type === 'income') {
-                        summary.bySubCategory[subKey].income += amount;
+                        summary.bySubCategory[subCategory].income += amount;
                     } else {
-                        summary.bySubCategory[subKey].expense += amount;
+                        summary.bySubCategory[subCategory].expense += amount;
+                    }
+                    
+                    // 完整科目統計
+                    if (!summary.byCategoryFull[categoryFull]) {
+                        summary.byCategoryFull[categoryFull] = { income: 0, expense: 0 };
+                    }
+                    if (record.type === 'income') {
+                        summary.byCategoryFull[categoryFull].income += amount;
+                    } else {
+                        summary.byCategoryFull[categoryFull].expense += amount;
                     }
                 });
                 
@@ -1492,7 +1773,8 @@
                 // 驗證每筆記錄的基本結構
                 for (let i = 0; i < data.records.length; i++) {
                     const record = data.records[i];
-                    if (!record.date || !record.time || !record.type || !record.category || !record.amount) {
+                    if (!record.date || !record.time || !record.type || 
+                        !record.mainCategory || !record.subCategory || !record.amount) {
                         return { valid: false, error: `第 ${i + 1} 筆記錄缺少必要欄位` };
                     }
                 }
@@ -1507,6 +1789,18 @@
                 const sizes = ['Bytes', 'KB', 'MB', 'GB'];
                 const i = Math.floor(Math.log(bytes) / Math.log(k));
                 return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            },
+            
+            // 計算主科目下的記錄筆數
+            countRecordsByMainCategory: (mainCategory) => {
+                return appState.records.filter(record => record.mainCategory === mainCategory).length;
+            },
+            
+            // 計算子科目下的記錄筆數
+            countRecordsBySubCategory: (mainCategory, subCategory) => {
+                return appState.records.filter(record => 
+                    record.mainCategory === mainCategory && record.subCategory === subCategory
+                ).length;
             }
         };
 
@@ -1515,12 +1809,14 @@
             // 初始化
             init: () => {
                 utils.setCurrentDateTime();
-                app.updateMainCategorySelects();
-                app.renderCategoriesList();
+                app.updateAllSelects();
+                app.renderMainCategoriesList();
+                app.renderSubCategoriesList();
                 app.renderRecordsList();
                 app.updateSummary();
                 app.setupEventListeners();
                 app.updateYearSelector();
+                app.setupTypeSelector();
                 
                 // 確保所有模態框初始隱藏
                 app.hideAllModals();
@@ -1535,44 +1831,91 @@
                 });
             },
             
-            // 更新主科目選擇器
-            updateMainCategorySelects: () => {
-                const categories = Object.keys(appState.categories);
-                
-                // 記帳表單的主科目
-                elements.recordCategory.innerHTML = '<option value="">請選擇科目</option>';
-                categories.forEach(cat => {
+            // 設定收支別選擇器
+            setupTypeSelector: () => {
+                elements.typeOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        const type = option.dataset.type;
+                        
+                        // 更新選擇狀態
+                        elements.typeOptions.forEach(opt => {
+                            opt.classList.remove('selected');
+                        });
+                        option.classList.add('selected');
+                        
+                        // 更新隱藏輸入值
+                        elements.recordType.value = type;
+                    });
+                });
+            },
+            
+            // 更新所有選擇下拉菜單
+            updateAllSelects: () => {
+                // 更新主科目選擇（記帳表單）
+                elements.recordMainCategory.innerHTML = '<option value="">請選擇</option>';
+                Object.keys(appState.categories).forEach(mainCat => {
                     const option = document.createElement('option');
-                    option.value = cat;
-                    option.textContent = cat;
-                    elements.recordCategory.appendChild(option);
+                    option.value = mainCat;
+                    option.textContent = mainCat;
+                    elements.recordMainCategory.appendChild(option);
                 });
                 
-                // 篩選器的主科目
-                elements.filterCategory.innerHTML = '<option value="">全部</option>';
-                categories.forEach(cat => {
+                // 更新主科目選擇（記錄列表篩選器）
+                elements.filterMainCategory.innerHTML = '<option value="">全部</option>';
+                Object.keys(appState.categories).forEach(mainCat => {
                     const option = document.createElement('option');
-                    option.value = cat;
-                    option.textContent = cat;
-                    elements.filterCategory.appendChild(option);
+                    option.value = mainCat;
+                    option.textContent = mainCat;
+                    elements.filterMainCategory.appendChild(option);
                 });
                 
-                // 更新記錄列表年份選擇器
+                // 更新主科目選擇（統計分析篩選器）
+                elements.summaryMainCategory.innerHTML = '<option value="">全部</option>';
+                Object.keys(appState.categories).forEach(mainCat => {
+                    const option = document.createElement('option');
+                    option.value = mainCat;
+                    option.textContent = mainCat;
+                    elements.summaryMainCategory.appendChild(option);
+                });
+                
+                // 更新子科目選擇（記錄列表篩選器）
+                app.updateSubCategoryFilter();
+                
+                // 更新子科目選擇（統計分析篩選器）
+                app.updateSubCategorySummaryFilter();
+                
+                // 更新年份選擇器 - 記錄列表
                 app.updateRecordListYearSelector();
             },
             
-            // 更新子科目選擇器
-            updateSubCategorySelect: (mainCategory, targetSelectElement, includeAllOption = false) => {
-                targetSelectElement.innerHTML = includeAllOption ? '<option value="">全部</option>' : '<option value="">請選擇子科目</option>';
+            // 更新子科目篩選器（記錄列表）
+            updateSubCategoryFilter: () => {
+                elements.filterSubCategory.innerHTML = '<option value="">全部</option>';
+                const selectedMainCategory = elements.filterMainCategory.value;
                 
-                if (!mainCategory || !appState.categories[mainCategory]) return;
+                if (selectedMainCategory && appState.categories[selectedMainCategory]) {
+                    appState.categories[selectedMainCategory].forEach(subCat => {
+                        const option = document.createElement('option');
+                        option.value = subCat;
+                        option.textContent = subCat;
+                        elements.filterSubCategory.appendChild(option);
+                    });
+                }
+            },
+            
+            // 更新子科目篩選器（統計分析）
+            updateSubCategorySummaryFilter: () => {
+                elements.summarySubCategory.innerHTML = '<option value="">全部</option>';
+                const selectedMainCategory = elements.summaryMainCategory.value;
                 
-                appState.categories[mainCategory].forEach(sub => {
-                    const option = document.createElement('option');
-                    option.value = sub;
-                    option.textContent = sub;
-                    targetSelectElement.appendChild(option);
-                });
+                if (selectedMainCategory && appState.categories[selectedMainCategory]) {
+                    appState.categories[selectedMainCategory].forEach(subCat => {
+                        const option = document.createElement('option');
+                        option.value = subCat;
+                        option.textContent = subCat;
+                        elements.summarySubCategory.appendChild(option);
+                    });
+                }
             },
             
             // 更新記錄列表的年份選擇器
@@ -1607,184 +1950,303 @@
                 storage.set('categories', appState.categories);
             },
             
-            // 新增或更新記錄
-            saveRecord: (recordData) => {
-                if (appState.editingId) {
-                    // 更新模式
-                    const index = appState.records.findIndex(r => r.id === appState.editingId);
-                    if (index !== -1) {
-                        // 保留原始的 id 和 createdAt
-                        const updatedRecord = {
-                            ...appState.records[index],
-                            ...recordData,
-                            id: appState.editingId 
-                        };
-                        appState.records[index] = updatedRecord;
-                        utils.showNotification('記錄已更新！');
-                    }
-                } else {
-                    // 新增模式
-                    const newRecord = {
-                        id: utils.generateId(),
-                        ...recordData,
-                        createdAt: new Date().toISOString()
-                    };
-                    appState.records.unshift(newRecord);
-                    utils.showNotification('記錄已保存！');
-                }
+            // 新增記錄
+            addRecord: (recordData) => {
+                const newRecord = {
+                    id: utils.generateId(),
+                    ...recordData,
+                    createdAt: new Date().toISOString()
+                };
                 
+                appState.records.unshift(newRecord);
                 app.saveData();
                 app.renderRecordsList();
                 app.updateSummary();
-                app.updateRecordListYearSelector();
-                app.updateYearSelector();
+                app.updateRecordListYearSelector(); // 更新記錄列表年份選擇器
+                app.updateYearSelector(); // 更新統計分析年份選擇器
+                utils.showNotification('記錄已保存！');
             },
             
-            // 編輯記錄功能
-            editRecord: (id) => {
-                const record = appState.records.find(r => r.id === id);
-                if (!record) return;
-
-                // 填入表單數據
-                elements.editRecordId.value = record.id;
-                elements.recordDate.value = record.date;
-                elements.recordTime.value = record.time;
-                
-                // 設定 Radio Button
-                const radios = document.getElementsByName('recordType');
-                for(let radio of radios) {
-                    if(radio.value === record.type) {
-                        radio.checked = true;
-                        break;
-                    }
+            // 更新記錄
+            updateRecord: (id, recordData) => {
+                const index = appState.records.findIndex(record => record.id === id);
+                if (index !== -1) {
+                    appState.records[index] = {
+                        ...appState.records[index],
+                        ...recordData,
+                        updatedAt: new Date().toISOString()
+                    };
+                    
+                    app.saveData();
+                    app.renderRecordsList();
+                    app.updateSummary();
+                    utils.showNotification('記錄已更新！');
+                    
+                    // 重置編輯狀態
+                    app.cancelEdit();
                 }
-
-                elements.recordCategory.value = record.category;
-                
-                // 觸發子科目更新，並設定子科目值
-                app.updateSubCategorySelect(record.category, elements.recordSubCategory);
-                elements.recordSubCategory.value = record.subCategory || "";
-                
-                elements.recordAmount.value = record.amount;
-                elements.recordSummary.value = record.summary || "";
-                
-                // 處理照片
-                appState.currentPhoto = record.receiptImage || null;
-                if (appState.currentPhoto) {
-                    elements.photoPreview.src = appState.currentPhoto;
-                    elements.photoPreviewContainer.classList.remove('hidden');
-                    elements.photoPrompt.classList.add('hidden');
-                    elements.removePhotoBtn.classList.remove('hidden');
-                    elements.photoArea.classList.add('has-image');
-                } else {
-                    elements.photoPreviewContainer.classList.add('hidden');
-                    elements.photoPrompt.classList.remove('hidden');
-                    elements.removePhotoBtn.classList.add('hidden');
-                    elements.photoArea.classList.remove('has-image');
-                }
-
-                // 設定編輯狀態
-                appState.editingId = id;
-                elements.submitBtn.textContent = "💾 更新記錄";
-                elements.cancelEditBtn.classList.remove('hidden');
-
-                // 切換到記帳分頁
-                document.querySelector('.tab-btn[data-tab="record"]').click();
-            },
-
-            // 取消編輯
-            cancelEdit: () => {
-                app.resetForm();
             },
             
             // 刪除記錄
             deleteRecord: (id) => {
                 appState.records = appState.records.filter(record => record.id !== id);
-                
-                // 如果正在編輯這筆被刪除的資料，重置表單
-                if(appState.editingId === id) {
-                    app.cancelEdit();
-                }
-
                 app.saveData();
                 app.renderRecordsList();
                 app.updateSummary();
-                app.updateRecordListYearSelector();
-                app.updateYearSelector();
+                app.updateRecordListYearSelector(); // 更新記錄列表年份選擇器
+                app.updateYearSelector(); // 更新統計分析年份選擇器
                 utils.showNotification('記錄已刪除！');
             },
             
+            // 進入編輯模式
+            editRecord: (id) => {
+                const record = appState.records.find(r => r.id === id);
+                if (!record) {
+                    utils.showNotification('找不到要編輯的記錄', true);
+                    return;
+                }
+                
+                // 設置編輯狀態
+                appState.editingRecordId = id;
+                
+                // 切換到記帳標籤
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                
+                document.querySelector('[data-tab="record"]').classList.add('active');
+                document.getElementById('record-tab').classList.add('active');
+                
+                // 更新表單標題
+                elements.formModeTitle.textContent = '編輯記錄';
+                elements.cancelEditBtn.classList.remove('hidden');
+                elements.submitFormBtn.textContent = '💾 更新記錄';
+                
+                // 填充表單數據
+                elements.recordDate.value = record.date;
+                elements.recordTime.value = record.time;
+                
+                // 設置收支別
+                elements.typeOptions.forEach(opt => {
+                    opt.classList.remove('selected');
+                    if (opt.dataset.type === record.type) {
+                        opt.classList.add('selected');
+                    }
+                });
+                elements.recordType.value = record.type;
+                
+                // 設置科目
+                elements.recordMainCategory.value = record.mainCategory;
+                
+                // 更新子科目選項
+                elements.recordSubCategory.innerHTML = '<option value="">請選擇</option>';
+                if (record.mainCategory && appState.categories[record.mainCategory]) {
+                    appState.categories[record.mainCategory].forEach(subCat => {
+                        const option = document.createElement('option');
+                        option.value = subCat;
+                        option.textContent = subCat;
+                        if (subCat === record.subCategory) {
+                            option.selected = true;
+                        }
+                        elements.recordSubCategory.appendChild(option);
+                    });
+                }
+                
+                elements.recordAmount.value = record.amount;
+                elements.recordSummary.value = record.summary || '';
+                
+                // 處理照片
+                if (record.receiptImage) {
+                    appState.currentPhoto = record.receiptImage;
+                    elements.photoPreview.src = record.receiptImage;
+                    elements.photoPreviewContainer.classList.remove('hidden');
+                    elements.photoPrompt.classList.add('hidden');
+                    elements.removePhotoBtn.classList.remove('hidden');
+                    elements.photoArea.classList.add('has-image');
+                    
+                    // 點擊圖片查看大圖
+                    elements.photoPreview.onclick = () => {
+                        elements.receiptImage.src = record.receiptImage;
+                        elements.receiptModal.classList.remove('hidden');
+                        elements.receiptModal.style.display = 'flex';
+                    };
+                } else {
+                    appState.currentPhoto = null;
+                    elements.photoPreviewContainer.classList.add('hidden');
+                    elements.photoPrompt.classList.remove('hidden');
+                    elements.removePhotoBtn.classList.add('hidden');
+                    elements.photoArea.classList.remove('has-image');
+                    elements.photoFileInput.value = '';
+                    elements.photoPreview.onclick = null;
+                }
+                
+                utils.showNotification('正在編輯記錄...');
+            },
+            
+            // 取消編輯
+            cancelEdit: () => {
+                appState.editingRecordId = null;
+                elements.formModeTitle.textContent = '新增記錄';
+                elements.cancelEditBtn.classList.add('hidden');
+                elements.submitFormBtn.textContent = '💾 保存記錄';
+                app.resetForm();
+            },
+            
             // 新增主科目
-            addCategory: (name) => {
+            addMainCategory: (name) => {
                 if (!name.trim()) {
-                    utils.showNotification('請輸入科目名稱', true);
+                    utils.showNotification('請輸入主科目名稱', true);
                     return;
                 }
                 
                 if (appState.categories[name]) {
-                    utils.showNotification('該科目已存在', true);
+                    utils.showNotification('該主科目已存在', true);
                     return;
                 }
                 
-                appState.categories[name] = []; // 初始化為空陣列
+                appState.categories[name] = [];
                 app.saveData();
-                app.updateMainCategorySelects();
-                app.renderCategoriesList();
-                utils.showNotification('科目已新增！');
-                elements.newCategory.value = '';
+                app.updateAllSelects();
+                app.renderMainCategoriesList();
+                app.renderSubCategoriesList();
+                utils.showNotification('主科目已新增！');
+                elements.newMainCategory.value = '';
+            },
+            
+            // 確認刪除主科目
+            confirmDeleteMainCategory: (name) => {
+                const recordCount = utils.countRecordsByMainCategory(name);
+                
+                // 設置刪除目標
+                appState.categoryDeleteTarget = {
+                    type: 'main',
+                    mainCategory: name,
+                    subCategory: ''
+                };
+                
+                // 顯示確認訊息
+                if (recordCount > 0) {
+                    elements.categoryDeleteModalMessage.textContent = 
+                        `所選科目已有 ${recordCount} 筆收支紀錄筆數，是否確定移除？`;
+                } else {
+                    elements.categoryDeleteModalMessage.textContent = 
+                        '是否確定移除？';
+                }
+                
+                // 顯示模態框
+                elements.categoryDeleteModal.classList.remove('hidden');
+                elements.categoryDeleteModal.style.display = 'flex';
+            },
+            
+            // 刪除主科目
+            deleteMainCategory: (name) => {
+                delete appState.categories[name];
+                app.saveData();
+                app.updateAllSelects();
+                app.renderMainCategoriesList();
+                app.renderSubCategoriesList();
+                
+                // 如果刪除的是當前選中的主科目，清空選擇
+                if (appState.selectedMainCategory === name) {
+                    appState.selectedMainCategory = null;
+                    elements.selectedCategoryIndicator.classList.add('hidden');
+                    elements.newSubCategory.placeholder = '請先選擇主科目';
+                    elements.addSubCategoryBtn.disabled = true;
+                    app.renderSubCategoriesList();
+                }
+                
+                utils.showNotification('主科目已刪除！');
+            },
+            
+            // 選擇主科目
+            selectMainCategory: (name) => {
+                appState.selectedMainCategory = name;
+                
+                // 更新UI
+                app.renderMainCategoriesList();
+                app.renderSubCategoriesList();
+                
+                // 更新子科目管理區域
+                elements.selectedCategoryName.textContent = name;
+                elements.selectedCategoryIndicator.classList.remove('hidden');
+                elements.newSubCategory.placeholder = '輸入子科目名稱';
+                elements.addSubCategoryBtn.disabled = false;
+                
+                // 聚焦到子科目輸入框
+                elements.newSubCategory.focus();
             },
             
             // 新增子科目
-            addSubCategory: (mainCat, subName) => {
-                if (!subName.trim()) return;
+            addSubCategory: () => {
+                if (!appState.selectedMainCategory) {
+                    utils.showNotification('請先選擇主科目', true);
+                    return;
+                }
                 
-                if (appState.categories[mainCat].includes(subName)) {
+                const subCategoryName = elements.newSubCategory.value.trim();
+                
+                if (!subCategoryName) {
+                    utils.showNotification('請輸入子科目名稱', true);
+                    return;
+                }
+                
+                if (!appState.categories[appState.selectedMainCategory]) {
+                    appState.categories[appState.selectedMainCategory] = [];
+                }
+                
+                if (appState.categories[appState.selectedMainCategory].includes(subCategoryName)) {
                     utils.showNotification('該子科目已存在', true);
                     return;
                 }
                 
-                appState.categories[mainCat].push(subName);
+                appState.categories[appState.selectedMainCategory].push(subCategoryName);
                 app.saveData();
-                // 如果當前記帳表單選中的是這個主科目，更新下拉
-                if (elements.recordCategory.value === mainCat) {
-                     app.updateSubCategorySelect(mainCat, elements.recordSubCategory);
-                }
-                app.renderCategoriesList();
+                app.updateAllSelects();
+                app.renderSubCategoriesList();
                 utils.showNotification('子科目已新增！');
+                elements.newSubCategory.value = '';
             },
             
-            // 刪除主科目
-            deleteCategory: (name) => {
-                const hasRecords = appState.records.some(record => record.category === name);
-                if (hasRecords) {
-                    utils.showNotification('無法刪除，已有記錄使用該科目', true);
-                    return;
+            // 確認刪除子科目
+            confirmDeleteSubCategory: (mainCategory, subCategoryName) => {
+                const recordCount = utils.countRecordsBySubCategory(mainCategory, subCategoryName);
+                
+                // 設置刪除目標
+                appState.categoryDeleteTarget = {
+                    type: 'sub',
+                    mainCategory: mainCategory,
+                    subCategory: subCategoryName
+                };
+                
+                // 顯示確認訊息
+                if (recordCount > 0) {
+                    elements.categoryDeleteModalMessage.textContent = 
+                        `所選子科目已有 ${recordCount} 筆收支紀錄筆數，是否確定移除？`;
+                } else {
+                    elements.categoryDeleteModalMessage.textContent = 
+                        '是否確定移除？';
                 }
                 
-                if (confirm(`確定要刪除主科目「${name}」嗎？其下所有子科目也會被刪除。`)) {
-                    delete appState.categories[name];
-                    app.saveData();
-                    app.updateMainCategorySelects();
-                    app.renderCategoriesList();
-                    utils.showNotification('科目已刪除！');
-                }
+                // 顯示模態框
+                elements.categoryDeleteModal.classList.remove('hidden');
+                elements.categoryDeleteModal.style.display = 'flex';
             },
-
+            
             // 刪除子科目
-            deleteSubCategory: (mainCat, subName) => {
-                const hasRecords = appState.records.some(record => record.category === mainCat && record.subCategory === subName);
-                if (hasRecords) {
-                    utils.showNotification('無法刪除，已有記錄使用該子科目', true);
-                    return;
+            deleteSubCategory: (mainCategory, subCategoryName) => {
+                if (appState.categories[mainCategory]) {
+                    appState.categories[mainCategory] = appState.categories[mainCategory]
+                        .filter(sub => sub !== subCategoryName);
+                    
+                    // 如果主科目下沒有子科目了，保留空陣列
+                    if (appState.categories[mainCategory].length === 0) {
+                        // 保留空陣列
+                    }
+                    
+                    app.saveData();
+                    app.updateAllSelects();
+                    app.renderSubCategoriesList();
+                    utils.showNotification('子科目已刪除！');
                 }
-
-                appState.categories[mainCat] = appState.categories[mainCat].filter(s => s !== subName);
-                app.saveData();
-                if (elements.recordCategory.value === mainCat) {
-                     app.updateSubCategorySelect(mainCat, elements.recordSubCategory);
-                }
-                app.renderCategoriesList();
-                utils.showNotification('子科目已刪除！');
             },
             
             // 渲染記錄列表
@@ -1809,7 +2271,6 @@
                     card.className = `record-card ${record.type}`;
                     
                     const hasReceipt = record.receiptImage && record.receiptImage.trim() !== '';
-                    const subCatDisplay = record.subCategory ? ` - ${record.subCategory}` : '';
                     
                     card.innerHTML = `
                         <div class="record-header">
@@ -1819,13 +2280,13 @@
                             </div>
                         </div>
                         <div class="record-details">
-                            <div><strong>科目:</strong> ${record.category}${subCatDisplay}</div>
+                            <div><strong>科目:</strong> ${record.mainCategory} - ${record.subCategory}</div>
                             <div><strong>收支別:</strong> ${record.type === 'income' ? '收入' : '支出'}</div>
                         </div>
                         ${record.summary ? `<div class="record-summary">${record.summary}</div>` : ''}
                         <div class="record-actions">
                             ${hasReceipt ? `<button class="btn" onclick="app.viewReceipt('${record.id}')">🖼️ 查看收據</button>` : ''}
-                            <button class="btn btn-info" onclick="app.editRecord('${record.id}')">✏️ 編輯</button>
+                            <button class="btn edit-btn" onclick="app.editRecord('${record.id}')">✏️ 編輯</button>
                             <button class="btn btn-danger" onclick="app.confirmDelete('${record.id}')">🗑️ 刪除</button>
                         </div>
                     `;
@@ -1834,44 +2295,67 @@
                 });
             },
             
-            // 渲染科目列表 (巢狀結構)
-            renderCategoriesList: () => {
-                const container = elements.categoriesList;
+            // 渲染主科目列表
+            renderMainCategoriesList: () => {
+                const container = elements.mainCategoriesList;
                 container.innerHTML = '';
                 
-                const categories = Object.keys(appState.categories);
-
-                if (categories.length === 0) {
-                    container.innerHTML = '<div class="empty-state"><p>尚無科目，請新增</p></div>';
+                const mainCategories = Object.keys(appState.categories);
+                
+                if (mainCategories.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><p>尚無主科目，請新增</p></div>';
                     return;
                 }
                 
-                categories.forEach(cat => {
-                    const subCategories = appState.categories[cat];
-                    const item = document.createElement('div');
-                    item.className = 'category-item';
+                mainCategories.forEach(mainCat => {
+                    const recordCount = utils.countRecordsByMainCategory(mainCat);
+                    const isSelected = appState.selectedMainCategory === mainCat;
                     
-                    let subsHtml = '';
-                    subCategories.forEach(sub => {
-                        subsHtml += `
-                            <div class="subcategory-item">
-                                <span>${sub}</span>
-                                <button class="btn btn-danger btn-sm" onclick="app.deleteSubCategory('${cat}', '${sub}')">刪除</button>
-                            </div>
-                        `;
-                    });
-
+                    const item = document.createElement('div');
+                    item.className = `management-item main-category-item ${isSelected ? 'selected' : ''}`;
+                    item.setAttribute('data-category', mainCat);
                     item.innerHTML = `
-                        <div class="category-header">
-                            <span>${cat}</span>
-                            <button class="btn btn-danger btn-sm" onclick="app.deleteCategory('${cat}')">刪除主科目</button>
-                        </div>
-                        <div class="subcategory-list">
-                            ${subsHtml}
-                            <div class="subcategory-add-row">
-                                <input type="text" placeholder="新子科目名稱" id="newSub-${cat}" style="padding: 5px; flex:1;">
-                                <button class="btn btn-success btn-sm" onclick="app.addSubCategory('${cat}', document.getElementById('newSub-${cat}').value)">新增子科目</button>
-                            </div>
+                        <span>${mainCat} <span class="category-count">${recordCount}筆</span></span>
+                        <button class="btn btn-danger" onclick="event.stopPropagation(); app.confirmDeleteMainCategory('${mainCat}')">刪除</button>
+                    `;
+                    
+                    // 點擊選擇主科目
+                    item.addEventListener('click', (e) => {
+                        if (!e.target.classList.contains('btn-danger')) {
+                            app.selectMainCategory(mainCat);
+                        }
+                    });
+                    
+                    container.appendChild(item);
+                });
+            },
+            
+            // 渲染子科目列表
+            renderSubCategoriesList: () => {
+                const container = elements.subCategoriesList;
+                container.innerHTML = '';
+                
+                if (!appState.selectedMainCategory) {
+                    container.innerHTML = '<div class="empty-state"><p>請點擊左側主科目以查看子科目</p></div>';
+                    return;
+                }
+                
+                const subCategories = appState.categories[appState.selectedMainCategory] || [];
+                
+                if (subCategories.length === 0) {
+                    container.innerHTML = '<div class="empty-state"><p>該主科目下尚無子科目，請新增</p></div>';
+                    return;
+                }
+                
+                subCategories.forEach(subCat => {
+                    const recordCount = utils.countRecordsBySubCategory(appState.selectedMainCategory, subCat);
+                    
+                    const item = document.createElement('div');
+                    item.className = 'subcategory-item';
+                    item.innerHTML = `
+                        <span>${subCat} <span class="category-count">${recordCount}筆</span></span>
+                        <div class="subcategory-actions">
+                            <button class="btn btn-danger" onclick="app.confirmDeleteSubCategory('${appState.selectedMainCategory}', '${subCat}')">刪除</button>
                         </div>
                     `;
                     container.appendChild(item);
@@ -1892,20 +2376,21 @@
                 const netText = summary.netIncome >= 0 ? `💰 淨收入: ${utils.formatAmount(summary.netIncome)}` : `💸 淨支出: ${utils.formatAmount(Math.abs(summary.netIncome))}`;
                 elements.totalSummary.textContent = `收入: ${utils.formatAmount(summary.totalIncome)} | 支出: ${utils.formatAmount(summary.totalExpense)} | ${netText}`;
                 
-                // 主科目統計
+                // 科目統計
                 const categoryContainer = elements.categorySummary;
-                if (Object.keys(summary.byCategory).length === 0) {
+                if (Object.keys(summary.byCategoryFull).length === 0) {
                     categoryContainer.innerHTML = '<div class="empty-state"><p>尚無統計數據</p></div>';
                 } else {
                     categoryContainer.innerHTML = '<div class="summary-grid">';
-                    for (const [category, data] of Object.entries(summary.byCategory)) {
+                    for (const [categoryFull, data] of Object.entries(summary.byCategoryFull)) {
+                        const [mainCategory, subCategory] = categoryFull.split(':');
                         const total = data.income - data.expense;
                         const totalText = total >= 0 ? `+${utils.formatAmount(total)}` : `-${utils.formatAmount(Math.abs(total))}`;
                         const totalClass = total >= 0 ? 'income-text' : 'expense-text';
                         
                         categoryContainer.innerHTML += `
                             <div class="summary-item">
-                                <div>${category}</div>
+                                <div>${mainCategory} - ${subCategory}</div>
                                 <div style="font-size: 0.8rem; color: #666;">收: ${utils.formatAmount(data.income)} | 支: ${utils.formatAmount(data.expense)}</div>
                                 <div class="summary-value ${totalClass}">${totalText}</div>
                             </div>
@@ -1913,43 +2398,26 @@
                     }
                     categoryContainer.innerHTML += '</div>';
                 }
-                
-                // 子科目統計
-                const subCategoryContainer = elements.subCategorySummary;
-                if (Object.keys(summary.bySubCategory).length === 0) {
-                    subCategoryContainer.innerHTML = '<div class="empty-state"><p>尚無統計數據</p></div>';
-                } else {
-                    subCategoryContainer.innerHTML = '<div class="summary-grid">';
-                    for (const [subKey, data] of Object.entries(summary.bySubCategory)) {
-                        const total = data.income - data.expense;
-                        const totalText = total >= 0 ? `+${utils.formatAmount(total)}` : `-${utils.formatAmount(Math.abs(total))}`;
-                        const totalClass = total >= 0 ? 'income-text' : 'expense-text';
-                        
-                        subCategoryContainer.innerHTML += `
-                            <div class="summary-item">
-                                <div>${subKey}</div>
-                                <div style="font-size: 0.8rem; color: #666;">收: ${utils.formatAmount(data.income)} | 支: ${utils.formatAmount(data.expense)}</div>
-                                <div class="summary-value ${totalClass}">${totalText}</div>
-                            </div>
-                        `;
-                    }
-                    subCategoryContainer.innerHTML += '</div>';
-                }
             },
             
             // 應用統計篩選
             applySummaryFilter: () => {
                 const year = elements.summaryYear.value;
                 const month = elements.summaryMonth.value;
+                const mainCategory = elements.summaryMainCategory.value;
+                const subCategory = elements.summarySubCategory.value;
                 
-                appState.summaryFilter.year = year;
-                appState.summaryFilter.month = month;
+                // 保存篩選條件
+                appState.summaryFilter = { year, month, mainCategory, subCategory };
                 
+                // 篩選記錄
                 let filtered = appState.records.filter(record => {
                     const { year: recordYear, month: recordMonth } = utils.extractYearMonth(record.date);
                     
                     if (year && recordYear !== year) return false;
                     if (month && recordMonth !== month) return false;
+                    if (mainCategory && record.mainCategory !== mainCategory) return false;
+                    if (subCategory && record.subCategory !== subCategory) return false;
                     
                     return true;
                 });
@@ -1960,15 +2428,20 @@
                     return;
                 }
                 
+                // 計算統計
                 const summary = utils.calculateSummary(filtered);
-                app.showPeriodSummary(year, month, summary);
+                
+                // 顯示週期總覽
+                app.showPeriodSummary(year, month, mainCategory, subCategory, summary);
+                
+                // 更新統計數據
                 app.updateFilteredSummary(filtered);
                 
                 utils.showNotification(`已生成 ${year || '全部'}年 ${month || '全部'}月 的統計`);
             },
             
             // 顯示週期總覽
-            showPeriodSummary: (year, month, summary) => {
+            showPeriodSummary: (year, month, mainCategory, subCategory, summary) => {
                 let periodText = '';
                 if (year && month) {
                     periodText = `${year}年${parseInt(month)}月`;
@@ -1978,6 +2451,13 @@
                     periodText = `${parseInt(month)}月`;
                 } else {
                     periodText = '全部期間';
+                }
+                
+                if (mainCategory) {
+                    periodText += ` - ${mainCategory}`;
+                    if (subCategory) {
+                        periodText += `:${subCategory}`;
+                    }
                 }
                 
                 elements.periodTitle.textContent = periodText + ' 收支總覽';
@@ -1998,20 +2478,21 @@
             updateFilteredSummary: (filteredRecords) => {
                 const summary = utils.calculateSummary(filteredRecords);
                 
-                // 主科目統計
+                // 科目統計
                 const categoryContainer = elements.categorySummary;
-                if (Object.keys(summary.byCategory).length === 0) {
+                if (Object.keys(summary.byCategoryFull).length === 0) {
                     categoryContainer.innerHTML = '<div class="empty-state"><p>尚無統計數據</p></div>';
                 } else {
                     categoryContainer.innerHTML = '<div class="summary-grid">';
-                    for (const [category, data] of Object.entries(summary.byCategory)) {
+                    for (const [categoryFull, data] of Object.entries(summary.byCategoryFull)) {
+                        const [mainCategory, subCategory] = categoryFull.split(':');
                         const total = data.income - data.expense;
                         const totalText = total >= 0 ? `+${utils.formatAmount(total)}` : `-${utils.formatAmount(Math.abs(total))}`;
                         const totalClass = total >= 0 ? 'income-text' : 'expense-text';
                         
                         categoryContainer.innerHTML += `
                             <div class="summary-item">
-                                <div>${category}</div>
+                                <div>${mainCategory} - ${subCategory}</div>
                                 <div style="font-size: 0.8rem; color: #666;">收: ${utils.formatAmount(data.income)} | 支: ${utils.formatAmount(data.expense)}</div>
                                 <div class="summary-value ${totalClass}">${totalText}</div>
                             </div>
@@ -2019,35 +2500,15 @@
                     }
                     categoryContainer.innerHTML += '</div>';
                 }
-                
-                // 子科目統計
-                const subCategoryContainer = elements.subCategorySummary;
-                if (Object.keys(summary.bySubCategory).length === 0) {
-                    subCategoryContainer.innerHTML = '<div class="empty-state"><p>尚無統計數據</p></div>';
-                } else {
-                    subCategoryContainer.innerHTML = '<div class="summary-grid">';
-                    for (const [subKey, data] of Object.entries(summary.bySubCategory)) {
-                        const total = data.income - data.expense;
-                        const totalText = total >= 0 ? `+${utils.formatAmount(total)}` : `-${utils.formatAmount(Math.abs(total))}`;
-                        const totalClass = total >= 0 ? 'income-text' : 'expense-text';
-                        
-                        subCategoryContainer.innerHTML += `
-                            <div class="summary-item">
-                                <div>${subKey}</div>
-                                <div style="font-size: 0.8rem; color: #666;">收: ${utils.formatAmount(data.income)} | 支: ${utils.formatAmount(data.expense)}</div>
-                                <div class="summary-value ${totalClass}">${totalText}</div>
-                            </div>
-                        `;
-                    }
-                    subCategoryContainer.innerHTML += '</div>';
-                }
             },
             
             // 清除統計篩選
             clearSummaryFilter: () => {
                 elements.summaryYear.value = '';
                 elements.summaryMonth.value = '';
-                appState.summaryFilter = { year: '', month: '' };
+                elements.summaryMainCategory.value = '';
+                elements.summarySubCategory.value = '';
+                appState.summaryFilter = { year: '', month: '', mainCategory: '', subCategory: '' };
                 app.hidePeriodSummary();
                 app.updateSummary(); // 恢復總覽
                 utils.showNotification('統計篩選已清除');
@@ -2059,25 +2520,36 @@
                 const month = elements.filterMonth.value;
                 const summaryKeyword = elements.filterSummary.value.trim();
                 const type = elements.filterType.value;
-                const category = elements.filterCategory.value;
+                const mainCategory = elements.filterMainCategory.value;
                 const subCategory = elements.filterSubCategory.value;
                 
                 let filtered = appState.records.filter(record => {
+                    // 年份過濾
                     if (year) {
                         const { year: recordYear } = utils.extractYearMonth(record.date);
                         if (recordYear !== year) return false;
                     }
+                    
+                    // 月份過濾
                     if (month) {
                         const { month: recordMonth } = utils.extractYearMonth(record.date);
                         if (recordMonth !== month) return false;
                     }
+                    
+                    // 摘要關鍵字搜尋（不區分大小寫）
                     if (summaryKeyword) {
                         if (!record.summary || !record.summary.toLowerCase().includes(summaryKeyword.toLowerCase())) {
                             return false;
                         }
                     }
+                    
+                    // 類型過濾
                     if (type && record.type !== type) return false;
-                    if (category && record.category !== category) return false;
+                    
+                    // 主科目過濾
+                    if (mainCategory && record.mainCategory !== mainCategory) return false;
+                    
+                    // 子科目過濾
                     if (subCategory && record.subCategory !== subCategory) return false;
                     
                     return true;
@@ -2085,6 +2557,7 @@
                 
                 app.renderRecordsList(filtered);
                 
+                // 顯示篩選結果數量
                 if (filtered.length > 0) {
                     utils.showNotification(`找到 ${filtered.length} 筆符合條件的記錄`);
                 } else {
@@ -2098,14 +2571,13 @@
                 elements.filterMonth.value = '';
                 elements.filterSummary.value = '';
                 elements.filterType.value = '';
-                elements.filterCategory.value = '';
+                elements.filterMainCategory.value = '';
                 elements.filterSubCategory.value = '';
-                elements.filterSubCategory.innerHTML = '<option value="">全部</option>';
                 app.renderRecordsList();
                 utils.showNotification('篩選器已清除');
             },
             
-            // 確認刪除
+            // 確認刪除記錄
             confirmDelete: (id) => {
                 appState.deleteTargetId = id;
                 elements.deleteModalMessage.textContent = '您確定要刪除這筆記錄嗎？此操作無法復原。';
@@ -2121,6 +2593,7 @@
                     elements.receiptModal.classList.remove('hidden');
                     elements.receiptModal.style.display = 'flex';
                     
+                    // 防止圖片點擊事件冒泡
                     elements.receiptImage.onclick = (e) => {
                         e.stopPropagation();
                     };
@@ -2132,37 +2605,40 @@
             // 重置表單
             resetForm: () => {
                 elements.recordForm.reset();
-                elements.editRecordId.value = ""; // 清除編輯ID
                 utils.setCurrentDateTime();
-                
-                // 重置 Radio (預設支出)
-                const radios = document.getElementsByName('recordType');
-                for(let radio of radios) {
-                    if(radio.value === 'expense') radio.checked = true;
-                }
-                
-                elements.recordSubCategory.innerHTML = '<option value="">請選擇子科目</option>';
                 appState.currentPhoto = null;
-                appState.editingId = null; // 清除編輯狀態
-                
-                elements.submitBtn.textContent = "💾 保存記錄";
-                elements.cancelEditBtn.classList.add('hidden');
-                
                 elements.photoPreviewContainer.classList.add('hidden');
                 elements.photoPrompt.classList.remove('hidden');
                 elements.removePhotoBtn.classList.add('hidden');
                 elements.photoArea.classList.remove('has-image');
                 elements.photoFileInput.value = '';
                 elements.photoPreview.onclick = null;
+                
+                // 重置收支別選擇器為支出（預設）
+                elements.typeOptions.forEach(opt => {
+                    opt.classList.remove('selected');
+                    if (opt.dataset.type === 'expense') {
+                        opt.classList.add('selected');
+                    }
+                });
+                elements.recordType.value = 'expense';
+                
+                // 重置子科目選擇
+                elements.recordSubCategory.innerHTML = '<option value="">請先選擇主科目</option>';
+                
+                // 重置編輯狀態
+                if (appState.editingRecordId) {
+                    app.cancelEdit();
+                }
             },
             
-            // 匯出功能
+            // 匯出功能（增強版）
             exportData: async () => {
                 const exportData = {
                     records: appState.records,
                     categories: appState.categories,
                     exportDate: new Date().toISOString(),
-                    version: '2.1'
+                    version: '1.1' // 更新版本號以反映新資料結構
                 };
                 
                 const dataStr = JSON.stringify(exportData, null, 2);
@@ -2170,6 +2646,7 @@
                 const dateStr = new Date().toISOString().split('T')[0];
                 const defaultFileName = `accounting_backup_${dateStr}.json`;
                 
+                // 嘗試使用 showSaveFilePicker（現代瀏覽器）
                 if ('showSaveFilePicker' in window) {
                     try {
                         const handle = await window.showSaveFilePicker({
@@ -2193,6 +2670,7 @@
                     }
                 }
                 
+                // 傳統下載方式（回退方案）
                 const url = URL.createObjectURL(dataBlob);
                 const link = document.createElement('a');
                 link.href = url;
@@ -2209,7 +2687,7 @@
                     records: appState.records,
                     categories: appState.categories,
                     exportDate: new Date().toISOString(),
-                    version: '2.1'
+                    version: '1.1'
                 };
                 
                 const dataStr = JSON.stringify(exportData, null, 2);
@@ -2230,6 +2708,7 @@
                 navigator.clipboard.writeText(content).then(() => {
                     utils.showNotification('已複製到剪貼簿！');
                 }).catch(() => {
+                    // 降級方案
                     elements.jsonContent.select();
                     document.execCommand('copy');
                     utils.showNotification('已複製到剪貼簿！');
@@ -2271,11 +2750,19 @@
                             return;
                         }
                         
+                        // 保存驗證通過的資料
                         appState.importData = validation.data;
+                        
+                        // 顯示檔案資訊
                         elements.fileInfo.textContent = `✅ 檔案有效 (${utils.formatFileSize(file.size)})`;
                         elements.fileInfo.className = 'file-info success';
+                        
+                        // 顯示預覽
                         app.showImportPreview(validation.data);
+                        
+                        // 顯示確認按鈕
                         elements.confirmImportBtn.classList.remove('hidden');
+                        
                         utils.showNotification('檔案驗證成功，請確認後匯入');
                         
                     } catch (error) {
@@ -2299,33 +2786,56 @@
             showImportPreview: (data) => {
                 const mode = document.querySelector('input[name="importMode"]:checked').value;
                 const modeText = mode === 'merge' ? '合併' : '覆蓋';
-                const catCount = Object.keys(data.categories).length;
                 
                 let previewHTML = `
                     <h4>📊 匯入資料預覽 (${modeText}模式)</h4>
                     <div class="data-summary">
                         <strong>📝 記錄:</strong> ${data.records.length} 筆<br>
-                        <strong>📚 科目:</strong> ${catCount} 項主科目<br>
+                        <strong>📚 主科目:</strong> ${Object.keys(data.categories).length} 項<br>
                         <strong>📅 匯出日期:</strong> ${new Date(data.exportDate).toLocaleString('zh-TW')}<br>
                         <br>
                 `;
                 
                 if (mode === 'merge') {
+                    // 合併模式預覽
                     const newRecords = data.records.filter(r => !appState.records.some(exist => exist.id === r.id));
-                    const newCategories = Object.keys(data.categories).filter(c => !appState.categories[c]);
+                    
+                    // 計算新增的主科目
+                    const newMainCategories = [];
+                    Object.keys(data.categories).forEach(mainCat => {
+                        if (!appState.categories[mainCat]) {
+                            newMainCategories.push(mainCat);
+                        }
+                    });
                     
                     previewHTML += `<strong>✅ 預計新增:</strong><br>`;
                     previewHTML += `- 記錄: ${newRecords.length} 筆<br>`;
-                    previewHTML += `- 主科目: ${newCategories.length} 項${newCategories.length > 0 ? ' (' + newCategories.join(', ') + ')' : ''}<br>`;
+                    previewHTML += `- 主科目: ${newMainCategories.length} 項${newMainCategories.length > 0 ? ' (' + newMainCategories.join(', ') + ')' : ''}<br>`;
+                    
+                    // 計算新增的子科目
+                    let totalNewSubCategories = 0;
+                    Object.keys(data.categories).forEach(mainCat => {
+                        if (appState.categories[mainCat]) {
+                            const existingSubs = appState.categories[mainCat];
+                            const newSubs = data.categories[mainCat].filter(sub => !existingSubs.includes(sub));
+                            totalNewSubCategories += newSubs.length;
+                        } else {
+                            totalNewSubCategories += data.categories[mainCat].length;
+                        }
+                    });
+                    
+                    previewHTML += `- 子科目: ${totalNewSubCategories} 項<br>`;
                     
                     if (data.records.length > newRecords.length) {
                         previewHTML += `<br><strong>⚠️ 注意:</strong> ${data.records.length - newRecords.length} 筆重複記錄將被忽略`;
                     }
                     
                 } else {
+                    // 覆蓋模式預覽
                     previewHTML += `<strong>⚠️ 警告:</strong> 此操作將完全取代現有資料！<br>`;
                     previewHTML += `- 現有 ${appState.records.length} 筆記錄將被清除<br>`;
-                    previewHTML += `- 現有所有科目將被清除<br>`;
+                    previewHTML += `- 現有 ${Object.keys(appState.categories).length} 項主科目將被清除<br>`;
+                    previewHTML += `- 現有子科目也將被清除<br>`;
                 }
                 
                 previewHTML += `</div>`;
@@ -2343,44 +2853,54 @@
                 const mode = document.querySelector('input[name="importMode"]:checked').value;
                 
                 if (mode === 'merge') {
+                    // 合併模式
                     const existingIds = new Set(appState.records.map(r => r.id));
                     const newRecords = appState.importData.records.filter(r => !existingIds.has(r.id));
                     
                     appState.records = [...newRecords, ...appState.records];
                     
-                    for (const [key, subs] of Object.entries(appState.importData.categories)) {
-                        if (!appState.categories[key]) {
-                            appState.categories[key] = subs;
-                        } else {
-                            const existingSubs = new Set(appState.categories[key]);
-                            subs.forEach(sub => {
-                                if (!existingSubs.has(sub)) {
-                                    appState.categories[key].push(sub);
-                                }
-                            });
+                    // 合併科目（去重）
+                    Object.keys(appState.importData.categories).forEach(mainCat => {
+                        if (!appState.categories[mainCat]) {
+                            appState.categories[mainCat] = [];
                         }
-                    }
+                        
+                        // 合併子科目
+                        appState.importData.categories[mainCat].forEach(subCat => {
+                            if (!appState.categories[mainCat].includes(subCat)) {
+                                appState.categories[mainCat].push(subCat);
+                            }
+                        });
+                    });
                     
                     utils.showNotification(`成功合併 ${newRecords.length} 筆記錄`);
                     
                 } else {
+                    // 覆蓋模式
                     if (!confirm('⚠️ 確定要覆蓋所有現有資料嗎？此操作無法復原！')) {
                         return;
                     }
                     
                     appState.records = appState.importData.records;
                     appState.categories = appState.importData.categories;
+                    
                     utils.showNotification('資料已完全覆蓋');
                 }
                 
+                // 保存並更新介面
                 app.saveData();
-                app.updateMainCategorySelects();
-                app.renderCategoriesList();
+                app.updateAllSelects();
+                app.renderMainCategoriesList();
+                app.renderSubCategoriesList();
                 app.renderRecordsList();
                 app.updateSummary();
                 app.updateYearSelector();
                 app.updateRecordListYearSelector();
+                
+                // 重置匯入區塊
                 app.resetImportSection();
+                
+                // 關閉模態框
                 elements.importConfirmModal.classList.add('hidden');
                 elements.importConfirmModal.style.display = 'none';
             },
@@ -2400,56 +2920,83 @@
                 // 標籤切換
                 elements.tabBtns.forEach(btn => {
                     btn.addEventListener('click', () => {
+                        // 移除所有active類
                         elements.tabBtns.forEach(b => b.classList.remove('active'));
                         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                         
+                        // 添加active類
                         btn.classList.add('active');
                         const tabId = btn.dataset.tab + '-tab';
                         document.getElementById(tabId).classList.add('active');
+                        
+                        // 如果切換到記帳標籤且正在編輯，保持編輯狀態
+                        if (tabId === 'record-tab' && appState.editingRecordId) {
+                            // 保持編輯狀態
+                        } else {
+                            // 取消編輯狀態
+                            if (appState.editingRecordId) {
+                                app.cancelEdit();
+                            }
+                        }
                     });
-                });
-
-                // 連動選單：記帳頁面
-                elements.recordCategory.addEventListener('change', (e) => {
-                    const selectedCat = e.target.value;
-                    app.updateSubCategorySelect(selectedCat, elements.recordSubCategory);
-                });
-
-                // 連動選單：篩選頁面
-                elements.filterCategory.addEventListener('change', (e) => {
-                    const selectedCat = e.target.value;
-                    app.updateSubCategorySelect(selectedCat, elements.filterSubCategory, true);
                 });
                 
                 // 表單提交
                 elements.recordForm.addEventListener('submit', (e) => {
                     e.preventDefault();
                     
-                    const recordType = document.querySelector('input[name="recordType"]:checked').value;
-                    
                     const recordData = {
                         date: elements.recordDate.value,
                         time: elements.recordTime.value,
-                        type: recordType,
-                        category: elements.recordCategory.value,
+                        type: elements.recordType.value,
+                        mainCategory: elements.recordMainCategory.value,
                         subCategory: elements.recordSubCategory.value,
                         amount: elements.recordAmount.value,
                         summary: elements.recordSummary.value,
                         receiptImage: appState.currentPhoto || ''
                     };
                     
+                    // 簡單驗證
                     if (!recordData.date || !recordData.time || !recordData.type || 
-                        !recordData.category || !recordData.amount) {
+                        !recordData.mainCategory || !recordData.subCategory || !recordData.amount) {
                         utils.showNotification('請填寫所有必填字段', true);
                         return;
                     }
                     
-                    app.saveRecord(recordData);
-                    app.resetForm();
+                    if (appState.editingRecordId) {
+                        // 更新記錄
+                        app.updateRecord(appState.editingRecordId, recordData);
+                    } else {
+                        // 新增記錄
+                        app.addRecord(recordData);
+                        app.resetForm();
+                    }
                 });
                 
-                // 取消編輯按鈕
-                elements.cancelEditBtn.addEventListener('click', app.cancelEdit);
+                // 主科目變化時更新子科目選擇
+                elements.recordMainCategory.addEventListener('change', () => {
+                    const mainCategory = elements.recordMainCategory.value;
+                    elements.recordSubCategory.innerHTML = '<option value="">請選擇</option>';
+                    
+                    if (mainCategory && appState.categories[mainCategory]) {
+                        appState.categories[mainCategory].forEach(subCat => {
+                            const option = document.createElement('option');
+                            option.value = subCat;
+                            option.textContent = subCat;
+                            elements.recordSubCategory.appendChild(option);
+                        });
+                    }
+                });
+                
+                // 主科目篩選器變化時更新子科目篩選器
+                elements.filterMainCategory.addEventListener('change', () => {
+                    app.updateSubCategoryFilter();
+                });
+                
+                // 統計分析主科目篩選器變化時更新子科目篩選器
+                elements.summaryMainCategory.addEventListener('change', () => {
+                    app.updateSubCategorySummaryFilter();
+                });
                 
                 // 照片功能
                 elements.takePhotoBtn.addEventListener('click', () => {
@@ -2474,6 +3021,7 @@
                             elements.photoArea.classList.add('has-image');
                             utils.showNotification('圖片已上傳');
                             
+                            // 點擊圖片查看大圖
                             elements.photoPreview.onclick = () => {
                                 elements.receiptImage.src = base64Image;
                                 elements.receiptModal.classList.remove('hidden');
@@ -2499,14 +3047,30 @@
                 // 重置按鈕
                 elements.resetFormBtn.addEventListener('click', app.resetForm);
                 
-                // 科目管理
-                elements.addCategoryBtn.addEventListener('click', () => {
-                    app.addCategory(elements.newCategory.value);
+                // 取消編輯按鈕
+                elements.cancelEditBtn.addEventListener('click', () => {
+                    app.cancelEdit();
                 });
                 
-                elements.newCategory.addEventListener('keypress', (e) => {
+                // 主科目管理
+                elements.addMainCategoryBtn.addEventListener('click', () => {
+                    app.addMainCategory(elements.newMainCategory.value);
+                });
+                
+                elements.newMainCategory.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') {
-                        app.addCategory(elements.newCategory.value);
+                        app.addMainCategory(elements.newMainCategory.value);
+                    }
+                });
+                
+                // 子科目管理
+                elements.addSubCategoryBtn.addEventListener('click', () => {
+                    app.addSubCategory();
+                });
+                
+                elements.newSubCategory.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        app.addSubCategory();
                     }
                 });
                 
@@ -2529,6 +3093,7 @@
                 });
                 
                 elements.confirmImportBtn.addEventListener('click', () => {
+                    // 顯示確認模態框
                     const mode = document.querySelector('input[name="importMode"]:checked').value;
                     const modeText = mode === 'merge' ? '合併' : '覆蓋';
                     
@@ -2536,7 +3101,7 @@
                         <p>您選擇了 <strong>${modeText}模式</strong>，準備匯入資料：</p>
                         <ul style="margin: 10px 0; padding-left: 20px;">
                             <li>記錄: ${appState.importData.records.length} 筆</li>
-                            <li>科目: ${Object.keys(appState.importData.categories).length} 項主科目</li>
+                            <li>主科目: ${Object.keys(appState.importData.categories).length} 項</li>
                         </ul>
                         <p style="color: #856404; background: #fff3cd; padding: 10px; border-radius: 4px;">
                             ⚠️ 請確認資料來源安全，並注意覆蓋模式將會<b>永久刪除</b>現有資料！
@@ -2547,15 +3112,18 @@
                     elements.importConfirmModal.style.display = 'flex';
                 });
                 
+                // 監聽匯入模式變更
                 document.querySelectorAll('input[name="importMode"]').forEach(radio => {
                     radio.addEventListener('change', () => {
                         appState.importMode = radio.value;
+                        // 如果已有預覽，重新顯示
                         if (appState.importData && !elements.importPreview.classList.contains('hidden')) {
                             app.showImportPreview(appState.importData);
                         }
                     });
                 });
                 
+                // 匯入確認模態框按鈕
                 elements.finalImportBtn.addEventListener('click', () => {
                     app.executeImport();
                 });
@@ -2570,6 +3138,7 @@
                     elements.importConfirmModal.style.display = 'none';
                 });
                 
+                // 記錄刪除模態框
                 elements.closeDeleteModal.addEventListener('click', () => {
                     elements.deleteModal.classList.add('hidden');
                     elements.deleteModal.style.display = 'none';
@@ -2591,6 +3160,34 @@
                     }
                 });
                 
+                // 科目刪除模態框
+                elements.closeCategoryDeleteModal.addEventListener('click', () => {
+                    elements.categoryDeleteModal.classList.add('hidden');
+                    elements.categoryDeleteModal.style.display = 'none';
+                    appState.categoryDeleteTarget = { type: '', mainCategory: '', subCategory: '' };
+                });
+                
+                elements.cancelCategoryDeleteBtn.addEventListener('click', () => {
+                    elements.categoryDeleteModal.classList.add('hidden');
+                    elements.categoryDeleteModal.style.display = 'none';
+                    appState.categoryDeleteTarget = { type: '', mainCategory: '', subCategory: '' };
+                });
+                
+                elements.confirmCategoryDeleteBtn.addEventListener('click', () => {
+                    const target = appState.categoryDeleteTarget;
+                    
+                    if (target.type === 'main') {
+                        app.deleteMainCategory(target.mainCategory);
+                    } else if (target.type === 'sub') {
+                        app.deleteSubCategory(target.mainCategory, target.subCategory);
+                    }
+                    
+                    elements.categoryDeleteModal.classList.add('hidden');
+                    elements.categoryDeleteModal.style.display = 'none';
+                    appState.categoryDeleteTarget = { type: '', mainCategory: '', subCategory: '' };
+                });
+                
+                // 收據模態框
                 elements.closeReceiptModal.addEventListener('click', () => {
                     elements.receiptModal.classList.add('hidden');
                     elements.receiptModal.style.display = 'none';
@@ -2621,9 +3218,23 @@
                     }
                 });
                 
+                elements.categoryDeleteModal.addEventListener('click', (e) => {
+                    if (e.target === elements.categoryDeleteModal) {
+                        elements.categoryDeleteModal.classList.add('hidden');
+                        elements.categoryDeleteModal.style.display = 'none';
+                        appState.categoryDeleteTarget = { type: '', mainCategory: '', subCategory: '' };
+                    }
+                });
+                
+                // 鍵盤事件：ESC 鍵關閉模態框
                 document.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape') {
                         app.hideAllModals();
+                        
+                        // 如果正在編輯，按ESC取消編輯
+                        if (appState.editingRecordId) {
+                            app.cancelEdit();
+                        }
                     }
                 });
             }
