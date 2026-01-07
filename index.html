@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#4a6fa5">
-    <title>多帳冊智能記帳程式 (Cloud Sync)</title>
+    <title>多帳冊智能記帳程式 (Cloud Sync Edition)</title>
     <style>
         :root {
             --primary-color: #4a6fa5;
@@ -50,7 +50,7 @@
             border-radius: var(--border-radius);
             margin-bottom: 20px;
             box-shadow: var(--box-shadow);
-            position: relative; /* For cloud icon positioning */
+            position: relative;
         }
 
         .header-content {
@@ -59,34 +59,25 @@
             gap: 10px;
         }
 
-        /* Cloud Icon Styles */
-        .cloud-status {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            cursor: pointer;
-            transition: transform 0.2s;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 8px;
-            border-radius: 50%;
+        .header-top {
             display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .cloud-status:active { transform: scale(0.95); }
-        .cloud-icon { width: 24px; height: 24px; fill: currentColor; }
-        .cloud-disconnected { color: #ff6b6b; } /* Red-ish */
-        .cloud-connected { color: #28a745; background: rgba(255, 255, 255, 0.9); } /* Green */
-        .cloud-syncing { animation: pulse 1.5s infinite; color: var(--warning-color); }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+            justify-content: space-between;
+            align-items: flex-start;
         }
 
         h1 { font-size: 1.5rem; margin: 0; }
         .date-display { font-size: 0.9rem; opacity: 0.9; }
+
+        /* Cloud Icon */
+        .cloud-icon {
+            font-size: 1.8rem;
+            cursor: pointer;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+            transition: transform 0.2s;
+        }
+        .cloud-icon:active { transform: scale(0.9); }
+        .cloud-status-off { color: #ff6b6b; } /* Red for disconnected */
+        .cloud-status-on { color: #51cf66; }  /* Green for connected */
 
         /* Tabs */
         .tabs {
@@ -240,17 +231,37 @@
         .type-option.income.selected { color: var(--success-color); border-bottom: 3px solid var(--success-color); }
         .type-option.expense.selected { color: var(--accent-color); border-bottom: 3px solid var(--accent-color); }
 
-        /* Filter Section */
+        /* Filter Section (Modified) */
         .filter-section {
             background: #f8f9fa;
-            padding: 15px;
             border-radius: var(--border-radius);
             margin-bottom: 15px;
             border: 1px solid #e9ecef;
+            overflow: hidden;
         }
-        .filter-section h3 { font-size: 1rem; margin-bottom: 10px; color: var(--primary-color); }
+        .filter-header {
+            padding: 15px;
+            background: #e9ecef;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        .filter-header::after {
+            content: '▼';
+            font-size: 0.8rem;
+            transition: transform 0.3s;
+        }
+        .filter-section.collapsed .filter-header::after { transform: rotate(-90deg); }
+        .filter-content {
+            padding: 15px;
+            display: block;
+        }
+        .filter-section.collapsed .filter-content { display: none; }
 
-        /* Record Cards */
+        /* Record Cards (Modified) */
         .record-list { display: flex; flex-direction: column; gap: 12px; }
         .record-card {
             background-color: white;
@@ -258,7 +269,10 @@
             padding: 15px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.05);
             border-left: 5px solid #ccc;
+            cursor: pointer;
+            transition: transform 0.1s, background-color 0.2s;
         }
+        .record-card:active { transform: scale(0.98); background-color: #f8f9fa; }
         .record-card.income { border-left-color: var(--success-color); }
         .record-card.expense { border-left-color: var(--accent-color); }
 
@@ -267,6 +281,7 @@
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 8px;
+            pointer-events: none; /* Let clicks pass to card */
         }
         .record-date-block { display: flex; flex-direction: column; }
         .record-date { font-weight: 600; font-size: 0.95rem; }
@@ -293,19 +308,6 @@
             color: #666;
             margin-bottom: 10px;
             padding-left: 5px;
-        }
-
-        .record-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-            border-top: 1px solid #eee;
-            padding-top: 10px;
-        }
-        .record-actions button {
-            width: auto;
-            padding: 6px 12px;
-            font-size: 0.85rem;
         }
 
         /* Account Book Management */
@@ -349,7 +351,19 @@
             width: 100%; max-width: 400px;
             max-height: 85vh; overflow-y: auto;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            position: relative;
         }
+
+        /* Detail Modal Specifics */
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .detail-label { color: #666; font-size: 0.9rem; }
+        .detail-val { font-weight: 500; text-align: right; }
+        .detail-amount { font-size: 1.5rem; font-weight: bold; color: var(--primary-color); padding: 15px 0; text-align: center; }
 
         /* Notification */
         .notification {
@@ -384,9 +398,18 @@
             padding-right: 30px;
         }
 
-        /* Helper Text in Modal */
-        .helper-text { font-size: 0.85rem; color: #666; margin-top: 5px; background: #f0f2f5; padding: 8px; border-radius: 6px;}
-        .helper-text a { color: var(--primary-color); }
+        /* Spinner */
+        .spinner {
+            border: 3px solid rgba(0,0,0,0.1);
+            border-radius: 50%;
+            border-top: 3px solid var(--primary-color);
+            width: 20px; height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         @media (max-width: 320px) {
             .form-row { grid-template-columns: 1fr; gap: 10px; } 
@@ -398,18 +421,15 @@
     <div class="container">
         <header>
             <div class="header-content">
-                <div>
-                    <h1>📒 智能記帳 <span style="font-size: 0.8rem; font-weight: normal; opacity: 0.8;">App</span></h1>
-                    <div class="date-display" id="currentDate"></div>
+                <div class="header-top">
+                    <div>
+                        <h1>📒 智能記帳 <span style="font-size: 0.8rem; font-weight: normal; opacity: 0.8;">App</span></h1>
+                        <div class="date-display" id="currentDate"></div>
+                    </div>
+                    <div id="cloudSyncBtn" class="cloud-icon cloud-status-off" title="雲端同步">☁️</div>
                 </div>
                 <div id="headerTotal" style="font-weight: bold; font-size: 1rem; margin-top: 5px; padding-top:5px; border-top:1px solid rgba(255,255,255,0.2);">
-                </div>
-            </div>
-            <div id="cloudIcon" class="cloud-status cloud-disconnected" title="雲端設定">
-                <svg class="cloud-icon" viewBox="0 0 24 24">
-                    <path d="M17.5,19c-0.3,0-0.5,0-0.8,0c-0.3-3.6-3.3-6.5-7-6.5c-0.7,0-1.4,0.1-2,0.3c-0.6-2.9-3.2-5.1-6.2-5.1c-3.5,0-6.4,2.9-6.4,6.4c0,0.1,0,0.3,0,0.4C-0.3,16-0.3,17.5,1,19c1.3,1.5,3.1,2.5,5.2,2.5h11.3c2.5,0,4.5-2,4.5-4.5S19.9,12.5,17.5,19z M17.5,19"/>
-                    <path d="M19.4,6.6c-0.8-1.7-2.4-3-4.4-3.5c0.5-2,2.6-3.3,4.6-2.8c1.5,0.4,2.7,1.6,3.1,3.1C23.2,5,21.6,6.6,19.4,6.6z" opacity="0.6"/>
-                </svg>
+                    </div>
             </div>
         </header>
 
@@ -497,61 +517,66 @@
         </div>
 
         <div class="tab-content" id="records-tab">
-            <div class="filter-section">
-                <h3>🔍 篩選條件</h3>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>年份</label>
-                        <select id="filterYear"><option value="">全部</option></select>
-                    </div>
-                    <div class="form-group">
-                        <label>月份</label>
-                        <select id="filterMonth">
-                            <option value="">全部</option>
-                            <option value="01">1月</option><option value="02">2月</option><option value="03">3月</option>
-                            <option value="04">4月</option><option value="05">5月</option><option value="06">6月</option>
-                            <option value="07">7月</option><option value="08">8月</option><option value="09">9月</option>
-                            <option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
-                        </select>
-                    </div>
+            <div class="filter-section collapsed" id="filterSection">
+                <div class="filter-header" id="filterHeader">
+                    🔍 篩選條件 (點擊展開)
                 </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>帳冊</label>
-                        <select id="filterBook"><option value="">全部</option></select>
+                <div class="filter-content">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>年份</label>
+                            <select id="filterYear"><option value="">全部</option></select>
+                        </div>
+                        <div class="form-group">
+                            <label>月份</label>
+                            <select id="filterMonth">
+                                <option value="">全部</option>
+                                <option value="01">1月</option><option value="02">2月</option><option value="03">3月</option>
+                                <option value="04">4月</option><option value="05">5月</option><option value="06">6月</option>
+                                <option value="07">7月</option><option value="08">8月</option><option value="09">9月</option>
+                                <option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>收支</label>
-                        <select id="filterType">
-                            <option value="">全部</option>
-                            <option value="income">收入</option>
-                            <option value="expense">支出</option>
-                        </select>
-                    </div>
-                </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>主科目</label>
-                        <select id="filterMainCategory"><option value="">全部</option></select>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>帳冊</label>
+                            <select id="filterBook"><option value="">全部</option></select>
+                        </div>
+                        <div class="form-group">
+                            <label>收支</label>
+                            <select id="filterType">
+                                <option value="">全部</option>
+                                <option value="income">收入</option>
+                                <option value="expense">支出</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>子科目</label>
-                        <select id="filterSubCategory"><option value="">全部</option></select>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>主科目</label>
+                            <select id="filterMainCategory"><option value="">全部</option></select>
+                        </div>
+                        <div class="form-group">
+                            <label>子科目</label>
+                            <select id="filterSubCategory"><option value="">全部</option></select>
+                        </div>
                     </div>
-                </div>
 
-                <div class="form-group">
-                    <input type="text" id="filterKeyword" placeholder="搜尋摘要關鍵字...">
-                </div>
+                    <div class="form-group">
+                        <input type="text" id="filterKeyword" placeholder="搜尋摘要關鍵字...">
+                    </div>
 
-                <div class="btn-group">
-                    <button class="btn" id="applyFilterBtn">🔍 搜尋</button>
-                    <button class="btn btn-cancel" id="clearFilterBtn">清除</button>
+                    <div class="btn-group">
+                        <button class="btn" id="applyFilterBtn">🔍 搜尋</button>
+                        <button class="btn btn-cancel" id="clearFilterBtn">清除</button>
+                    </div>
                 </div>
             </div>
             
+            <div id="recordsInfoText" style="margin-bottom:10px; font-size:0.85rem; color:#666;"></div>
             <div id="recordsList" class="record-list"></div>
         </div>
 
@@ -681,51 +706,56 @@
     <div id="cloudModal" class="modal">
         <div class="modal-content">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h3>☁️ 雲端設定 (JSONBin)</h3>
+                <h3>☁️ 雲端同步設定 (GitHub)</h3>
                 <span class="close-modal" style="font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('cloudModal').classList.remove('show')">&times;</span>
             </div>
-            <div class="helper-text">
-                <p>我們使用免費的 <strong>JSONBin.io</strong> 服務進行同步。</p>
-                <ol style="margin-left: 20px; margin-top:5px;">
-                    <li>前往 <a href="https://jsonbin.io/login" target="_blank">JSONBin.io</a> 註冊並登入。</li>
-                    <li>在 "Access Keys" 頁面複製 <strong>Master Key</strong> (X-Master-Key)。</li>
-                    <li>在 "Bins" 頁面點擊 "Create New Bin"，複製該 Bin 的 <strong>ID</strong>。</li>
-                </ol>
+            <div style="margin-bottom:15px; font-size:0.9rem; color:#666;">
+                資料將儲存於您的 GitHub Gist。請貼上 Personal Access Token (需勾選 gist 權限)。
             </div>
-            <form id="cloudForm" style="margin-top:15px;">
-                <div class="form-group">
-                    <label>Master Key (X-Master-Key)</label>
-                    <input type="password" id="cloudApiKey" placeholder="$2b$10$..." required>
-                </div>
-                <div class="form-group">
-                    <label>Bin ID</label>
-                    <input type="text" id="cloudBinId" placeholder="65a..." required>
-                </div>
-                <div class="btn-group">
-                    <button type="submit" class="btn btn-success">🔗 連接並同步</button>
-                    <button type="button" class="btn btn-cancel" onclick="document.getElementById('cloudModal').classList.remove('show')">取消</button>
-                </div>
-            </form>
+            <div class="form-group">
+                <label>Access Token (PAT)</label>
+                <input type="password" id="ghToken" placeholder="ghp_..." autocomplete="off">
+            </div>
+            <div class="form-group">
+                <label>Gist ID (留空則自動建立)</label>
+                <input type="text" id="ghGistId" placeholder="e.g. 5d8e...">
+            </div>
+            
+            <div id="syncStatus" style="margin-bottom:10px; font-size:0.9rem;"></div>
+
+            <div class="btn-group" style="flex-direction: column;">
+                <button class="btn btn-success" id="saveCloudSettingsBtn">連線並同步</button>
+                <button class="btn btn-danger" id="disconnectCloudBtn">中斷連線</button>
+            </div>
         </div>
     </div>
 
-    <div id="conflictModal" class="modal">
+    <div id="conflictModal" class="modal" style="z-index: 10001;">
         <div class="modal-content">
-            <h3 style="margin-bottom:15px; color:var(--warning-color);">⚠️ 發現資料衝突</h3>
-            <p style="margin-bottom:20px; color:#555;">本地端與雲端皆有資料，請選擇同步方式：</p>
+            <h3>⚠️ 資料同步衝突</h3>
+            <p style="margin:15px 0; color:#555;">雲端與本地端皆有資料，請選擇同步方式：</p>
+            <div class="btn-group" style="flex-direction: column;">
+                <button class="btn btn-danger" onclick="resolveConflict('overwrite_local')">下載雲端資料 (覆蓋本地)</button>
+                <button class="btn btn-warning" onclick="resolveConflict('overwrite_cloud')">上傳本地資料 (覆蓋雲端)</button>
+                <button class="btn btn-info" onclick="resolveConflict('merge')">合併資料 (保留兩邊)</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                <h3 id="detailTitle">記錄詳情</h3>
+                <span class="close-modal" style="font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('detailModal').classList.remove('show')">&times;</span>
+            </div>
             
-            <button class="btn btn-info" id="mergeSyncBtn" style="margin-bottom:10px;">
-                🔄 合併資料 (保留兩邊所有資料)
-            </button>
-            <button class="btn btn-success" id="pushSyncBtn" style="margin-bottom:10px;">
-                ⬆️ 覆蓋雲端 (使用本地資料)
-            </button>
-            <button class="btn btn-danger" id="pullSyncBtn" style="margin-bottom:10px;">
-                ⬇️ 覆蓋本地 (使用雲端資料)
-            </button>
-            <button class="btn btn-cancel" onclick="document.getElementById('conflictModal').classList.remove('show')">
-                暫不處理
-            </button>
+            <div id="detailContent">
+                </div>
+
+            <div class="btn-group" style="margin-top:20px;">
+                <button class="btn btn-warning" id="editDetailBtn">編輯</button>
+                <button class="btn btn-danger" id="deleteDetailBtn">刪除</button>
+            </div>
         </div>
     </div>
 
@@ -753,200 +783,15 @@
             editingRecordId: null,
             editingBookId: null,
             currentMainCat: null,
-            cloudConfig: {
-                apiKey: null,
-                binId: null
+            githubConfig: {
+                gistId: '',
+                filename: 'money_tracker_data.json'
             }
         };
 
-        // --- 雲端管理模組 ---
-        const CloudManager = {
-            API_URL: 'https://api.jsonbin.io/v3/b',
-            
-            init: () => {
-                const storedConfig = localStorage.getItem('acc_cloud_config');
-                if (storedConfig) {
-                    appState.cloudConfig = JSON.parse(storedConfig);
-                    CloudManager.updateIconStatus(true);
-                } else {
-                    CloudManager.updateIconStatus(false);
-                }
-            },
-
-            saveConfig: (key, binId) => {
-                appState.cloudConfig = { apiKey: key, binId: binId };
-                localStorage.setItem('acc_cloud_config', JSON.stringify(appState.cloudConfig));
-            },
-
-            updateIconStatus: (isConnected) => {
-                const icon = document.getElementById('cloudIcon');
-                if (isConnected) {
-                    icon.classList.remove('cloud-disconnected');
-                    icon.classList.add('cloud-connected');
-                } else {
-                    icon.classList.remove('cloud-connected');
-                    icon.classList.add('cloud-disconnected');
-                }
-            },
-
-            setLoading: (isLoading) => {
-                const icon = document.getElementById('cloudIcon');
-                if (isLoading) icon.classList.add('cloud-syncing');
-                else icon.classList.remove('cloud-syncing');
-            },
-
-            // 取得雲端資料
-            fetchCloudData: async () => {
-                if (!appState.cloudConfig.apiKey || !appState.cloudConfig.binId) return null;
-                
-                try {
-                    const res = await fetch(`${CloudManager.API_URL}/${appState.cloudConfig.binId}/latest`, {
-                        headers: {
-                            'X-Master-Key': appState.cloudConfig.apiKey,
-                            'X-Bin-Meta': 'false' // 只拿資料內容
-                        }
-                    });
-                    
-                    if (!res.ok) throw new Error('連線失敗');
-                    return await res.json();
-                } catch (e) {
-                    console.error(e);
-                    throw e;
-                }
-            },
-
-            // 上傳資料到雲端
-            uploadToCloud: async (data) => {
-                if (!appState.cloudConfig.apiKey || !appState.cloudConfig.binId) return;
-
-                try {
-                    const res = await fetch(`${CloudManager.API_URL}/${appState.cloudConfig.binId}`, {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Master-Key': appState.cloudConfig.apiKey
-                        },
-                        body: JSON.stringify(data)
-                    });
-                    if (!res.ok) throw new Error('上傳失敗');
-                    return await res.json();
-                } catch (e) {
-                    throw e;
-                }
-            },
-
-            // 同步邏輯主入口
-            sync: async () => {
-                CloudManager.setLoading(true);
-                try {
-                    // 1. 抓取雲端資料
-                    let cloudData;
-                    try {
-                        cloudData = await CloudManager.fetchCloudData();
-                    } catch (e) {
-                        utils.showNotify('雲端連線錯誤，請檢查設定', 'error');
-                        CloudManager.updateIconStatus(false);
-                        return;
-                    }
-
-                    const localHasData = appState.records.length > 0;
-                    // 判斷雲端是否為空 (新 Bin 通常是空物件或包含空陣列)
-                    const cloudHasData = cloudData && cloudData.records && cloudData.records.length > 0;
-
-                    // 情境 A: 本地有資料，雲端無 -> 直接上傳
-                    if (localHasData && !cloudHasData) {
-                        await CloudManager.push();
-                        utils.showNotify('雲端是空的，已自動上傳本地資料');
-                    }
-                    // 情境 B: 本地無資料，雲端有 -> 直接下載
-                    else if (!localHasData && cloudHasData) {
-                        await CloudManager.pull(cloudData);
-                        utils.showNotify('已從雲端還原資料');
-                    }
-                    // 情境 C: 兩邊都有資料 -> 詢問
-                    else if (localHasData && cloudHasData) {
-                        // 暫存雲端資料供選擇後使用
-                        window.tempCloudData = cloudData;
-                        document.getElementById('conflictModal').classList.add('show');
-                    } 
-                    // 兩邊都沒資料，或剛連線 -> 視為成功
-                    else {
-                        CloudManager.updateIconStatus(true);
-                        utils.showNotify('連線成功 (目前無資料需同步)');
-                    }
-                } catch (e) {
-                    utils.showNotify('同步過程發生錯誤', 'error');
-                    console.error(e);
-                } finally {
-                    CloudManager.setLoading(false);
-                }
-            },
-
-            push: async () => {
-                const data = {
-                    records: appState.records,
-                    categories: appState.categories,
-                    accountBooks: appState.accountBooks
-                };
-                await CloudManager.uploadToCloud(data);
-                CloudManager.updateIconStatus(true);
-            },
-
-            pull: async (data) => {
-                if (data.records) appState.records = data.records;
-                if (data.categories) appState.categories = data.categories;
-                if (data.accountBooks) appState.accountBooks = data.accountBooks;
-                utils.save();
-                CloudManager.updateIconStatus(true);
-                // 重新渲染畫面
-                renderBookList();
-                renderCategoryManagement();
-                renderSelects();
-                filterRecords();
-                updateHeaderTotal();
-            },
-
-            merge: async (cloudData) => {
-                // 1. 合併帳冊 (以 ID 去重)
-                const bookMap = new Map();
-                [...appState.accountBooks, ...cloudData.accountBooks].forEach(b => bookMap.set(b.id, b));
-                appState.accountBooks = Array.from(bookMap.values());
-
-                // 2. 合併記錄 (以 ID 去重，若 ID 相同使用本地版本 - 簡單策略)
-                const recordMap = new Map();
-                // 先放雲端，再放本地，這樣本地會覆蓋雲端同 ID
-                cloudData.records.forEach(r => recordMap.set(r.id, r));
-                appState.records.forEach(r => recordMap.set(r.id, r));
-                appState.records = Array.from(recordMap.values());
-
-                // 3. 合併科目
-                // 遍歷雲端的主科目
-                for (const [mainCat, subCats] of Object.entries(cloudData.categories)) {
-                    if (!appState.categories[mainCat]) {
-                        // 本地沒有這個主科目，直接加
-                        appState.categories[mainCat] = subCats;
-                    } else {
-                        // 本地有，合併子科目並去重
-                        const uniqueSub = new Set([...appState.categories[mainCat], ...subCats]);
-                        appState.categories[mainCat] = Array.from(uniqueSub);
-                    }
-                }
-
-                utils.save();
-                
-                // 合併後上傳回雲端，確保雲端也是最新
-                await CloudManager.push();
-                
-                // 重新渲染
-                renderBookList();
-                renderCategoryManagement();
-                renderSelects();
-                filterRecords();
-                updateHeaderTotal();
-                
-                utils.showNotify('資料合併完成並已同步至雲端');
-            }
-        };
+        // --- GitHub 同步變數 ---
+        let ghToken = '';
+        let pendingCloudData = null; // 用於衝突處理
 
         // --- 工具 ---
         const utils = {
@@ -961,12 +806,13 @@
                 const el = document.getElementById('notification');
                 el.textContent = msg;
                 el.className = `notification show ${type}`;
-                setTimeout(() => el.classList.remove('show'), 3000);
+                setTimeout(() => el.classList.remove('show'), 2500);
             },
             save: () => {
                 localStorage.setItem('acc_records', JSON.stringify(appState.records));
                 localStorage.setItem('acc_categories', JSON.stringify(appState.categories));
                 localStorage.setItem('acc_books', JSON.stringify(appState.accountBooks));
+                localStorage.setItem('acc_gh_config', JSON.stringify(appState.githubConfig));
             },
             getToday: () => new Date().toISOString().split('T')[0],
             getTime: () => new Date().toTimeString().split(' ')[0].substr(0, 5)
@@ -977,12 +823,14 @@
             const storedRecords = localStorage.getItem('acc_records');
             const storedCats = localStorage.getItem('acc_categories');
             const storedBooks = localStorage.getItem('acc_books');
+            const storedGhConfig = localStorage.getItem('acc_gh_config');
+            const storedToken = localStorage.getItem('acc_gh_token');
 
             appState.categories = storedCats ? JSON.parse(storedCats) : DEFAULT_CATEGORIES;
             appState.accountBooks = storedBooks ? JSON.parse(storedBooks) : [];
             appState.records = storedRecords ? JSON.parse(storedRecords) : [];
-
-            CloudManager.init(); // 初始化雲端設定
+            if(storedGhConfig) appState.githubConfig = JSON.parse(storedGhConfig);
+            if(storedToken) ghToken = storedToken;
 
             if (appState.accountBooks.length === 0) {
                 appState.accountBooks.push({
@@ -1015,68 +863,20 @@
             renderSelects();
             renderBookList();
             renderCategoryManagement();
-            
+            renderYearSelects(); // 預先渲染年份供篩選器使用
+
             document.getElementById('recordDate').value = utils.getToday();
             document.getElementById('recordTime').value = utils.getTime();
 
-            filterRecords();
+            // 預設列出一個月內的資料
+            setDefaultFilterDate();
+            
             updateHeaderTotal();
+            updateCloudIconStatus();
         }
 
         // --- 事件綁定 ---
         function initEvents() {
-            // Cloud Events
-            document.getElementById('cloudIcon').addEventListener('click', () => {
-                const isConnected = document.getElementById('cloudIcon').classList.contains('cloud-connected');
-                // 如果已經連線，嘗試同步，若要修改設定也在這邊
-                // 為了簡化，點擊總是開啟 Modal，但如果已連線可以顯示"立即同步"按鈕
-                // 這裡設計：如果有 Key，先嘗試 Sync，失敗或按鈕進入設定
-                if(appState.cloudConfig.apiKey) {
-                   // 可以直接 Sync
-                   CloudManager.sync();
-                } else {
-                   document.getElementById('cloudModal').classList.add('show');
-                }
-            });
-
-            // 長按雲端圖示或再次點擊開啟設定 (這裡簡化：如果已配置，點擊同步；如果要改設定，目前UI沒有直接入口，
-            // 為了方便，我們讓 User 在 Cloud Modal 內操作。
-            // 修改邏輯：點擊圖示 -> 如果未設定 -> 開啟 Modal。如果已設定 -> 執行 Sync。
-            // 為了讓使用者能改設定，我們在設定 Tab (Data Tab) 加一個按鈕，或者讓 Cloud Icon 有右鍵選單?
-            // 簡單作法：在 Data Tab 增加 "雲端設定" 按鈕
-            
-            // Cloud Form Submit
-            document.getElementById('cloudForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const key = document.getElementById('cloudApiKey').value.trim();
-                const binId = document.getElementById('cloudBinId').value.trim();
-                if(key && binId) {
-                    CloudManager.saveConfig(key, binId);
-                    document.getElementById('cloudModal').classList.remove('show');
-                    await CloudManager.sync();
-                }
-            });
-
-            // Conflict Resolution Buttons
-            document.getElementById('pushSyncBtn').addEventListener('click', async () => {
-                document.getElementById('conflictModal').classList.remove('show');
-                await CloudManager.push();
-                utils.showNotify('已強制覆蓋雲端資料');
-            });
-            document.getElementById('pullSyncBtn').addEventListener('click', async () => {
-                document.getElementById('conflictModal').classList.remove('show');
-                if(window.tempCloudData) {
-                    await CloudManager.pull(window.tempCloudData);
-                    utils.showNotify('已強制覆蓋本地資料');
-                }
-            });
-            document.getElementById('mergeSyncBtn').addEventListener('click', async () => {
-                document.getElementById('conflictModal').classList.remove('show');
-                if(window.tempCloudData) {
-                    await CloudManager.merge(window.tempCloudData);
-                }
-            });
-
             // Tabs
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -1084,14 +884,19 @@
                     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
                     btn.classList.add('active');
                     document.getElementById(btn.dataset.tab + '-tab').classList.add('active');
+                    
                     if(btn.dataset.tab === 'records') {
-                        renderYearSelects(); 
-                        filterRecords();
+                        // 進入列表不重置篩選，保留上次狀態
                     }
                     if(btn.dataset.tab === 'books') {
-                        renderBookList();
+                        renderBookList(); 
                     }
                 });
+            });
+
+            // 篩選器收合
+            document.getElementById('filterHeader').addEventListener('click', () => {
+                document.getElementById('filterSection').classList.toggle('collapsed');
             });
 
             // 收支選擇
@@ -1123,7 +928,11 @@
             document.getElementById('cancelEditBtn').addEventListener('click', exitEditMode);
 
             // 列表篩選
-            document.getElementById('applyFilterBtn').addEventListener('click', filterRecords);
+            document.getElementById('applyFilterBtn').addEventListener('click', () => {
+                filterRecords();
+                // 搜尋後收合篩選器
+                document.getElementById('filterSection').classList.add('collapsed');
+            });
             document.getElementById('clearFilterBtn').addEventListener('click', () => {
                 document.querySelectorAll('#records-tab select').forEach(s => s.value = '');
                 document.getElementById('filterKeyword').value = '';
@@ -1167,23 +976,274 @@
 
             // 統計
             document.getElementById('runSummaryBtn').addEventListener('click', runSummary);
+
+            // 雲端同步事件
+            document.getElementById('cloudSyncBtn').addEventListener('click', openCloudSettings);
+            document.getElementById('saveCloudSettingsBtn').addEventListener('click', handleConnectCloud);
+            document.getElementById('disconnectCloudBtn').addEventListener('click', handleDisconnectCloud);
+
+            // 詳細資料頁按鈕
+            document.getElementById('editDetailBtn').addEventListener('click', () => {
+                document.getElementById('detailModal').classList.remove('show');
+                editRecord(appState.currentDetailId);
+            });
+            document.getElementById('deleteDetailBtn').addEventListener('click', () => {
+                document.getElementById('detailModal').classList.remove('show');
+                deleteRecord(appState.currentDetailId);
+            });
+        }
+
+        // --- 雲端同步邏輯 ---
+        function updateCloudIconStatus() {
+            const icon = document.getElementById('cloudSyncBtn');
+            if (ghToken && appState.githubConfig.gistId) {
+                icon.className = 'cloud-icon cloud-status-on';
+            } else {
+                icon.className = 'cloud-icon cloud-status-off';
+            }
+        }
+
+        function openCloudSettings() {
+            document.getElementById('ghToken').value = ghToken;
+            document.getElementById('ghGistId').value = appState.githubConfig.gistId;
+            document.getElementById('syncStatus').textContent = '';
+            document.getElementById('cloudModal').classList.add('show');
+        }
+
+        function handleDisconnectCloud() {
+            ghToken = '';
+            appState.githubConfig.gistId = '';
+            localStorage.removeItem('acc_gh_token');
+            utils.save();
+            updateCloudIconStatus();
+            document.getElementById('cloudModal').classList.remove('show');
+            utils.showNotify('已中斷雲端連線');
+        }
+
+        async function handleConnectCloud() {
+            const token = document.getElementById('ghToken').value.trim();
+            const gistId = document.getElementById('ghGistId').value.trim();
+            const btn = document.getElementById('saveCloudSettingsBtn');
+            const statusDiv = document.getElementById('syncStatus');
+
+            if (!token) {
+                statusDiv.textContent = '❌ 請輸入 Access Token';
+                statusDiv.style.color = 'red';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '連線中... <span class="spinner"></span>';
             
-            // 在 Data Tab 增加一個開啟雲端設定的按鈕 (為了方便修改)
-            const dataTab = document.getElementById('data-tab');
-            const settingBtn = document.createElement('button');
-            settingBtn.className = 'btn';
-            settingBtn.style.backgroundColor = '#6610f2'; // purple
-            settingBtn.style.color = 'white';
-            settingBtn.style.marginBottom = '10px';
-            settingBtn.innerHTML = '☁️ 雲端同步設定';
-            settingBtn.onclick = () => {
-                document.getElementById('cloudApiKey').value = appState.cloudConfig.apiKey || '';
-                document.getElementById('cloudBinId').value = appState.cloudConfig.binId || '';
-                document.getElementById('cloudModal').classList.add('show');
-            };
-            // 插入在匯出按鈕之前
-            const btnGroup = dataTab.querySelector('.btn-group');
-            btnGroup.insertBefore(settingBtn, btnGroup.firstChild);
+            try {
+                // 1. 若無 Gist ID，創建新的
+                let targetGistId = gistId;
+                if (!targetGistId) {
+                    statusDiv.textContent = '正在創建 Gist...';
+                    targetGistId = await createGist(token);
+                }
+
+                // 2. 獲取 Gist 資料
+                statusDiv.textContent = '正在讀取雲端資料...';
+                const cloudContent = await getGistContent(token, targetGistId);
+
+                // 3. 判斷同步邏輯
+                const localHasData = appState.records.length > 0;
+                const cloudHasData = cloudContent && cloudContent.records && cloudContent.records.length > 0;
+
+                let needSaveLocal = false;
+                let needPushCloud = false;
+
+                if (localHasData && !cloudHasData) {
+                    // Local > Cloud
+                    needPushCloud = true;
+                    statusDiv.textContent = '上傳本地資料中...';
+                } else if (!localHasData && cloudHasData) {
+                    // Cloud > Local
+                    appState.records = cloudContent.records;
+                    appState.categories = cloudContent.categories || appState.categories;
+                    appState.accountBooks = cloudContent.accountBooks || appState.accountBooks;
+                    needSaveLocal = true;
+                    statusDiv.textContent = '下載雲端資料中...';
+                } else if (localHasData && cloudHasData) {
+                    // 雙向有資料，觸發衝突解決
+                    pendingCloudData = cloudContent;
+                    ghToken = token;
+                    appState.githubConfig.gistId = targetGistId;
+                    localStorage.setItem('acc_gh_token', token);
+                    utils.save();
+                    
+                    document.getElementById('cloudModal').classList.remove('show');
+                    document.getElementById('conflictModal').classList.add('show');
+                    btn.disabled = false;
+                    btn.textContent = '連線並同步';
+                    return; 
+                }
+
+                // 儲存設定
+                ghToken = token;
+                appState.githubConfig.gistId = targetGistId;
+                localStorage.setItem('acc_gh_token', token);
+                
+                if (needSaveLocal) {
+                    utils.save();
+                    location.reload(); // 簡單起見重新載入以更新 UI
+                }
+                
+                if (needPushCloud) {
+                    await updateGist(token, targetGistId, appState);
+                }
+
+                utils.save();
+                updateCloudIconStatus();
+                document.getElementById('cloudModal').classList.remove('show');
+                utils.showNotify('雲端同步成功！');
+
+            } catch (error) {
+                console.error(error);
+                statusDiv.textContent = '❌ 連線失敗: ' + error.message;
+                statusDiv.style.color = 'red';
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '連線並同步';
+            }
+        }
+
+        async function createGist(token) {
+            const response = await fetch('https://api.github.com/gists', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    description: "Money Tracker App Data",
+                    public: false,
+                    files: {
+                        [appState.githubConfig.filename]: {
+                            content: JSON.stringify(appState)
+                        }
+                    }
+                })
+            });
+            if (!response.ok) throw new Error('無法建立 Gist');
+            const data = await response.json();
+            return data.id;
+        }
+
+        async function getGistContent(token, gistId) {
+            const response = await fetch(`https://api.github.com/gists/${gistId}`, {
+                headers: { 'Authorization': `token ${token}` }
+            });
+            if (!response.ok) {
+                if(response.status === 404) throw new Error('找不到該 Gist ID');
+                throw new Error('讀取 Gist 失敗');
+            }
+            const data = await response.json();
+            const file = data.files[appState.githubConfig.filename];
+            if (!file) return null;
+            return JSON.parse(file.content);
+        }
+
+        async function updateGist(token, gistId, dataObj) {
+            const response = await fetch(`https://api.github.com/gists/${gistId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    files: {
+                        [appState.githubConfig.filename]: {
+                            content: JSON.stringify(dataObj)
+                        }
+                    }
+                })
+            });
+            if (!response.ok) throw new Error('更新 Gist 失敗');
+        }
+
+        // 衝突解決
+        async function resolveConflict(action) {
+            const modal = document.getElementById('conflictModal');
+            try {
+                if (action === 'overwrite_local') {
+                    appState.records = pendingCloudData.records;
+                    appState.categories = pendingCloudData.categories;
+                    appState.accountBooks = pendingCloudData.accountBooks;
+                    utils.save();
+                    location.reload();
+                } else if (action === 'overwrite_cloud') {
+                    await updateGist(ghToken, appState.githubConfig.gistId, appState);
+                    utils.showNotify('已覆蓋雲端資料');
+                } else if (action === 'merge') {
+                    // 合併邏輯：ID 相同者取修改時間新者，不同者保留
+                    const localMap = new Map(appState.records.map(r => [r.id, r]));
+                    const cloudRecords = pendingCloudData.records || [];
+                    
+                    cloudRecords.forEach(cr => {
+                        if (localMap.has(cr.id)) {
+                            const lr = localMap.get(cr.id);
+                            // 簡單比較，若雲端無 updatedAt 則視為舊
+                            const lTime = new Date(lr.updatedAt || '2000-01-01').getTime();
+                            const cTime = new Date(cr.updatedAt || '2000-01-01').getTime();
+                            if (cTime > lTime) {
+                                localMap.set(cr.id, cr);
+                            }
+                        } else {
+                            localMap.set(cr.id, cr);
+                        }
+                    });
+                    
+                    appState.records = Array.from(localMap.values());
+                    
+                    // 合併科目 (簡單聯集)
+                    for (const [main, subs] of Object.entries(pendingCloudData.categories)) {
+                        if (!appState.categories[main]) {
+                            appState.categories[main] = subs;
+                        } else {
+                            appState.categories[main] = [...new Set([...appState.categories[main], ...subs])];
+                        }
+                    }
+
+                    // 合併帳冊 (以 ID 判斷)
+                    const bookMap = new Map(appState.accountBooks.map(b => [b.id, b]));
+                    pendingCloudData.accountBooks.forEach(b => {
+                        if(!bookMap.has(b.id)) bookMap.set(b.id, b);
+                    });
+                    appState.accountBooks = Array.from(bookMap.values());
+
+                    utils.save();
+                    // 同步回雲端
+                    await updateGist(ghToken, appState.githubConfig.gistId, appState);
+                    utils.showNotify('資料已合併');
+                    setTimeout(() => location.reload(), 1000);
+                }
+            } catch (e) {
+                alert('處理失敗: ' + e.message);
+            } finally {
+                updateCloudIconStatus();
+                modal.classList.remove('show');
+                pendingCloudData = null;
+            }
+        }
+
+        // --- 列表預設篩選 (前一個月) ---
+        function setDefaultFilterDate() {
+            // 計算 30 天前的日期
+            const d = new Date();
+            d.setDate(d.getDate() - 30);
+            const dateStr = d.toISOString().split('T')[0];
+            
+            // 這裡不直接設定 input，而是設定一個標記，讓 filterRecords 使用
+            // 但為了 UI 一致性，我們只簡單在 filterRecords 裡做邏輯，
+            // 或者這裡直接觸發一次帶有特殊邏輯的 filter
+            
+            // 為了符合 UI 操作，我們單純執行 filterRecords，
+            // 並在 filterRecords 內部增加邏輯：如果所有篩選條件都是空的，預設過濾日期
+            filterRecords(true); 
         }
 
         // --- 核心邏輯 ---
@@ -1236,7 +1296,7 @@
             document.getElementById('recordSubCategory').innerHTML = '<option value="">...</option>';
         }
 
-        function filterRecords() {
+        function filterRecords(isDefaultLoad = false) {
             const y = document.getElementById('filterYear').value;
             const m = document.getElementById('filterMonth').value;
             const b = document.getElementById('filterBook').value;
@@ -1245,7 +1305,24 @@
             const sc = document.getElementById('filterSubCategory').value;
             const k = document.getElementById('filterKeyword').value.toLowerCase();
 
+            // 檢查是否為空篩選 (使用者手動清除或剛載入)
+            const isFilterEmpty = !y && !m && !b && !t && !mc && !sc && !k;
+            
+            let dateThreshold = null;
+            if (isDefaultLoad && isFilterEmpty) {
+                const d = new Date();
+                d.setMonth(d.getMonth() - 1);
+                dateThreshold = d.toISOString().split('T')[0]; // 一個月前的日期字串 yyyy-mm-dd
+                document.getElementById('recordsInfoText').textContent = `顯示最近一個月的記錄`;
+            } else if (isFilterEmpty) {
+                 document.getElementById('recordsInfoText').textContent = `顯示全部記錄`;
+            } else {
+                document.getElementById('recordsInfoText').textContent = `搜尋結果`;
+            }
+
             const filtered = appState.records.filter(r => {
+                if (dateThreshold && r.date < dateThreshold) return false;
+
                 const rY = r.date.substring(0, 4);
                 const rM = r.date.substring(5, 7);
                 if (y && rY !== y) return false;
@@ -1284,6 +1361,8 @@
 
                 const div = document.createElement('div');
                 div.className = `record-card ${r.type}`;
+                // 修改：點擊卡片觸發 openDetail
+                div.onclick = () => openDetail(r.id);
                 div.innerHTML = `
                     <div class="record-header">
                         <div class="record-date-block">
@@ -1297,13 +1376,54 @@
                     </div>
                     <div class="record-cat">${r.mainCategory} > ${r.subCategory}</div>
                     ${r.summary ? `<div class="record-summary-text">${r.summary}</div>` : ''}
-                    <div class="record-actions">
-                        <button class="btn btn-warning" onclick="editRecord('${r.id}')">編輯</button>
-                        <button class="btn btn-danger" onclick="deleteRecord('${r.id}')">刪除</button>
-                    </div>
                 `;
                 container.appendChild(div);
             });
+        }
+
+        // --- 詳細資料邏輯 ---
+        function openDetail(id) {
+            const r = appState.records.find(i => i.id === id);
+            if (!r) return;
+            appState.currentDetailId = id;
+            
+            const book = appState.accountBooks.find(b => b.id === r.bookId);
+            const sign = r.type === 'income' ? '+' : '-';
+            const color = r.type === 'income' ? 'var(--success-color)' : 'var(--accent-color)';
+
+            const html = `
+                <div class="detail-amount" style="color:${color}">
+                    ${sign} ${utils.formatMoney(r.amount, r.currency)}
+                    <div style="font-size:0.9rem; color:#999; font-weight:normal; margin-top:5px;">
+                        ${r.currency !== 'TWD' ? `≈ TWD ${utils.formatMoney(r.amount * r.exchangeRate)}` : ''}
+                    </div>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">類型</span>
+                    <span class="detail-val" style="color:${color}">${r.type === 'income' ? '收入' : '支出'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">日期</span>
+                    <span class="detail-val">${r.date} ${r.time}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">帳冊</span>
+                    <span class="detail-val">${book ? book.name : '未知'}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">科目</span>
+                    <span class="detail-val">${r.mainCategory} - ${r.subCategory}</span>
+                </div>
+                ${r.summary ? `
+                <div style="margin-top:15px;">
+                    <span class="detail-label">備註</span>
+                    <div style="margin-top:5px; background:#f8f9fa; padding:10px; border-radius:8px;">${r.summary}</div>
+                </div>
+                ` : ''}
+            `;
+            
+            document.getElementById('detailContent').innerHTML = html;
+            document.getElementById('detailModal').classList.add('show');
         }
 
         function handleBookSubmit(e) {
@@ -1466,8 +1586,6 @@
             document.getElementById('filterMainCategory').innerHTML = '<option value="">全部</option>' + catOpts;
             
             if (appState.accountBooks.length > 0) {
-                 const current = document.getElementById('recordBook').value;
-                 if(!current) document.getElementById('recordBook').value = appState.accountBooks[0].id;
                  document.getElementById('recordBook').dispatchEvent(new Event('change'));
             }
         }
