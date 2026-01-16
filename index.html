@@ -68,7 +68,6 @@
         h1 { font-size: 1.5rem; margin: 0; }
         .date-display { font-size: 0.9rem; opacity: 0.9; }
 
-        /* Cloud Icon */
         .cloud-icon {
             font-size: 1.8rem;
             cursor: pointer;
@@ -174,7 +173,6 @@
         
         input:read-only { background-color: #f8f9fa; color: #666; }
 
-        /* Checkbox styling */
         .checkbox-container {
             display: flex;
             align-items: center;
@@ -189,10 +187,9 @@
             height: 22px;
             cursor: pointer;
             flex-shrink: 0;
-            -webkit-appearance: checkbox; /* 恢復標準勾選樣式 */
+            -webkit-appearance: checkbox;
         }
 
-        /* Buttons */
         .btn {
             padding: 12px 20px;
             background-color: var(--primary-color);
@@ -222,7 +219,6 @@
         .btn-info { background-color: var(--info-color); }
         .btn-cancel { background-color: #6c757d; }
 
-        /* Type Selector */
         .type-selector {
             display: flex;
             background: #eee;
@@ -250,7 +246,6 @@
         .type-option.income.selected { color: var(--success-color); border-bottom: 3px solid var(--success-color); }
         .type-option.expense.selected { color: var(--accent-color); border-bottom: 3px solid var(--accent-color); }
 
-        /* Filter & Header Row in List Tab */
         .list-action-bar {
             display: flex;
             gap: 10px;
@@ -293,7 +288,6 @@
             white-space: nowrap;
         }
 
-        /* Record Cards */
         .record-list { display: flex; flex-direction: column; gap: 12px; }
         .record-card {
             background-color: white;
@@ -355,7 +349,6 @@
             padding-left: 5px;
         }
 
-        /* Account Book Style (Modified) */
         .book-list { 
             display: grid; 
             gap: 20px; 
@@ -391,7 +384,6 @@
         .book-actions { display: flex; gap: 8px; margin-top: 10px; }
         .book-actions button { flex: 1; padding: 4px; font-size: 0.75rem; }
 
-        /* Modal */
         .modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.6);
@@ -409,7 +401,6 @@
             position: relative;
         }
 
-        /* Detail Modal Specifics */
         .detail-row {
             display: flex;
             justify-content: space-between;
@@ -420,7 +411,6 @@
         .detail-val { font-weight: 500; text-align: right; }
         .detail-amount { font-size: 1.5rem; font-weight: bold; color: var(--primary-color); padding: 15px 0; text-align: center; }
 
-        /* Notification */
         .notification {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
             padding: 12px 24px;
@@ -439,7 +429,6 @@
         .hidden { display: none !important; }
         .form-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         
-        /* Stats */
         .summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .summary-item { background: #fff; padding: 10px; border-radius: 8px; text-align: center; border: 1px solid #eee; }
         .summary-val { font-weight: bold; font-size: 1rem; margin-top: 5px; word-break: break-all; }
@@ -453,7 +442,6 @@
             padding-right: 30px;
         }
 
-        /* Spinner */
         .spinner {
             border: 3px solid rgba(0,0,0,0.1);
             border-radius: 50%;
@@ -494,7 +482,7 @@
 
         <div class="tabs">
             <button class="tab-btn active" data-tab="records">📋 列表</button>
-            <button class="tab-btn" data-tab="record">📝 記帳</button>
+            <button class="tab-btn hidden" data-tab="record" id="recordTabBtn">📝 記帳</button>
             <button class="tab-btn" data-tab="books">📕 帳冊</button>
             <button class="tab-btn" data-tab="categories">📚 科目</button>
             <button class="tab-btn" data-tab="summary">📊 統計</button>
@@ -571,7 +559,7 @@
         <div class="tab-content" id="record-tab">
             <div class="form-title">
                 <h2 id="formModeTitle">新增記錄</h2>
-                <button id="cancelEditBtn" class="btn btn-cancel hidden" style="width: auto; padding: 5px 10px; font-size: 0.8rem;">取消</button>
+                <button id="cancelEditBtn" class="btn btn-cancel" style="width: auto; padding: 5px 10px; font-size: 0.8rem;">取消</button>
             </div>
             
             <form id="recordForm">
@@ -921,7 +909,7 @@
             document.getElementById('recordDate').value = utils.getToday();
             document.getElementById('recordTime').value = utils.getTime();
 
-            filterRecords(true); // 預設顯示最近記錄
+            filterRecords(true);
             updateHeaderTotal();
             updateCloudIconStatus();
         }
@@ -930,18 +918,29 @@
         function initEvents() {
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
+                    const targetTab = btn.dataset.tab;
+                    
+                    // 如果點擊的不是「記帳」，且目前不是在編輯模式中，就隱藏「記帳」標籤
+                    if (targetTab !== 'record') {
+                        document.getElementById('recordTabBtn').classList.add('hidden');
+                    }
+
                     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
                     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                    btn.classList.add('active');
-                    document.getElementById(btn.dataset.tab + '-tab').classList.add('active');
                     
-                    if(btn.dataset.tab === 'records') filterRecords(true);
-                    if(btn.dataset.tab === 'books') renderBookList();
+                    btn.classList.add('active');
+                    document.getElementById(targetTab + '-tab').classList.add('active');
+                    
+                    if(targetTab === 'records') filterRecords(true);
+                    if(targetTab === 'books') renderBookList();
                 });
             });
 
             document.getElementById('listAddNewBtn').addEventListener('click', () => {
-                document.querySelector('[data-tab="record"]').click();
+                // 顯示記帳標籤並跳轉
+                const recordBtn = document.getElementById('recordTabBtn');
+                recordBtn.classList.remove('hidden');
+                recordBtn.click();
                 exitEditMode();
             });
 
@@ -971,7 +970,10 @@
 
             document.getElementById('recordForm').addEventListener('submit', handleRecordSubmit);
             document.getElementById('resetFormBtn').addEventListener('click', resetForm);
-            document.getElementById('cancelEditBtn').addEventListener('click', exitEditMode);
+            document.getElementById('cancelEditBtn').addEventListener('click', () => {
+                exitEditMode();
+                document.querySelector('[data-tab="records"]').click(); // 取消後回列表
+            });
 
             document.getElementById('applyFilterBtn').addEventListener('click', () => {
                 filterRecords();
@@ -1066,6 +1068,7 @@
             updateHeaderTotal();
             resetForm();
             
+            // 儲存後回到列表頁
             document.querySelector('[data-tab="records"]').click();
             filterRecords(true);
         }
@@ -1211,10 +1214,16 @@
 
                 const div = document.createElement('div');
                 div.className = 'book-card';
-                // 根據幣別給予不同顏色
                 const colorMap = {'TWD':'#4a6fa5', 'USD':'#28a745', 'JPY':'#ff6b6b', 'CNY':'#ffc107', 'EUR':'#17a2b8'};
                 div.style.borderLeftColor = colorMap[b.currency] || '#4a6fa5';
                 
+                // 點選卡片跳轉到列表頁並篩選該帳冊
+                div.onclick = (e) => {
+                    // 避免點擊到編輯/刪除按鈕也觸發跳轉
+                    if (e.target.tagName === 'BUTTON') return;
+                    viewBookRecords(b.id);
+                };
+
                 div.innerHTML = `
                     <div class="book-currency-tag">${b.currency}</div>
                     <div>
@@ -1232,6 +1241,21 @@
                 `;
                 el.appendChild(div);
             });
+        }
+
+        // --- 跳轉帳冊列表功能 ---
+        function viewBookRecords(bookId) {
+            document.getElementById('filterBook').value = bookId;
+            document.getElementById('filterYear').value = "";
+            document.getElementById('filterMonth').value = "";
+            document.getElementById('filterType').value = "";
+            document.getElementById('filterMainCategory').value = "";
+            document.getElementById('filterSubCategory').value = "";
+            document.getElementById('filterKeyword').value = "";
+            
+            filterRecords();
+            document.querySelector('[data-tab="records"]').click();
+            utils.showNotify('已顯示該帳冊記錄');
         }
 
         function updateHeaderTotal() {
@@ -1264,9 +1288,13 @@
             const r = appState.records.find(i => i.id === id);
             if (!r) return;
             appState.editingRecordId = id;
-            document.querySelector('[data-tab="record"]').click();
+            
+            // 顯示標籤並跳轉
+            const recordBtn = document.getElementById('recordTabBtn');
+            recordBtn.classList.remove('hidden');
+            recordBtn.click();
+
             document.getElementById('formModeTitle').textContent = '編輯記錄';
-            document.getElementById('cancelEditBtn').classList.remove('hidden');
             document.getElementById('recordBook').value = r.bookId;
             document.getElementById('recordDate').value = r.date;
             document.getElementById('recordTime').value = r.time;
@@ -1286,7 +1314,6 @@
         window.exitEditMode = () => {
             appState.editingRecordId = null;
             document.getElementById('formModeTitle').textContent = '新增記錄';
-            document.getElementById('cancelEditBtn').classList.add('hidden');
             resetForm();
         };
 
