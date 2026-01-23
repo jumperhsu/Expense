@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#4a6fa5">
-    <title>多帳冊智能記帳程式 (Cloud Sync Edition)</title>
+    <title>多帳冊智能記帳程式 (Cloud Sync Edition) v20260123.001</title>
     <style>
         :root {
             --primary-color: #4a6fa5;
@@ -65,8 +65,49 @@
             align-items: flex-start;
         }
 
-        h1 { font-size: 1.5rem; margin: 0; }
-        .date-display { font-size: 0.9rem; opacity: 0.9; }
+        h1 { 
+            font-size: 1.5rem; 
+            margin: 0; 
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .app-version {
+            font-size: 0.6rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 6px;
+            border-radius: 10px;
+            color: #ffcc00;
+            font-weight: normal;
+            align-self: flex-end;
+            margin-bottom: 2px;
+        }
+        
+        .date-display { 
+            font-size: 0.9rem; 
+            opacity: 0.9; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 5px;
+        }
+        
+        .date-left {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .book-total-balance {
+            font-size: 0.85rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 10px;
+            border-radius: 12px;
+            color: #ffff00;
+            font-weight: bold;
+            text-shadow: 0 0 5px rgba(255, 255, 0, 0.3);
+        }
 
         .cloud-icon {
             font-size: 1.8rem;
@@ -77,6 +118,37 @@
         .cloud-icon:active { transform: scale(0.9); }
         .cloud-status-off { color: #ff6b6b; } 
         .cloud-status-on { color: #51cf66; }  
+
+        .header-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+            font-size: 0.9rem;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .stat-item {
+            flex: 1;
+            min-width: 80px;
+            text-align: center;
+            padding: 5px 0;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            font-size: 1.05rem;
+            padding: 4px 0;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .income-stat { color: #51cf66 !important; }
+        .expense-stat { color: #ff6b6b !important; }
+        .balance-positive { color: #51cf66 !important; }
+        .balance-negative { color: #ff6b6b !important; }
 
         /* Tabs */
         .tabs {
@@ -456,11 +528,17 @@
 
         @media (max-width: 480px) {
             .book-list { grid-template-columns: 1fr 1fr; }
+            .header-stats { gap: 5px; }
+            .stat-item { min-width: 70px; }
+            .stat-value { font-size: 0.95rem; }
+            .book-total-balance { font-size: 0.8rem; padding: 3px 8px; }
         }
         @media (max-width: 320px) {
             .form-row { grid-template-columns: 1fr; gap: 10px; } 
             .summary-grid { grid-template-columns: 1fr; }
             .book-list { grid-template-columns: 1fr; }
+            .header-stats { flex-direction: column; }
+            .stat-item { min-width: 100%; }
         }
     </style>
 </head>
@@ -469,14 +547,28 @@
         <header>
             <div class="header-content">
                 <div class="header-top">
-                    <div>
-                        <h1>📒 智能記帳 <span style="font-size: 0.8rem; font-weight: normal; opacity: 0.8;">App</span></h1>
-                        <div class="date-display" id="currentDate"></div>
+                    <div style="flex: 1;">
+                        <h1>📒 智能記帳 <span style="font-size: 0.8rem; font-weight: normal; opacity: 0.8;">App</span> <span class="app-version">v20260123.001</span></h1>
+                        <div class="date-display" id="currentDate">
+                            <div class="date-left">
+                                <span id="currentDateText"></span>
+                            </div>
+                            <div class="book-total-balance" id="bookTotalBalance">帳冊結餘: 0</div>
+                        </div>
                     </div>
                     <div id="cloudSyncBtn" class="cloud-icon cloud-status-off" title="雲端同步">☁️</div>
                 </div>
-                <div id="headerTotal" style="font-weight: bold; font-size: 1rem; margin-top: 5px; padding-top:5px; border-top:1px solid rgba(255,255,255,0.2);">
+                <div class="header-stats" id="headerStats">
+                    <div class="stat-item">
+                        <div class="stat-value income-stat" id="headerIncome">0</div>
                     </div>
+                    <div class="stat-item">
+                        <div class="stat-value expense-stat" id="headerExpense">0</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="headerBalance">0</div>
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -898,7 +990,7 @@
             }
 
             const dateStr = new Date().toLocaleDateString('zh-TW', {month:'long', day:'numeric', weekday:'short'});
-            document.getElementById('currentDate').textContent = dateStr;
+            document.getElementById('currentDateText').textContent = dateStr;
             
             initEvents();
             renderSelects();
@@ -910,7 +1002,7 @@
             document.getElementById('recordTime').value = utils.getTime();
 
             filterRecords(true);
-            updateHeaderTotal();
+            updateHeaderStats();
             updateCloudIconStatus();
         }
 
@@ -919,6 +1011,17 @@
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const targetTab = btn.dataset.tab;
+                    
+                    // 如果點擊的是「帳冊」頁籤，清除篩選條件
+                    if (targetTab === 'books') {
+                        document.getElementById('filterYear').value = '';
+                        document.getElementById('filterMonth').value = '';
+                        document.getElementById('filterBook').value = '';
+                        document.getElementById('filterType').value = '';
+                        document.getElementById('filterMainCategory').value = '';
+                        document.getElementById('filterSubCategory').value = '';
+                        document.getElementById('filterKeyword').value = '';
+                    }
                     
                     // 如果點擊的不是「記帳」，且目前不是在編輯模式中，就隱藏「記帳」標籤
                     if (targetTab !== 'record') {
@@ -942,6 +1045,10 @@
                 recordBtn.classList.remove('hidden');
                 recordBtn.click();
                 exitEditMode();
+                
+                // 新增記錄時自動取得當下系統日期時間
+                document.getElementById('recordDate').value = utils.getToday();
+                document.getElementById('recordTime').value = utils.getTime();
             });
 
             document.getElementById('filterHeader').addEventListener('click', () => {
@@ -1065,7 +1172,7 @@
             }
             
             utils.save();
-            updateHeaderTotal();
+            updateHeaderStats();
             resetForm();
             
             // 儲存後回到列表頁
@@ -1258,21 +1365,67 @@
             utils.showNotify('已顯示該帳冊記錄');
         }
 
-        function updateHeaderTotal() {
+        // --- 更新頁首統計 ---
+        function updateHeaderStats() {
             const ym = new Date().toISOString().substring(0, 7);
-            let total = 0;
+            let income = 0, expense = 0;
+            
+            // 計算本月收入與支出（排除不列入統計項目）
             appState.records.forEach(r => {
-                if(!r.excludeFromStats && r.date.startsWith(ym) && r.type === 'expense') {
-                    total += r.amount * r.exchangeRate;
+                if (r.excludeFromStats) return;
+                if (r.date.startsWith(ym)) {
+                    const twd = r.amount * r.exchangeRate;
+                    if (r.type === 'income') income += twd;
+                    else expense += twd;
                 }
             });
-            document.getElementById('headerTotal').innerHTML = `本月支出統計: <span style="color:#ffcc00">${utils.formatMoney(total)}</span>`;
+            
+            const balance = income - expense;
+            
+            // 更新頁首統計
+            document.getElementById('headerIncome').textContent = utils.formatMoney(income);
+            document.getElementById('headerExpense').textContent = utils.formatMoney(expense);
+            
+            const balanceElement = document.getElementById('headerBalance');
+            balanceElement.textContent = utils.formatMoney(balance);
+            
+            // 根據結餘值設置顏色
+            if (balance >= 0) {
+                balanceElement.className = 'stat-value balance-positive';
+            } else {
+                balanceElement.className = 'stat-value balance-negative';
+            }
+            
+            // 計算帳冊總結餘（所有帳冊餘額轉台幣加總）
+            const bookTotalBalance = calculateTotalBookBalanceInTWD();
+            document.getElementById('bookTotalBalance').textContent = `帳冊結餘: ${utils.formatMoney(bookTotalBalance)}`;
+        }
+        
+        // --- 計算所有帳冊總餘額（轉台幣） ---
+        function calculateTotalBookBalanceInTWD() {
+            let total = 0;
+            appState.accountBooks.forEach(book => {
+                let balance = parseFloat(book.initialBalance || 0);
+                appState.records.forEach(r => {
+                    if (r.bookId === book.id) {
+                        if (r.type === 'income') balance += r.amount;
+                        else balance -= r.amount;
+                    }
+                });
+                // 轉換為台幣
+                const rate = BASE_RATES[book.currency] || 1;
+                total += balance * rate;
+            });
+            return total;
         }
 
         function resetForm() {
             document.getElementById('recordForm').reset();
-            document.getElementById('recordDate').value = utils.getToday();
-            document.getElementById('recordTime').value = utils.getTime();
+            // 只有在新增模式時才設定為當前時間，編輯模式保留原時間
+            if (!appState.editingRecordId) {
+                document.getElementById('recordDate').value = utils.getToday();
+                document.getElementById('recordTime').value = utils.getTime();
+            }
             document.querySelectorAll('.type-option').forEach(o => o.classList.remove('selected'));
             document.querySelector('.type-option.expense').classList.add('selected');
             document.getElementById('recordType').value = 'expense';
@@ -1320,7 +1473,7 @@
         window.deleteRecord = (id) => {
             if (confirm('確定刪除？')) {
                 appState.records = appState.records.filter(r => r.id !== id);
-                utils.save(); filterRecords(); updateHeaderTotal();
+                utils.save(); filterRecords(); updateHeaderStats();
                 utils.showNotify('已刪除', 'error');
             }
         };
@@ -1341,7 +1494,7 @@
             if (appState.records.some(r => r.bookId === id)) { alert('帳冊內有記錄，無法刪除'); return; }
             if (confirm('確定刪除？')) {
                 appState.accountBooks = appState.accountBooks.filter(b => b.id !== id);
-                utils.save(); renderBookList(); renderSelects();
+                utils.save(); renderBookList(); renderSelects(); updateHeaderStats();
             }
         };
 
