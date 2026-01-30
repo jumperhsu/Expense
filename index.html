@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#4a6fa5">
-    <title>多帳冊智能記帳程式 (Cloud Sync Edition) v20260123.001</title>
+    <title>多帳冊智能記帳程式 (Cloud Sync Edition) v20260130.001</title>
     <style>
         :root {
             --primary-color: #4a6fa5;
@@ -540,7 +540,45 @@
             .header-stats { flex-direction: column; }
             .stat-item { min-width: 100%; }
         }
+        
+        /* Firebase 配置樣式 */
+        .config-textarea {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .firebase-info {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: var(--border-radius);
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 0.85rem;
+        }
+        
+        .firebase-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 10px 0;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .status-connected { background-color: var(--success-color); }
+        .status-disconnected { background-color: var(--accent-color); }
+        .status-connecting { background-color: var(--warning-color); }
     </style>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 </head>
 <body>
     <div class="container">
@@ -548,7 +586,7 @@
             <div class="header-content">
                 <div class="header-top">
                     <div style="flex: 1;">
-                        <h1>📒 智能記帳 <span style="font-size: 0.8rem; font-weight: normal; opacity: 0.8;">App</span> <span class="app-version">v20260123.001</span></h1>
+                        <h1>📒 智能記帳 <span style="font-size: 0.8rem; font-weight: normal; opacity: 0.8;">App</span> <span class="app-version">v20260130.001</span></h1>
                         <div class="date-display" id="currentDate">
                             <div class="date-left">
                                 <span id="currentDateText"></span>
@@ -861,21 +899,49 @@
     <div id="cloudModal" class="modal">
         <div class="modal-content">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h3>☁️ 雲端同步設定 (GitHub)</h3>
+                <h3>☁️ Firebase 雲端同步設定</h3>
                 <span class="close-modal" style="font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('cloudModal').classList.remove('show')">&times;</span>
             </div>
-            <div class="form-group">
-                <label>Access Token (PAT)</label>
-                <input type="password" id="ghToken" placeholder="ghp_..." autocomplete="off">
+            
+            <div class="firebase-status">
+                <div id="firebaseStatusDot" class="status-dot status-disconnected"></div>
+                <span id="firebaseStatusText">未連線</span>
             </div>
-            <div class="form-group">
-                <label>Gist ID (留空則自動建立)</label>
-                <input type="text" id="ghGistId" placeholder="e.g. 5d8e...">
+            
+            <div class="firebase-info">
+                <p><strong>如何設定：</strong></p>
+                <p>1. 前往 <a href="https://console.firebase.google.com/" target="_blank">Firebase 控制台</a></p>
+                <p>2. 建立新專案或選擇現有專案</p>
+                <p>3. 點擊「建立應用程式」並取得設定資訊</p>
+                <p>4. 將設定貼到下方文字框</p>
             </div>
+            
+            <div class="form-group">
+                <label>Firebase 配置 JSON</label>
+                <textarea id="firebaseConfigJson" class="config-textarea" placeholder='{
+  "apiKey": "...",
+  "authDomain": "...",
+  "databaseURL": "...",
+  "projectId": "...",
+  "storageBucket": "...",
+  "messagingSenderId": "...",
+  "appId": "...",
+  "measurementId": "..."
+}'></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>資料庫路徑 (預設: /moneyTracker)</label>
+                <input type="text" id="firebasePath" value="/moneyTracker">
+            </div>
+            
             <div id="syncStatus" style="margin-bottom:10px; font-size:0.9rem;"></div>
+            
             <div class="btn-group" style="flex-direction: column;">
-                <button class="btn btn-success" id="saveCloudSettingsBtn">連線並同步</button>
-                <button class="btn btn-danger" id="disconnectCloudBtn">中斷連線</button>
+                <button class="btn btn-success" id="saveFirebaseSettingsBtn">儲存並連線</button>
+                <button class="btn btn-info" id="syncNowBtn">立即同步</button>
+                <button class="btn btn-warning" id="clearCloudDataBtn">清空雲端資料</button>
+                <button class="btn btn-danger" id="disconnectFirebaseBtn">中斷連線</button>
             </div>
         </div>
     </div>
@@ -930,13 +996,13 @@
             editingRecordId: null,
             editingBookId: null,
             currentMainCat: null,
-            githubConfig: {
-                gistId: '',
-                filename: 'money_tracker_data.json'
-            }
+            firebaseConfig: null,
+            firebasePath: '/moneyTracker'
         };
 
-        let ghToken = '';
+        // Firebase 實例
+        let firebaseApp = null;
+        let firebaseDB = null;
         let pendingCloudData = null;
 
         // --- 工具 ---
@@ -958,7 +1024,8 @@
                 localStorage.setItem('acc_records', JSON.stringify(appState.records));
                 localStorage.setItem('acc_categories', JSON.stringify(appState.categories));
                 localStorage.setItem('acc_books', JSON.stringify(appState.accountBooks));
-                localStorage.setItem('acc_gh_config', JSON.stringify(appState.githubConfig));
+                localStorage.setItem('acc_firebase_config', JSON.stringify(appState.firebaseConfig));
+                localStorage.setItem('acc_firebase_path', appState.firebasePath);
             },
             getToday: () => new Date().toISOString().split('T')[0],
             getTime: () => new Date().toTimeString().split(' ')[0].substr(0, 5)
@@ -969,14 +1036,24 @@
             const storedRecords = localStorage.getItem('acc_records');
             const storedCats = localStorage.getItem('acc_categories');
             const storedBooks = localStorage.getItem('acc_books');
-            const storedGhConfig = localStorage.getItem('acc_gh_config');
-            const storedToken = localStorage.getItem('acc_gh_token');
+            const storedFirebaseConfig = localStorage.getItem('acc_firebase_config');
+            const storedFirebasePath = localStorage.getItem('acc_firebase_path');
 
             appState.categories = storedCats ? JSON.parse(storedCats) : DEFAULT_CATEGORIES;
             appState.accountBooks = storedBooks ? JSON.parse(storedBooks) : [];
             appState.records = storedRecords ? JSON.parse(storedRecords) : [];
-            if(storedGhConfig) appState.githubConfig = JSON.parse(storedGhConfig);
-            if(storedToken) ghToken = storedToken;
+            
+            if(storedFirebaseConfig) {
+                try {
+                    appState.firebaseConfig = JSON.parse(storedFirebaseConfig);
+                } catch(e) {
+                    appState.firebaseConfig = null;
+                }
+            }
+            
+            if(storedFirebasePath) {
+                appState.firebasePath = storedFirebasePath;
+            }
 
             if (appState.accountBooks.length === 0) {
                 appState.accountBooks.push({
@@ -998,12 +1075,202 @@
             renderCategoryManagement();
             renderYearSelects();
 
+            // 新增記錄時自動設定為系統當前時間
             document.getElementById('recordDate').value = utils.getToday();
             document.getElementById('recordTime').value = utils.getTime();
 
             filterRecords(true);
             updateHeaderStats();
-            updateCloudIconStatus();
+            updateFirebaseIconStatus();
+            
+            // 初始化 Firebase 連線
+            if (appState.firebaseConfig) {
+                initFirebase();
+            }
+        }
+
+        // --- Firebase 相關函數 ---
+        function initFirebase() {
+            try {
+                if (firebase.apps.length === 0) {
+                    firebaseApp = firebase.initializeApp(appState.firebaseConfig);
+                    firebaseDB = firebase.database();
+                    updateFirebaseStatus(true, '已連線');
+                    utils.showNotify('Firebase 連線成功', 'success');
+                } else {
+                    firebaseApp = firebase.apps[0];
+                    firebaseDB = firebase.database();
+                    updateFirebaseStatus(true, '已連線');
+                }
+            } catch (error) {
+                console.error('Firebase 初始化失敗:', error);
+                updateFirebaseStatus(false, '連線失敗');
+                utils.showNotify('Firebase 連線失敗: ' + error.message, 'error');
+            }
+        }
+
+        function updateFirebaseStatus(isConnected, message) {
+            const statusDot = document.getElementById('firebaseStatusDot');
+            const statusText = document.getElementById('firebaseStatusText');
+            
+            if (isConnected) {
+                statusDot.className = 'status-dot status-connected';
+                statusText.textContent = message;
+                document.getElementById('cloudSyncBtn').className = 'cloud-icon cloud-status-on';
+            } else {
+                statusDot.className = 'status-dot status-disconnected';
+                statusText.textContent = message;
+                document.getElementById('cloudSyncBtn').className = 'cloud-icon cloud-status-off';
+            }
+        }
+
+        async function syncToFirebase() {
+            if (!firebaseDB) {
+                utils.showNotify('Firebase 未連線', 'error');
+                return;
+            }
+
+            const statusDiv = document.getElementById('syncStatus');
+            statusDiv.innerHTML = '🔄 同步中... <span class="spinner"></span>';
+            
+            try {
+                // 讀取雲端資料
+                const snapshot = await firebaseDB.ref(appState.firebasePath).once('value');
+                const cloudData = snapshot.val();
+                
+                if (!cloudData) {
+                    // 雲端沒有資料，上傳本地資料
+                    await uploadToFirebase();
+                    statusDiv.innerHTML = '✅ 資料已上傳至雲端';
+                    utils.showNotify('資料已同步至雲端', 'success');
+                } else {
+                    // 檢查是否有衝突
+                    const localHasData = appState.records.length > 0;
+                    const cloudHasData = cloudData.records && cloudData.records.length > 0;
+                    
+                    if (localHasData && cloudHasData) {
+                        // 兩邊都有資料，顯示衝突解決介面
+                        pendingCloudData = cloudData;
+                        document.getElementById('cloudModal').classList.remove('show');
+                        document.getElementById('conflictModal').classList.add('show');
+                    } else if (cloudHasData) {
+                        // 只有雲端有資料，下載到本地
+                        appState.records = cloudData.records || [];
+                        appState.categories = cloudData.categories || DEFAULT_CATEGORIES;
+                        appState.accountBooks = cloudData.accountBooks || [];
+                        utils.save();
+                        statusDiv.innerHTML = '✅ 資料已從雲端下載';
+                        utils.showNotify('資料已從雲端同步', 'success');
+                        location.reload();
+                    } else {
+                        // 只有本地有資料，上傳到雲端
+                        await uploadToFirebase();
+                        statusDiv.innerHTML = '✅ 資料已上傳至雲端';
+                        utils.showNotify('資料已同步至雲端', 'success');
+                    }
+                }
+            } catch (error) {
+                console.error('同步失敗:', error);
+                statusDiv.innerHTML = '❌ 同步失敗: ' + error.message;
+                utils.showNotify('同步失敗: ' + error.message, 'error');
+            }
+        }
+
+        async function uploadToFirebase() {
+            if (!firebaseDB) return;
+            
+            const dataToUpload = {
+                records: appState.records,
+                categories: appState.categories,
+                accountBooks: appState.accountBooks,
+                lastSync: new Date().toISOString(),
+                appVersion: 'v20260130.001'
+            };
+            
+            await firebaseDB.ref(appState.firebasePath).set(dataToUpload);
+        }
+
+        async function clearFirebaseData() {
+            if (!firebaseDB) return;
+            
+            if (confirm('確定要清空雲端資料嗎？此操作無法復原！')) {
+                try {
+                    await firebaseDB.ref(appState.firebasePath).remove();
+                    utils.showNotify('雲端資料已清空', 'success');
+                } catch (error) {
+                    utils.showNotify('清空失敗: ' + error.message, 'error');
+                }
+            }
+        }
+
+        async function resolveConflict(action) {
+            const statusDiv = document.getElementById('syncStatus');
+            statusDiv.innerHTML = '🔄 處理衝突中... <span class="spinner"></span>';
+            
+            try {
+                if (action === 'overwrite_local') {
+                    // 使用雲端資料覆蓋本地
+                    appState.records = pendingCloudData.records || [];
+                    appState.categories = pendingCloudData.categories || DEFAULT_CATEGORIES;
+                    appState.accountBooks = pendingCloudData.accountBooks || [];
+                    utils.save();
+                    statusDiv.innerHTML = '✅ 已使用雲端資料覆蓋本地';
+                    document.getElementById('conflictModal').classList.remove('show');
+                    location.reload();
+                } else if (action === 'overwrite_cloud') {
+                    // 使用本地資料覆蓋雲端
+                    await uploadToFirebase();
+                    statusDiv.innerHTML = '✅ 已使用本地資料覆蓋雲端';
+                    document.getElementById('conflictModal').classList.remove('show');
+                } else if (action === 'merge') {
+                    // 合併資料（保留最新的記錄）
+                    const localMap = new Map(appState.records.map(r => [r.id, r]));
+                    (pendingCloudData.records || []).forEach(cr => {
+                        if (localMap.has(cr.id)) {
+                            // 保留更新時間較新的記錄
+                            const localRecord = localMap.get(cr.id);
+                            const cloudUpdated = new Date(cr.updatedAt || 0);
+                            const localUpdated = new Date(localRecord.updatedAt || 0);
+                            
+                            if (cloudUpdated > localUpdated) {
+                                localMap.set(cr.id, cr);
+                            }
+                        } else {
+                            localMap.set(cr.id, cr);
+                        }
+                    });
+                    
+                    appState.records = Array.from(localMap.values());
+                    
+                    // 合併分類
+                    if (pendingCloudData.categories) {
+                        Object.keys(pendingCloudData.categories).forEach(key => {
+                            if (!appState.categories[key]) {
+                                appState.categories[key] = pendingCloudData.categories[key];
+                            }
+                        });
+                    }
+                    
+                    // 合併帳冊
+                    if (pendingCloudData.accountBooks) {
+                        const bookIds = new Set(appState.accountBooks.map(b => b.id));
+                        pendingCloudData.accountBooks.forEach(book => {
+                            if (!bookIds.has(book.id)) {
+                                appState.accountBooks.push(book);
+                            }
+                        });
+                    }
+                    
+                    utils.save();
+                    await uploadToFirebase();
+                    statusDiv.innerHTML = '✅ 資料已合併';
+                    document.getElementById('conflictModal').classList.remove('show');
+                    location.reload();
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '❌ 衝突處理失敗: ' + error.message;
+                utils.showNotify('衝突處理失敗: ' + error.message, 'error');
+            }
         }
 
         // --- 事件 ---
@@ -1126,9 +1393,13 @@
             });
 
             document.getElementById('runSummaryBtn').addEventListener('click', runSummary);
-            document.getElementById('cloudSyncBtn').addEventListener('click', openCloudSettings);
-            document.getElementById('saveCloudSettingsBtn').addEventListener('click', handleConnectCloud);
-            document.getElementById('disconnectCloudBtn').addEventListener('click', handleDisconnectCloud);
+            
+            // Firebase 相關事件
+            document.getElementById('cloudSyncBtn').addEventListener('click', openFirebaseSettings);
+            document.getElementById('saveFirebaseSettingsBtn').addEventListener('click', handleSaveFirebaseSettings);
+            document.getElementById('syncNowBtn').addEventListener('click', syncToFirebase);
+            document.getElementById('clearCloudDataBtn').addEventListener('click', clearFirebaseData);
+            document.getElementById('disconnectFirebaseBtn').addEventListener('click', handleDisconnectFirebase);
 
             document.getElementById('editDetailBtn').addEventListener('click', () => {
                 document.getElementById('detailModal').classList.remove('show');
@@ -1137,6 +1408,19 @@
             document.getElementById('deleteDetailBtn').addEventListener('click', () => {
                 document.getElementById('detailModal').classList.remove('show');
                 deleteRecord(appState.currentDetailId);
+            });
+            
+            // 自動嘗試解析 Firebase 配置
+            document.getElementById('firebaseConfigJson').addEventListener('input', function() {
+                try {
+                    const config = JSON.parse(this.value);
+                    if (config.apiKey && config.projectId) {
+                        document.getElementById('firebasePath').value = config.databaseURL ? 
+                            config.databaseURL.split('/').pop() + '/moneyTracker' : '/moneyTracker';
+                    }
+                } catch (e) {
+                    // 解析失敗，不做任何事
+                }
             });
         }
 
@@ -1178,6 +1462,11 @@
             // 儲存後回到列表頁
             document.querySelector('[data-tab="records"]').click();
             filterRecords(true);
+            
+            // 自動同步到 Firebase
+            if (firebaseDB) {
+                setTimeout(() => uploadToFirebase(), 1000);
+            }
         }
 
         function handleBookSubmit(e) {
@@ -1203,6 +1492,11 @@
             renderBookList();
             renderSelects();
             document.getElementById('bookModal').classList.remove('show');
+            
+            // 自動同步到 Firebase
+            if (firebaseDB) {
+                setTimeout(() => uploadToFirebase(), 1000);
+            }
         }
 
         function filterRecords(isDefaultLoad = false) {
@@ -1475,6 +1769,11 @@
                 appState.records = appState.records.filter(r => r.id !== id);
                 utils.save(); filterRecords(); updateHeaderStats();
                 utils.showNotify('已刪除', 'error');
+                
+                // 同步到 Firebase
+                if (firebaseDB) {
+                    setTimeout(() => uploadToFirebase(), 1000);
+                }
             }
         };
 
@@ -1495,6 +1794,11 @@
             if (confirm('確定刪除？')) {
                 appState.accountBooks = appState.accountBooks.filter(b => b.id !== id);
                 utils.save(); renderBookList(); renderSelects(); updateHeaderStats();
+                
+                // 同步到 Firebase
+                if (firebaseDB) {
+                    setTimeout(() => uploadToFirebase(), 1000);
+                }
             }
         };
 
@@ -1577,89 +1881,113 @@
             });
         }
 
-        async function createGist(token) {
-            const response = await fetch('https://api.github.com/gists', {
-                method: 'POST',
-                headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-                body: JSON.stringify({ description: "Money Tracker App Data", public: false, files: { [appState.githubConfig.filename]: { content: JSON.stringify(appState) } } })
-            });
-            if (!response.ok) throw new Error('無法建立 Gist');
-            const data = await response.json(); return data.id;
+        // --- Firebase 設定處理 ---
+        function openFirebaseSettings() {
+            document.getElementById('firebaseConfigJson').value = appState.firebaseConfig ? 
+                JSON.stringify(appState.firebaseConfig, null, 2) : '';
+            document.getElementById('firebasePath').value = appState.firebasePath;
+            document.getElementById('cloudModal').classList.add('show');
+            updateFirebaseStatus(!!firebaseDB, firebaseDB ? '已連線' : '未連線');
         }
-        async function getGistContent(token, gistId) {
-            const response = await fetch(`https://api.github.com/gists/${gistId}`, { headers: { 'Authorization': `token ${token}` } });
-            if (!response.ok) throw new Error('讀取 Gist 失敗');
-            const data = await response.json(); const file = data.files[appState.githubConfig.filename];
-            return file ? JSON.parse(file.content) : null;
-        }
-        async function updateGist(token, gistId, dataObj) {
-            const response = await fetch(`https://api.github.com/gists/${gistId}`, {
-                method: 'PATCH',
-                headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
-                body: JSON.stringify({ files: { [appState.githubConfig.filename]: { content: JSON.stringify(dataObj) } } })
-            });
-            if (!response.ok) throw new Error('更新 Gist 失敗');
-        }
-        async function handleConnectCloud() {
-            const token = document.getElementById('ghToken').value.trim();
-            const gistId = document.getElementById('ghGistId').value.trim();
-            const btn = document.getElementById('saveCloudSettingsBtn');
-            const statusDiv = document.getElementById('syncStatus');
-            if (!token) { statusDiv.textContent = '❌ 請輸入 Access Token'; return; }
-            btn.disabled = true; btn.innerHTML = '連線中... <span class="spinner"></span>';
-            try {
-                let targetGistId = gistId;
-                if (!targetGistId) targetGistId = await createGist(token);
-                const cloudContent = await getGistContent(token, targetGistId);
-                const localHasData = appState.records.length > 0;
-                const cloudHasData = cloudContent && cloudContent.records && cloudContent.records.length > 0;
-                if (localHasData && cloudHasData) {
-                    pendingCloudData = cloudContent; ghToken = token; appState.githubConfig.gistId = targetGistId;
-                    localStorage.setItem('acc_gh_token', token); utils.save();
-                    document.getElementById('cloudModal').classList.remove('show');
-                    document.getElementById('conflictModal').classList.add('show');
-                } else {
-                    if (cloudHasData) { appState.records = cloudContent.records; appState.categories = cloudContent.categories; appState.accountBooks = cloudContent.accountBooks; }
-                    ghToken = token; appState.githubConfig.gistId = targetGistId;
-                    localStorage.setItem('acc_gh_token', token); utils.save();
-                    if (localHasData && !cloudHasData) await updateGist(token, targetGistId, appState);
-                    location.reload();
-                }
-            } catch (error) { statusDiv.textContent = '❌ 失敗: ' + error.message; }
-            finally { btn.disabled = false; btn.textContent = '連線並同步'; }
-        }
-        async function resolveConflict(action) {
-            if (action === 'overwrite_local') { appState.records = pendingCloudData.records; appState.categories = pendingCloudData.categories; appState.accountBooks = pendingCloudData.accountBooks; }
-            else if (action === 'overwrite_cloud') { await updateGist(ghToken, appState.githubConfig.gistId, appState); }
-            else if (action === 'merge') {
-                const localMap = new Map(appState.records.map(r => [r.id, r]));
-                (pendingCloudData.records || []).forEach(cr => {
-                    if (localMap.has(cr.id)) { if (new Date(cr.updatedAt) > new Date(localMap.get(cr.id).updatedAt)) localMap.set(cr.id, cr); }
-                    else localMap.set(cr.id, cr);
-                });
-                appState.records = Array.from(localMap.values());
-            }
-            utils.save(); location.reload();
-        }
-        function openCloudSettings() { document.getElementById('ghToken').value = ghToken; document.getElementById('ghGistId').value = appState.githubConfig.gistId; document.getElementById('cloudModal').classList.add('show'); }
-        function handleDisconnectCloud() { ghToken = ''; appState.githubConfig.gistId = ''; localStorage.removeItem('acc_gh_token'); utils.save(); location.reload(); }
-        function updateCloudIconStatus() { const icon = document.getElementById('cloudSyncBtn'); icon.className = (ghToken && appState.githubConfig.gistId) ? 'cloud-icon cloud-status-on' : 'cloud-icon cloud-status-off'; }
 
+        async function handleSaveFirebaseSettings() {
+            const configJson = document.getElementById('firebaseConfigJson').value.trim();
+            const path = document.getElementById('firebasePath').value.trim() || '/moneyTracker';
+            const btn = document.getElementById('saveFirebaseSettingsBtn');
+            const statusDiv = document.getElementById('syncStatus');
+            
+            if (!configJson) {
+                statusDiv.textContent = '❌ 請輸入 Firebase 配置';
+                return;
+            }
+            
+            try {
+                const config = JSON.parse(configJson);
+                
+                // 驗證必要的 Firebase 配置欄位
+                if (!config.apiKey || !config.authDomain || !config.databaseURL || !config.projectId) {
+                    statusDiv.textContent = '❌ Firebase 配置不完整';
+                    return;
+                }
+                
+                btn.disabled = true;
+                btn.innerHTML = '連線中... <span class="spinner"></span>';
+                
+                // 儲存配置
+                appState.firebaseConfig = config;
+                appState.firebasePath = path;
+                utils.save();
+                
+                // 初始化 Firebase
+                initFirebase();
+                
+                // 嘗試同步資料
+                await syncToFirebase();
+                
+                btn.disabled = false;
+                btn.textContent = '儲存並連線';
+                
+            } catch (error) {
+                console.error('Firebase 設定失敗:', error);
+                statusDiv.textContent = '❌ 配置格式錯誤: ' + error.message;
+                btn.disabled = false;
+                btn.textContent = '儲存並連線';
+            }
+        }
+
+        function handleDisconnectFirebase() {
+            if (confirm('確定要中斷 Firebase 連線嗎？')) {
+                appState.firebaseConfig = null;
+                utils.save();
+                
+                if (firebaseApp) {
+                    try {
+                        firebaseApp.delete();
+                    } catch (e) {
+                        console.error('Firebase 刪除失敗:', e);
+                    }
+                }
+                
+                firebaseApp = null;
+                firebaseDB = null;
+                updateFirebaseStatus(false, '未連線');
+                utils.showNotify('Firebase 連線已中斷', 'success');
+                document.getElementById('cloudModal').classList.remove('show');
+            }
+        }
+
+        function updateFirebaseIconStatus() {
+            const icon = document.getElementById('cloudSyncBtn');
+            icon.className = firebaseDB ? 'cloud-icon cloud-status-on' : 'cloud-icon cloud-status-off';
+        }
+
+        // --- 資料匯入/匯出 ---
         document.getElementById('exportDataBtn').addEventListener('click', () => {
             const blob = new Blob([JSON.stringify(appState)], {type: "application/json"});
             const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `backup_${utils.getToday()}.json`; a.click();
         });
+        
         document.getElementById('importFile').addEventListener('change', (e) => {
             const file = e.target.files[0]; if (!file) return;
             const r = new FileReader();
             r.onload = (evt) => {
                 try {
                     const d = JSON.parse(evt.target.result);
-                    if (confirm('確定匯入並覆蓋？')) { Object.assign(appState, d); utils.save(); location.reload(); }
+                    if (confirm('確定匯入並覆蓋？')) { 
+                        Object.assign(appState, d); 
+                        utils.save(); 
+                        location.reload(); 
+                    }
                 } catch(err) { alert('格式錯誤'); }
             }; r.readAsText(file);
         });
-        document.getElementById('clearAllDataBtn').addEventListener('click', () => { if(confirm('警告：確定清除所有資料？')) { localStorage.clear(); location.reload(); } });
+        
+        document.getElementById('clearAllDataBtn').addEventListener('click', () => { 
+            if(confirm('警告：確定清除所有資料？')) { 
+                localStorage.clear(); 
+                location.reload(); 
+            } 
+        });
 
         initApp();
     </script>
