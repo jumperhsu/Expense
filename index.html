@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#4a6fa5">
-    <title>多帳冊智能記帳程式 (Cloud Sync Edition) v20260130.001</title>
+    <title>多帳冊智能記帳程式 (預支預收版) v20260331-final</title>
     <style>
         :root {
             --primary-color: #4a6fa5;
@@ -19,7 +19,6 @@
             --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
             --transition: all 0.2s ease;
         }
-
         * {
             margin: 0;
             padding: 0;
@@ -27,7 +26,6 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
-
         body {
             background-color: #f0f2f5;
             color: #333;
@@ -35,14 +33,12 @@
             overflow-x: hidden;
             padding-bottom: 80px;
         }
-
         .container {
             width: 100%;
             max-width: 800px;
             margin: 0 auto;
             padding: 15px;
         }
-
         header {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
@@ -52,19 +48,16 @@
             box-shadow: var(--box-shadow);
             position: relative;
         }
-
         .header-content {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
-
         .header-top {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
         }
-
         h1 { 
             font-size: 1.5rem; 
             margin: 0; 
@@ -72,7 +65,6 @@
             align-items: center;
             gap: 8px;
         }
-        
         .app-version {
             font-size: 0.6rem;
             background: rgba(255, 255, 255, 0.2);
@@ -83,7 +75,6 @@
             align-self: flex-end;
             margin-bottom: 2px;
         }
-        
         .date-display { 
             font-size: 0.9rem; 
             opacity: 0.9; 
@@ -92,13 +83,11 @@
             align-items: center;
             margin-top: 5px;
         }
-        
         .date-left {
             display: flex;
             align-items: center;
             gap: 5px;
         }
-        
         .book-total-balance {
             font-size: 0.85rem;
             background: rgba(255, 255, 255, 0.2);
@@ -108,7 +97,6 @@
             font-weight: bold;
             text-shadow: 0 0 5px rgba(255, 255, 0, 0.3);
         }
-
         .cloud-icon {
             font-size: 1.8rem;
             cursor: pointer;
@@ -118,7 +106,6 @@
         .cloud-icon:active { transform: scale(0.9); }
         .cloud-status-off { color: #ff6b6b; } 
         .cloud-status-on { color: #51cf66; }  
-
         .header-stats {
             display: flex;
             justify-content: space-between;
@@ -129,14 +116,12 @@
             flex-wrap: wrap;
             gap: 8px;
         }
-        
         .stat-item {
             flex: 1;
             min-width: 80px;
             text-align: center;
             padding: 5px 0;
         }
-        
         .stat-value {
             font-weight: bold;
             font-size: 1.05rem;
@@ -144,13 +129,10 @@
             border-radius: 8px;
             background: rgba(255, 255, 255, 0.1);
         }
-        
         .income-stat { color: #51cf66 !important; }
         .expense-stat { color: #ff6b6b !important; }
         .balance-positive { color: #51cf66 !important; }
         .balance-negative { color: #ff6b6b !important; }
-
-        /* Tabs */
         .tabs {
             display: flex;
             gap: 8px;
@@ -160,7 +142,6 @@
             scrollbar-width: none;
         }
         .tabs::-webkit-scrollbar { display: none; }
-
         .tab-btn {
             padding: 8px 16px;
             background-color: white;
@@ -173,14 +154,12 @@
             transition: var(--transition);
             white-space: nowrap;
         }
-
         .tab-btn.active {
             background-color: var(--primary-color);
             color: white;
             border-color: var(--primary-color);
             box-shadow: 0 2px 5px rgba(74, 111, 165, 0.3);
         }
-
         .tab-content {
             display: none;
             background-color: white;
@@ -190,40 +169,31 @@
             margin-bottom: 20px;
             animation: fadeIn 0.3s ease;
         }
-
         .tab-content.active { display: block; }
-
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(5px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        /* Forms Layout */
         .form-group {
             display: flex;
             flex-direction: column;
             margin-bottom: 15px;
             position: relative;
         }
-
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
             margin-bottom: 15px;
         }
-
         .form-row .form-group { margin-bottom: 0; }
-
         label {
             font-size: 0.85rem;
             font-weight: 600;
             margin-bottom: 5px;
             color: #555;
         }
-        
         label span.required { color: var(--accent-color); }
-
         input, select, textarea {
             padding: 12px;
             border: 1px solid #ddd;
@@ -234,17 +204,13 @@
             transition: border-color 0.2s;
             -webkit-appearance: none;
         }
-        
         input[type="date"], input[type="time"] { padding: 11px; }
-
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 2px rgba(74, 111, 165, 0.1);
         }
-        
         input:read-only { background-color: #f8f9fa; color: #666; }
-
         .checkbox-container {
             display: flex;
             align-items: center;
@@ -261,7 +227,6 @@
             flex-shrink: 0;
             -webkit-appearance: checkbox;
         }
-
         .btn {
             padding: 12px 20px;
             background-color: var(--primary-color);
@@ -272,32 +237,27 @@
             font-weight: 600;
             cursor: pointer;
             text-align: center;
-            width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 5px;
         }
-        
         .btn-group {
             display: flex;
             gap: 10px;
             margin-top: 15px;
         }
-        
         .btn-success { background-color: var(--success-color); }
         .btn-danger { background-color: var(--accent-color); }
         .btn-warning { background-color: var(--warning-color); color: #333; }
         .btn-info { background-color: var(--info-color); }
         .btn-cancel { background-color: #6c757d; }
-
         .type-selector {
             display: flex;
             background: #eee;
             padding: 4px;
             border-radius: var(--border-radius);
         }
-
         .type-option {
             flex: 1;
             padding: 10px;
@@ -309,15 +269,12 @@
             color: #666;
             transition: all 0.2s;
         }
-        
         .type-option.selected {
             background-color: white;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-
         .type-option.income.selected { color: var(--success-color); border-bottom: 3px solid var(--success-color); }
         .type-option.expense.selected { color: var(--accent-color); border-bottom: 3px solid var(--accent-color); }
-
         .list-action-bar {
             display: flex;
             gap: 10px;
@@ -353,13 +310,11 @@
             display: block;
         }
         .filter-section.collapsed .filter-content { display: none; }
-        
         .add-new-btn-list {
             width: 100px;
             height: 46px;
             white-space: nowrap;
         }
-
         .record-list { display: flex; flex-direction: column; gap: 12px; }
         .record-card {
             background-color: white;
@@ -375,7 +330,6 @@
         .record-card.income { border-left-color: var(--success-color); }
         .record-card.expense { border-left-color: var(--accent-color); }
         .record-card.excluded { opacity: 0.7; border-left-style: dashed; }
-        
         .exclude-badge {
             position: absolute;
             top: 5px;
@@ -386,7 +340,6 @@
             border-radius: 4px;
             color: #999;
         }
-
         .record-header {
             display: flex;
             justify-content: space-between;
@@ -397,13 +350,21 @@
         .record-date-block { display: flex; flex-direction: column; }
         .record-date { font-weight: 600; font-size: 0.95rem; }
         .record-time-book { font-size: 0.8rem; color: #888; margin-top: 2px; }
-        
+        .future-badge {
+            display: inline-block;
+            background: #fff3cd;
+            color: #856404;
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 12px;
+            margin-left: 6px;
+            font-weight: normal;
+        }
         .record-amount-block { text-align: right; }
         .record-amount { font-weight: 700; font-size: 1.1rem; }
         .record-amount.income { color: var(--success-color); }
         .record-amount.expense { color: var(--accent-color); }
         .record-twd { font-size: 0.75rem; color: #999; }
-
         .record-cat {
             font-size: 0.9rem;
             color: #555;
@@ -413,14 +374,12 @@
             display: inline-block;
             margin-bottom: 8px;
         }
-        
         .record-summary-text {
             font-size: 0.9rem;
             color: #666;
             margin-bottom: 10px;
             padding-left: 5px;
         }
-
         .book-list { 
             display: grid; 
             gap: 20px; 
@@ -455,7 +414,6 @@
         .book-balance-val { font-size: 1.2rem; font-weight: 800; color: var(--primary-color); word-break: break-all; }
         .book-actions { display: flex; gap: 8px; margin-top: 10px; }
         .book-actions button { flex: 1; padding: 4px; font-size: 0.75rem; }
-
         .modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background-color: rgba(0, 0, 0, 0.6);
@@ -472,7 +430,6 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             position: relative;
         }
-
         .detail-row {
             display: flex;
             justify-content: space-between;
@@ -482,7 +439,6 @@
         .detail-label { color: #666; font-size: 0.9rem; }
         .detail-val { font-weight: 500; text-align: right; }
         .detail-amount { font-size: 1.5rem; font-weight: bold; color: var(--primary-color); padding: 15px 0; text-align: center; }
-
         .notification {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px);
             padding: 12px 24px;
@@ -497,15 +453,12 @@
         .notification.show { transform: translateX(-50%) translateY(0); }
         .notification.error { background-color: var(--accent-color); }
         .notification.success { background-color: var(--success-color); }
-
         .hidden { display: none !important; }
         .form-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        
         .summary-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; }
         .summary-item { background: #fff; padding: 10px; border-radius: 8px; text-align: center; border: 1px solid #eee; }
         .summary-val { font-weight: bold; font-size: 1rem; margin-top: 5px; word-break: break-all; }
         .summary-label { font-size: 0.8rem; color: #666; }
-
         select {
             background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
             background-repeat: no-repeat;
@@ -513,7 +466,6 @@
             background-size: 16px;
             padding-right: 30px;
         }
-
         .spinner {
             border: 3px solid rgba(0,0,0,0.1);
             border-radius: 50%;
@@ -525,7 +477,6 @@
             margin-left: 10px;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
         @media (max-width: 480px) {
             .book-list { grid-template-columns: 1fr 1fr; }
             .header-stats { gap: 5px; }
@@ -540,15 +491,12 @@
             .header-stats { flex-direction: column; }
             .stat-item { min-width: 100%; }
         }
-        
-        /* Firebase 配置樣式 */
         .config-textarea {
             font-family: 'Courier New', monospace;
             font-size: 0.85rem;
             min-height: 150px;
             resize: vertical;
         }
-        
         .firebase-info {
             background: #f8f9fa;
             border: 1px solid #e9ecef;
@@ -557,1439 +505,651 @@
             margin: 10px 0;
             font-size: 0.85rem;
         }
-        
         .firebase-status {
             display: flex;
             align-items: center;
             gap: 8px;
             margin: 10px 0;
         }
-        
         .status-dot {
             width: 10px;
             height: 10px;
             border-radius: 50%;
             display: inline-block;
         }
-        
         .status-connected { background-color: var(--success-color); }
         .status-disconnected { background-color: var(--accent-color); }
         .status-connecting { background-color: var(--warning-color); }
+        /* 左右兩欄科目管理介面 */
+        .categories-layout {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .categories-left {
+            flex: 1;
+            min-width: 180px;
+            background: #f8f9fa;
+            border-radius: var(--border-radius);
+            padding: 15px;
+        }
+        .categories-right {
+            flex: 2;
+            min-width: 200px;
+            background: #f8f9fa;
+            border-radius: var(--border-radius);
+            padding: 15px;
+        }
+        .main-cat-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .main-cat-item {
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid #e0e0e0;
+        }
+        .main-cat-item.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        .main-cat-name {
+            font-weight: 500;
+            flex: 1;
+            cursor: pointer;
+        }
+        .main-cat-actions {
+            display: flex;
+            gap: 6px;
+        }
+        .icon-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .icon-btn:hover { background: rgba(0,0,0,0.1); }
+        .sub-cat-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        .sub-cat-item {
+            background: white;
+            border-radius: 8px;
+            padding: 8px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e0e0e0;
+        }
+        .sub-cat-name {
+            flex: 1;
+        }
+        .sub-cat-actions {
+            display: flex;
+            gap: 6px;
+        }
+        .empty-hint {
+            color: #999;
+            text-align: center;
+            padding: 20px;
+        }
+        @media (max-width: 600px) {
+            .categories-layout { flex-direction: column; }
+        }
     </style>
-    <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="header-content">
-                <div class="header-top">
-                    <div style="flex: 1;">
-                        <h1>📒 智能記帳 <span style="font-size: 0.8rem; font-weight: normal; opacity: 0.8;">App</span> <span class="app-version">v20260130.001</span></h1>
-                        <div class="date-display" id="currentDate">
-                            <div class="date-left">
-                                <span id="currentDateText"></span>
-                            </div>
-                            <div class="book-total-balance" id="bookTotalBalance">帳冊結餘: 0</div>
-                        </div>
-                    </div>
-                    <div id="cloudSyncBtn" class="cloud-icon cloud-status-off" title="雲端同步">☁️</div>
-                </div>
-                <div class="header-stats" id="headerStats">
-                    <div class="stat-item">
-                        <div class="stat-value income-stat" id="headerIncome">0</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value expense-stat" id="headerExpense">0</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-value" id="headerBalance">0</div>
+<div class="container">
+    <header>
+        <div class="header-content">
+            <div class="header-top">
+                <div style="flex: 1;">
+                    <h1>📒 智能記帳 <span style="font-size: 0.8rem; font-weight: normal; opacity: 0.8;">預支版</span> <span class="app-version">v20260331</span></h1>
+                    <div class="date-display" id="currentDate">
+                        <div class="date-left"><span id="currentDateText"></span></div>
+                        <div class="book-total-balance" id="bookTotalBalance">帳冊結餘: 0</div>
                     </div>
                 </div>
+                <div id="cloudSyncBtn" class="cloud-icon cloud-status-off" title="雲端同步">☁️</div>
             </div>
-        </header>
-
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="records">📋 列表</button>
-            <button class="tab-btn hidden" data-tab="record" id="recordTabBtn">📝 記帳</button>
-            <button class="tab-btn" data-tab="books">📕 帳冊</button>
-            <button class="tab-btn" data-tab="categories">📚 科目</button>
-            <button class="tab-btn" data-tab="summary">📊 統計</button>
-            <button class="tab-btn" data-tab="data">⚙️ 設定</button>
-        </div>
-
-        <div class="tab-content active" id="records-tab">
-            <div class="list-action-bar">
-                <div class="filter-section collapsed" id="filterSection">
-                    <div class="filter-header" id="filterHeader">
-                        🔍 篩選條件
-                    </div>
-                    <div class="filter-content">
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>年份</label>
-                                <select id="filterYear"><option value="">全部</option></select>
-                            </div>
-                            <div class="form-group">
-                                <label>月份</label>
-                                <select id="filterMonth">
-                                    <option value="">全部</option>
-                                    <option value="01">1月</option><option value="02">2月</option><option value="03">3月</option>
-                                    <option value="04">4月</option><option value="05">5月</option><option value="06">6月</option>
-                                    <option value="07">7月</option><option value="08">8月</option><option value="09">9月</option>
-                                    <option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>帳冊</label>
-                                <select id="filterBook"><option value="">全部</option></select>
-                            </div>
-                            <div class="form-group">
-                                <label>收支</label>
-                                <select id="filterType">
-                                    <option value="">全部</option>
-                                    <option value="income">收入</option>
-                                    <option value="expense">支出</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>主科目</label>
-                                <select id="filterMainCategory"><option value="">全部</option></select>
-                            </div>
-                            <div class="form-group">
-                                <label>子科目</label>
-                                <select id="filterSubCategory"><option value="">全部</option></select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <input type="text" id="filterKeyword" placeholder="搜尋摘要關鍵字...">
-                        </div>
-
-                        <div class="btn-group">
-                            <button class="btn" id="applyFilterBtn">🔍 搜尋</button>
-                            <button class="btn btn-cancel" id="clearFilterBtn">清除</button>
-                        </div>
-                    </div>
-                </div>
-                <button class="btn btn-success add-new-btn-list" id="listAddNewBtn">＋ 新增</button>
-            </div>
-            
-            <div id="recordsInfoText" style="margin-bottom:10px; font-size:0.85rem; color:#666;"></div>
-            <div id="recordsList" class="record-list"></div>
-        </div>
-
-        <div class="tab-content" id="record-tab">
-            <div class="form-title">
-                <h2 id="formModeTitle">新增記錄</h2>
-                <button id="cancelEditBtn" class="btn btn-cancel" style="width: auto; padding: 5px 10px; font-size: 0.8rem;">取消</button>
-            </div>
-            
-            <form id="recordForm">
-                <div class="form-group">
-                    <label for="recordBook">帳冊 <span class="required">*</span></label>
-                    <select id="recordBook" required></select>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="recordDate">日期</label>
-                        <input type="date" id="recordDate" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="recordTime">時間</label>
-                        <input type="time" id="recordTime" required>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="type-selector">
-                        <div class="type-option expense selected" data-type="expense">支出</div>
-                        <div class="type-option income" data-type="income">收入</div>
-                    </div>
-                    <input type="hidden" id="recordType" value="expense">
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="recordMainCategory">主科目 <span class="required">*</span></label>
-                        <select id="recordMainCategory" required>
-                            <option value="">請選擇</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="recordSubCategory">子科目</label>
-                        <select id="recordSubCategory" required>
-                            <option value="">...</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="recordCurrency">幣別</label>
-                        <input type="text" id="recordCurrency" readonly style="background-color: #eee;">
-                    </div>
-                    <div class="form-group">
-                        <label for="recordRate">匯率</label>
-                        <input type="number" id="recordRate" step="0.0001" min="0" required>
-                    </div>
-                </div>
-
-                <div class="form-row" style="align-items: flex-end;">
-                    <div class="form-group">
-                        <label class="checkbox-container">
-                            <input type="checkbox" id="recordExclude"> 
-                            <span>不列入收支統計</span>
-                        </label>
-                    </div>
-                    <div class="form-group">
-                        <label for="recordAmount">金額 <span class="required">*</span></label>
-                        <input type="number" id="recordAmount" min="0" step="0.01" placeholder="0.00" required style="font-size: 1.2rem; font-weight: bold; padding: 12px;">
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="recordSummary">摘要 / 備註</label>
-                    <textarea id="recordSummary" rows="2" placeholder="選填..."></textarea>
-                </div>
-
-                <div class="btn-group">
-                    <button type="submit" class="btn btn-success" id="submitFormBtn">💾 保存</button>
-                    <button type="button" class="btn" id="resetFormBtn" style="background:#ddd; color:#333">重置</button>
-                </div>
-            </form>
-        </div>
-
-        <div class="tab-content" id="books-tab">
-            <div class="form-title">
-                <h2>帳冊管理</h2>
-                <button class="btn btn-success" id="showAddBookModalBtn" style="width: auto;">＋ 新增帳冊</button>
-            </div>
-            <div id="bookListContainer" class="book-list"></div>
-        </div>
-
-        <div class="tab-content" id="categories-tab">
-            <div style="margin-bottom: 20px;">
-                <h3 style="margin-bottom:10px; color:var(--primary-color);">主科目</h3>
-                <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-                    <input type="text" id="newMainCatInput" placeholder="名稱">
-                    <button class="btn btn-success" id="addMainCatBtn" style="width: 80px;">新增</button>
-                </div>
-                <div id="mainCatList" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
-            </div>
-            <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
-            <div>
-                <h3 style="margin-bottom:10px; color:var(--secondary-color);">子科目</h3>
-                <p id="selectedMainCatLabel" style="font-size:0.9rem; color:#666; margin-bottom:5px;">請先點選上方主科目</p>
-                <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-                    <input type="text" id="newSubCatInput" placeholder="名稱" disabled>
-                    <button class="btn btn-success" id="addSubCatBtn" style="width: 80px;" disabled>新增</button>
-                </div>
-                <div id="subCatList" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+            <div class="header-stats" id="headerStats">
+                <div class="stat-item"><div class="stat-value income-stat" id="headerIncome">0</div></div>
+                <div class="stat-item"><div class="stat-value expense-stat" id="headerExpense">0</div></div>
+                <div class="stat-item"><div class="stat-value" id="headerBalance">0</div></div>
             </div>
         </div>
-
-        <div class="tab-content" id="summary-tab">
-            <div class="filter-section">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>年份</label>
-                        <select id="summaryYear"><option value="">全部</option></select>
-                    </div>
-                    <div class="form-group">
-                        <label>月份</label>
-                        <select id="summaryMonth">
-                            <option value="">全部</option>
-                            <option value="01">1月</option><option value="02">2月</option><option value="03">3月</option>
-                            <option value="04">4月</option><option value="05">5月</option><option value="06">6月</option>
-                            <option value="07">7月</option><option value="08">8月</option><option value="09">9月</option>
-                            <option value="10">10月</option><option value="11">11月</option><option value="12">12月</option>
-                        </select>
-                    </div>
+    </header>
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="records">📋 列表</button>
+        <button class="tab-btn hidden" data-tab="record" id="recordTabBtn">📝 記帳</button>
+        <button class="tab-btn" data-tab="books">📕 帳冊</button>
+        <button class="tab-btn" data-tab="categories">📚 科目</button>
+        <button class="tab-btn" data-tab="summary">📊 統計</button>
+        <button class="tab-btn" data-tab="data">⚙️ 設定</button>
+    </div>
+    <!-- 列表頁籤 -->
+    <div class="tab-content active" id="records-tab">
+        <div class="list-action-bar">
+            <div class="filter-section collapsed" id="filterSection">
+                <div class="filter-header" id="filterHeader">🔍 篩選條件</div>
+                <div class="filter-content">
+                    <div class="form-row"><div class="form-group"><label>年份</label><select id="filterYear"><option value="">全部</option></select></div><div class="form-group"><label>月份</label><select id="filterMonth"><option value="">全部</option><option value="01">1月</option><option value="02">2月</option><option value="03">3月</option><option value="04">4月</option><option value="05">5月</option><option value="06">6月</option><option value="07">7月</option><option value="08">8月</option><option value="09">9月</option><option value="10">10月</option><option value="11">11月</option><option value="12">12月</option></select></div></div>
+                    <div class="form-row"><div class="form-group"><label>帳冊</label><select id="filterBook"><option value="">全部</option></select></div><div class="form-group"><label>收支</label><select id="filterType"><option value="">全部</option><option value="income">收入</option><option value="expense">支出</option></select></div></div>
+                    <div class="form-row"><div class="form-group"><label>主科目</label><select id="filterMainCategory"><option value="">全部</option></select></div><div class="form-group"><label>子科目</label><select id="filterSubCategory"><option value="">全部</option></select></div></div>
+                    <div class="form-group"><input type="text" id="filterKeyword" placeholder="搜尋摘要關鍵字..."></div>
+                    <div class="btn-group"><button class="btn" id="applyFilterBtn">🔍 搜尋</button><button class="btn btn-cancel" id="clearFilterBtn">清除</button></div>
                 </div>
-
-                <div class="form-group">
-                    <label>帳冊 (預設跨帳冊)</label>
-                    <select id="summaryBook"><option value="">全部</option></select>
-                </div>
-
-                <button class="btn" id="runSummaryBtn">📊 產生報表</button>
             </div>
-
-            <div id="summaryResults" class="hidden">
-                <div class="summary-grid">
-                    <div class="summary-item">
-                        <div class="summary-label">總收入</div>
-                        <div class="summary-val" id="sumIncome" style="color:var(--success-color)">0</div>
-                    </div>
-                    <div class="summary-item">
-                        <div class="summary-label">總支出</div>
-                        <div class="summary-val" id="sumExpense" style="color:var(--accent-color)">0</div>
-                    </div>
-                    <div class="summary-item">
-                        <div class="summary-label">淨利</div>
-                        <div class="summary-val" id="sumNet">0</div>
-                    </div>
-                </div>
-                
-                <h3 style="font-size:1rem; margin-bottom:10px; border-left:4px solid var(--accent-color); padding-left:10px;">支出分佈</h3>
-                <div id="expenseCatChart"></div>
-                
-                <h3 style="font-size:1rem; margin:20px 0 10px 0; border-left:4px solid var(--success-color); padding-left:10px;">收入分佈</h3>
-                <div id="incomeCatChart"></div>
-            </div>
+            <button class="btn btn-success add-new-btn-list" id="listAddNewBtn">＋ 新增</button>
         </div>
-        
-        <div class="tab-content" id="data-tab">
-            <h3>資料維護</h3>
-            <div class="btn-group" style="flex-direction: column;">
-                <button class="btn btn-info" id="exportDataBtn">📤 匯出資料 (JSON)</button>
-                <button class="btn btn-warning" onclick="document.getElementById('importFile').click()">📥 匯入資料 (JSON)</button>
-                <input type="file" id="importFile" accept=".json" class="hidden">
-                <button class="btn btn-danger" id="clearAllDataBtn" style="margin-top:20px;">⚠️ 清除所有資料</button>
+        <div id="recordsInfoText" style="margin-bottom:10px; font-size:0.85rem; color:#666;"></div>
+        <div id="recordsList" class="record-list"></div>
+    </div>
+    <!-- 記帳頁籤 -->
+    <div class="tab-content" id="record-tab">
+        <div class="form-title"><h2 id="formModeTitle">新增記錄</h2><button id="cancelEditBtn" class="btn btn-cancel" style="width: auto; padding: 5px 10px;">取消</button></div>
+        <form id="recordForm">
+            <div class="form-group"><label for="recordBook">帳冊 <span class="required">*</span></label><select id="recordBook" required></select></div>
+            <div class="form-row"><div class="form-group"><label for="recordDate">日期</label><input type="date" id="recordDate" required></div><div class="form-group"><label for="recordTime">時間</label><input type="time" id="recordTime" required></div></div>
+            <div class="form-group"><div class="type-selector"><div class="type-option expense selected" data-type="expense">支出</div><div class="type-option income" data-type="income">收入</div></div><input type="hidden" id="recordType" value="expense"></div>
+            <div class="form-row"><div class="form-group"><label for="recordMainCategory">主科目 <span class="required">*</span></label><select id="recordMainCategory" required><option value="">請選擇</option></select></div><div class="form-group"><label for="recordSubCategory">子科目</label><select id="recordSubCategory" required><option value="">...</option></select></div></div>
+            <div class="form-row"><div class="form-group"><label for="recordCurrency">幣別</label><input type="text" id="recordCurrency" readonly style="background-color: #eee;"></div><div class="form-group"><label for="recordRate">匯率</label><input type="number" id="recordRate" step="0.0001" min="0" required></div></div>
+            <div class="form-row" style="align-items: flex-end;"><div class="form-group"><label class="checkbox-container"><input type="checkbox" id="recordExclude"> <span>不列入收支統計</span></label></div><div class="form-group"><label for="recordAmount">金額 <span class="required">*</span></label><input type="number" id="recordAmount" min="0" step="0.01" placeholder="0.00" required style="font-size:1.2rem; font-weight:bold; padding:12px;"></div></div>
+            <div class="form-group"><label for="recordSummary">摘要 / 備註</label><textarea id="recordSummary" rows="2" placeholder="選填..."></textarea></div>
+            <div class="btn-group"><button type="submit" class="btn btn-success" id="submitFormBtn">💾 保存</button><button type="button" class="btn" id="resetFormBtn" style="background:#ddd; color:#333">重置</button></div>
+        </form>
+    </div>
+    <!-- 帳冊頁籤 -->
+    <div class="tab-content" id="books-tab"><div class="form-title"><h2>帳冊管理</h2><button class="btn btn-success" id="showAddBookModalBtn" style="width: auto;">＋ 新增帳冊</button></div><div id="bookListContainer" class="book-list"></div></div>
+    <!-- 科目頁籤 (優化左右佈局) -->
+    <div class="tab-content" id="categories-tab">
+        <div class="form-title"><h2>📚 科目管理</h2></div>
+        <div class="categories-layout">
+            <div class="categories-left">
+                <h3 style="margin-bottom: 12px;">主科目</h3>
+                <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                    <input type="text" id="newMainCatInput" placeholder="新主科目" style="flex:1;">
+                    <button class="btn btn-success" id="addMainCatBtn" style="width: auto; padding: 8px 12px;">＋ 新增</button>
+                </div>
+                <div id="mainCatList" class="main-cat-list"></div>
+            </div>
+            <div class="categories-right">
+                <h3 style="margin-bottom: 12px;">子科目 <span id="selectedMainTitle" style="font-size: 0.8rem; color: #666;"></span></h3>
+                <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                    <input type="text" id="newSubCatInput" placeholder="新子科目" style="flex:1;" disabled>
+                    <button class="btn btn-success" id="addSubCatBtn" style="width: auto; padding: 8px 12px;" disabled>＋ 新增</button>
+                </div>
+                <div id="subCatList" class="sub-cat-list"></div>
             </div>
         </div>
     </div>
-
-    <div id="bookModal" class="modal">
-        <div class="modal-content">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h3 id="bookModalTitle">新增帳冊</h3>
-                <span class="close-modal" style="font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('bookModal').classList.remove('show')">&times;</span>
-            </div>
-            <form id="bookForm">
-                <input type="hidden" id="bookId">
-                <div class="form-group">
-                    <label>名稱</label>
-                    <input type="text" id="bookName" required>
-                </div>
-                <div class="form-group">
-                    <label>用途</label>
-                    <input type="text" id="bookPurpose">
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>幣別</label>
-                        <select id="bookCurrency" required>
-                            <option value="TWD">台幣 (TWD)</option>
-                            <option value="USD">美金 (USD)</option>
-                            <option value="JPY">日圓 (JPY)</option>
-                            <option value="CNY">人民幣 (CNY)</option>
-                            <option value="EUR">歐元 (EUR)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>期初金額</label>
-                        <input type="number" id="bookInitialBalance" step="0.01" value="0">
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-success">儲存</button>
-            </form>
-        </div>
+    <!-- 統計頁籤 -->
+    <div class="tab-content" id="summary-tab">
+        <div class="filter-section"><div class="form-row"><div class="form-group"><label>年份</label><select id="summaryYear"><option value="">全部</option></select></div><div class="form-group"><label>月份</label><select id="summaryMonth"><option value="">全部</option><option value="01">1月</option><option value="02">2月</option><option value="03">3月</option><option value="04">4月</option><option value="05">5月</option><option value="06">6月</option><option value="07">7月</option><option value="08">8月</option><option value="09">9月</option><option value="10">10月</option><option value="11">11月</option><option value="12">12月</option></select></div></div><div class="form-group"><label>帳冊 (預設跨帳冊)</label><select id="summaryBook"><option value="">全部</option></select></div><button class="btn" id="runSummaryBtn">📊 產生報表</button></div>
+        <div id="summaryResults" class="hidden"><div class="summary-grid"><div class="summary-item"><div class="summary-label">總收入</div><div class="summary-val" id="sumIncome" style="color:var(--success-color)">0</div></div><div class="summary-item"><div class="summary-label">總支出</div><div class="summary-val" id="sumExpense" style="color:var(--accent-color)">0</div></div><div class="summary-item"><div class="summary-label">淨利</div><div class="summary-val" id="sumNet">0</div></div></div><h3 style="font-size:1rem; margin:10px 0;">支出分佈</h3><div id="expenseCatChart"></div><h3 style="font-size:1rem; margin:20px 0 10px;">收入分佈</h3><div id="incomeCatChart"></div></div>
     </div>
-
-    <div id="cloudModal" class="modal">
-        <div class="modal-content">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h3>☁️ Firebase 雲端同步設定</h3>
-                <span class="close-modal" style="font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('cloudModal').classList.remove('show')">&times;</span>
-            </div>
-            
-            <div class="firebase-status">
-                <div id="firebaseStatusDot" class="status-dot status-disconnected"></div>
-                <span id="firebaseStatusText">未連線</span>
-            </div>
-            
-            <div class="firebase-info">
-                <p><strong>如何設定：</strong></p>
-                <p>1. 前往 <a href="https://console.firebase.google.com/" target="_blank">Firebase 控制台</a></p>
-                <p>2. 建立新專案或選擇現有專案</p>
-                <p>3. 點擊「建立應用程式」並取得設定資訊</p>
-                <p>4. 將設定貼到下方文字框</p>
-            </div>
-            
-            <div class="form-group">
-                <label>Firebase 配置 JSON</label>
-                <textarea id="firebaseConfigJson" class="config-textarea" placeholder='{
-  "apiKey": "...",
-  "authDomain": "...",
-  "databaseURL": "...",
-  "projectId": "...",
-  "storageBucket": "...",
-  "messagingSenderId": "...",
-  "appId": "...",
-  "measurementId": "..."
-}'></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label>資料庫路徑 (預設: /moneyTracker)</label>
-                <input type="text" id="firebasePath" value="/moneyTracker">
-            </div>
-            
-            <div id="syncStatus" style="margin-bottom:10px; font-size:0.9rem;"></div>
-            
-            <div class="btn-group" style="flex-direction: column;">
-                <button class="btn btn-success" id="saveFirebaseSettingsBtn">儲存並連線</button>
-                <button class="btn btn-info" id="syncNowBtn">立即同步</button>
-                <button class="btn btn-warning" id="clearCloudDataBtn">清空雲端資料</button>
-                <button class="btn btn-danger" id="disconnectFirebaseBtn">中斷連線</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="conflictModal" class="modal" style="z-index: 10001;">
-        <div class="modal-content">
-            <h3>⚠️ 資料同步衝突</h3>
-            <p style="margin:15px 0; color:#555;">雲端與本地端皆有資料，請選擇同步方式：</p>
-            <div class="btn-group" style="flex-direction: column;">
-                <button class="btn btn-danger" onclick="resolveConflict('overwrite_local')">下載雲端資料 (覆蓋本地)</button>
-                <button class="btn btn-warning" onclick="resolveConflict('overwrite_cloud')">上傳本地資料 (覆蓋雲端)</button>
-                <button class="btn btn-info" onclick="resolveConflict('merge')">合併資料 (保留兩邊)</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="detailModal" class="modal">
-        <div class="modal-content">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-                <h3 id="detailTitle">記錄詳情</h3>
-                <span class="close-modal" style="font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('detailModal').classList.remove('show')">&times;</span>
-            </div>
-            <div id="detailContent"></div>
-            <div class="btn-group" style="margin-top:20px;">
-                <button class="btn btn-warning" id="editDetailBtn">編輯</button>
-                <button class="btn btn-danger" id="deleteDetailBtn">刪除</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="notification" class="notification"></div>
-
-    <script>
-        // --- 核心資料 ---
-        const DEFAULT_CATEGORIES = {
-            '飲食': ['早餐', '午餐', '晚餐', '飲料', '零食'],
-            '交通': ['公車', '捷運', '計程車', '油資', '停車費'],
-            '娛樂': ['電影', 'KTV', '旅遊', '運動', '遊戲'],
-            '生活': ['房租', '水電', '網路', '手機', '日用品'],
-            '收入': ['薪水', '獎金', '投資', '兼職', '其他'],
-            '其他': ['醫療', '教育', '禮物', '捐款']
-        };
-
-        const BASE_RATES = {
-            'TWD': 1, 'USD': 32.5, 'CNY': 4.5, 'JPY': 0.22, 'EUR': 35.0
-        };
-
-        const appState = {
-            records: [],
-            categories: {},
-            accountBooks: [],
-            editingRecordId: null,
-            editingBookId: null,
-            currentMainCat: null,
-            firebaseConfig: null,
-            firebasePath: '/moneyTracker'
-        };
-
-        // Firebase 實例
-        let firebaseApp = null;
-        let firebaseDB = null;
-        let pendingCloudData = null;
-
-        // --- 工具 ---
-        const utils = {
-            uuid: () => Date.now().toString(36) + Math.random().toString(36).substr(2),
-            formatMoney: (amount, currency = 'TWD') => {
-                return new Intl.NumberFormat('zh-TW', { 
-                    minimumFractionDigits: currency === 'JPY' ? 0 : 2,
-                    maximumFractionDigits: 2
-                }).format(amount);
-            },
-            showNotify: (msg, type = 'success') => {
-                const el = document.getElementById('notification');
-                el.textContent = msg;
-                el.className = `notification show ${type}`;
-                setTimeout(() => el.classList.remove('show'), 2500);
-            },
-            save: () => {
-                localStorage.setItem('acc_records', JSON.stringify(appState.records));
-                localStorage.setItem('acc_categories', JSON.stringify(appState.categories));
-                localStorage.setItem('acc_books', JSON.stringify(appState.accountBooks));
-                localStorage.setItem('acc_firebase_config', JSON.stringify(appState.firebaseConfig));
-                localStorage.setItem('acc_firebase_path', appState.firebasePath);
-            },
-            getToday: () => new Date().toISOString().split('T')[0],
-            getTime: () => new Date().toTimeString().split(' ')[0].substr(0, 5)
-        };
-
-        // --- 初始化 ---
-        function initApp() {
-            const storedRecords = localStorage.getItem('acc_records');
-            const storedCats = localStorage.getItem('acc_categories');
-            const storedBooks = localStorage.getItem('acc_books');
-            const storedFirebaseConfig = localStorage.getItem('acc_firebase_config');
-            const storedFirebasePath = localStorage.getItem('acc_firebase_path');
-
-            appState.categories = storedCats ? JSON.parse(storedCats) : DEFAULT_CATEGORIES;
-            appState.accountBooks = storedBooks ? JSON.parse(storedBooks) : [];
-            appState.records = storedRecords ? JSON.parse(storedRecords) : [];
-            
-            if(storedFirebaseConfig) {
-                try {
-                    appState.firebaseConfig = JSON.parse(storedFirebaseConfig);
-                } catch(e) {
-                    appState.firebaseConfig = null;
-                }
-            }
-            
-            if(storedFirebasePath) {
-                appState.firebasePath = storedFirebasePath;
-            }
-
-            if (appState.accountBooks.length === 0) {
-                appState.accountBooks.push({
-                    id: 'default_book',
-                    name: '預設帳本',
-                    purpose: '系統自動建立',
-                    currency: 'TWD',
-                    initialBalance: 0,
-                    createdAt: new Date().toISOString()
-                });
-            }
-
-            const dateStr = new Date().toLocaleDateString('zh-TW', {month:'long', day:'numeric', weekday:'short'});
-            document.getElementById('currentDateText').textContent = dateStr;
-            
-            initEvents();
-            renderSelects();
-            renderBookList();
-            renderCategoryManagement();
-            renderYearSelects();
-
-            // 新增記錄時自動設定為系統當前時間
-            document.getElementById('recordDate').value = utils.getToday();
-            document.getElementById('recordTime').value = utils.getTime();
-
-            filterRecords(true);
-            updateHeaderStats();
-            updateFirebaseIconStatus();
-            
-            // 初始化 Firebase 連線
-            if (appState.firebaseConfig) {
-                initFirebase();
-            }
-        }
-
-        // --- Firebase 相關函數 ---
-        function initFirebase() {
-            try {
-                if (firebase.apps.length === 0) {
-                    firebaseApp = firebase.initializeApp(appState.firebaseConfig);
-                    firebaseDB = firebase.database();
-                    updateFirebaseStatus(true, '已連線');
-                    utils.showNotify('Firebase 連線成功', 'success');
-                } else {
-                    firebaseApp = firebase.apps[0];
-                    firebaseDB = firebase.database();
-                    updateFirebaseStatus(true, '已連線');
-                }
-            } catch (error) {
-                console.error('Firebase 初始化失敗:', error);
-                updateFirebaseStatus(false, '連線失敗');
-                utils.showNotify('Firebase 連線失敗: ' + error.message, 'error');
-            }
-        }
-
-        function updateFirebaseStatus(isConnected, message) {
-            const statusDot = document.getElementById('firebaseStatusDot');
-            const statusText = document.getElementById('firebaseStatusText');
-            
-            if (isConnected) {
-                statusDot.className = 'status-dot status-connected';
-                statusText.textContent = message;
-                document.getElementById('cloudSyncBtn').className = 'cloud-icon cloud-status-on';
-            } else {
-                statusDot.className = 'status-dot status-disconnected';
-                statusText.textContent = message;
-                document.getElementById('cloudSyncBtn').className = 'cloud-icon cloud-status-off';
-            }
-        }
-
-        async function syncToFirebase() {
-            if (!firebaseDB) {
-                utils.showNotify('Firebase 未連線', 'error');
-                return;
-            }
-
-            const statusDiv = document.getElementById('syncStatus');
-            statusDiv.innerHTML = '🔄 同步中... <span class="spinner"></span>';
-            
-            try {
-                // 讀取雲端資料
-                const snapshot = await firebaseDB.ref(appState.firebasePath).once('value');
-                const cloudData = snapshot.val();
-                
-                if (!cloudData) {
-                    // 雲端沒有資料，上傳本地資料
-                    await uploadToFirebase();
-                    statusDiv.innerHTML = '✅ 資料已上傳至雲端';
-                    utils.showNotify('資料已同步至雲端', 'success');
-                } else {
-                    // 檢查是否有衝突
-                    const localHasData = appState.records.length > 0;
-                    const cloudHasData = cloudData.records && cloudData.records.length > 0;
-                    
-                    if (localHasData && cloudHasData) {
-                        // 兩邊都有資料，顯示衝突解決介面
-                        pendingCloudData = cloudData;
-                        document.getElementById('cloudModal').classList.remove('show');
-                        document.getElementById('conflictModal').classList.add('show');
-                    } else if (cloudHasData) {
-                        // 只有雲端有資料，下載到本地
-                        appState.records = cloudData.records || [];
-                        appState.categories = cloudData.categories || DEFAULT_CATEGORIES;
-                        appState.accountBooks = cloudData.accountBooks || [];
-                        utils.save();
-                        statusDiv.innerHTML = '✅ 資料已從雲端下載';
-                        utils.showNotify('資料已從雲端同步', 'success');
-                        location.reload();
-                    } else {
-                        // 只有本地有資料，上傳到雲端
-                        await uploadToFirebase();
-                        statusDiv.innerHTML = '✅ 資料已上傳至雲端';
-                        utils.showNotify('資料已同步至雲端', 'success');
-                    }
-                }
-            } catch (error) {
-                console.error('同步失敗:', error);
-                statusDiv.innerHTML = '❌ 同步失敗: ' + error.message;
-                utils.showNotify('同步失敗: ' + error.message, 'error');
-            }
-        }
-
-        async function uploadToFirebase() {
-            if (!firebaseDB) return;
-            
-            const dataToUpload = {
-                records: appState.records,
-                categories: appState.categories,
-                accountBooks: appState.accountBooks,
-                lastSync: new Date().toISOString(),
-                appVersion: 'v20260130.001'
-            };
-            
-            await firebaseDB.ref(appState.firebasePath).set(dataToUpload);
-        }
-
-        async function clearFirebaseData() {
-            if (!firebaseDB) return;
-            
-            if (confirm('確定要清空雲端資料嗎？此操作無法復原！')) {
-                try {
-                    await firebaseDB.ref(appState.firebasePath).remove();
-                    utils.showNotify('雲端資料已清空', 'success');
-                } catch (error) {
-                    utils.showNotify('清空失敗: ' + error.message, 'error');
-                }
-            }
-        }
-
-        async function resolveConflict(action) {
-            const statusDiv = document.getElementById('syncStatus');
-            statusDiv.innerHTML = '🔄 處理衝突中... <span class="spinner"></span>';
-            
-            try {
-                if (action === 'overwrite_local') {
-                    // 使用雲端資料覆蓋本地
-                    appState.records = pendingCloudData.records || [];
-                    appState.categories = pendingCloudData.categories || DEFAULT_CATEGORIES;
-                    appState.accountBooks = pendingCloudData.accountBooks || [];
-                    utils.save();
-                    statusDiv.innerHTML = '✅ 已使用雲端資料覆蓋本地';
-                    document.getElementById('conflictModal').classList.remove('show');
-                    location.reload();
-                } else if (action === 'overwrite_cloud') {
-                    // 使用本地資料覆蓋雲端
-                    await uploadToFirebase();
-                    statusDiv.innerHTML = '✅ 已使用本地資料覆蓋雲端';
-                    document.getElementById('conflictModal').classList.remove('show');
-                } else if (action === 'merge') {
-                    // 合併資料（保留最新的記錄）
-                    const localMap = new Map(appState.records.map(r => [r.id, r]));
-                    (pendingCloudData.records || []).forEach(cr => {
-                        if (localMap.has(cr.id)) {
-                            // 保留更新時間較新的記錄
-                            const localRecord = localMap.get(cr.id);
-                            const cloudUpdated = new Date(cr.updatedAt || 0);
-                            const localUpdated = new Date(localRecord.updatedAt || 0);
-                            
-                            if (cloudUpdated > localUpdated) {
-                                localMap.set(cr.id, cr);
-                            }
-                        } else {
-                            localMap.set(cr.id, cr);
-                        }
-                    });
-                    
-                    appState.records = Array.from(localMap.values());
-                    
-                    // 合併分類
-                    if (pendingCloudData.categories) {
-                        Object.keys(pendingCloudData.categories).forEach(key => {
-                            if (!appState.categories[key]) {
-                                appState.categories[key] = pendingCloudData.categories[key];
-                            }
-                        });
-                    }
-                    
-                    // 合併帳冊
-                    if (pendingCloudData.accountBooks) {
-                        const bookIds = new Set(appState.accountBooks.map(b => b.id));
-                        pendingCloudData.accountBooks.forEach(book => {
-                            if (!bookIds.has(book.id)) {
-                                appState.accountBooks.push(book);
-                            }
-                        });
-                    }
-                    
-                    utils.save();
-                    await uploadToFirebase();
-                    statusDiv.innerHTML = '✅ 資料已合併';
-                    document.getElementById('conflictModal').classList.remove('show');
-                    location.reload();
-                }
-            } catch (error) {
-                statusDiv.innerHTML = '❌ 衝突處理失敗: ' + error.message;
-                utils.showNotify('衝突處理失敗: ' + error.message, 'error');
-            }
-        }
-
-        // --- 事件 ---
-        function initEvents() {
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const targetTab = btn.dataset.tab;
-                    
-                    // 如果點擊的是「帳冊」頁籤，清除篩選條件
-                    if (targetTab === 'books') {
-                        document.getElementById('filterYear').value = '';
-                        document.getElementById('filterMonth').value = '';
-                        document.getElementById('filterBook').value = '';
-                        document.getElementById('filterType').value = '';
-                        document.getElementById('filterMainCategory').value = '';
-                        document.getElementById('filterSubCategory').value = '';
-                        document.getElementById('filterKeyword').value = '';
-                    }
-                    
-                    // 如果點擊的不是「記帳」，且目前不是在編輯模式中，就隱藏「記帳」標籤
-                    if (targetTab !== 'record') {
-                        document.getElementById('recordTabBtn').classList.add('hidden');
-                    }
-
-                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                    
-                    btn.classList.add('active');
-                    document.getElementById(targetTab + '-tab').classList.add('active');
-                    
-                    if(targetTab === 'records') filterRecords(true);
-                    if(targetTab === 'books') renderBookList();
-                });
-            });
-
-            document.getElementById('listAddNewBtn').addEventListener('click', () => {
-                // 顯示記帳標籤並跳轉
-                const recordBtn = document.getElementById('recordTabBtn');
-                recordBtn.classList.remove('hidden');
-                recordBtn.click();
-                exitEditMode();
-                
-                // 新增記錄時自動取得當下系統日期時間
-                document.getElementById('recordDate').value = utils.getToday();
-                document.getElementById('recordTime').value = utils.getTime();
-            });
-
-            document.getElementById('filterHeader').addEventListener('click', () => {
-                document.getElementById('filterSection').classList.toggle('collapsed');
-            });
-
-            document.querySelectorAll('.type-option').forEach(opt => {
-                opt.addEventListener('click', function() {
-                    document.querySelectorAll('.type-option').forEach(o => o.classList.remove('selected'));
-                    this.classList.add('selected');
-                    document.getElementById('recordType').value = this.dataset.type;
-                });
-            });
-
-            document.getElementById('recordBook').addEventListener('change', function() {
-                const book = appState.accountBooks.find(b => b.id === this.value);
-                if (book) {
-                    document.getElementById('recordCurrency').value = book.currency;
-                    document.getElementById('recordRate').value = BASE_RATES[book.currency] || 1;
-                    document.getElementById('recordRate').readOnly = (book.currency === 'TWD');
-                }
-            });
-
-            document.getElementById('recordMainCategory').addEventListener('change', (e) => updateSubSelect('recordSubCategory', e.target.value));
-            document.getElementById('filterMainCategory').addEventListener('change', (e) => updateSubSelect('filterSubCategory', e.target.value));
-
-            document.getElementById('recordForm').addEventListener('submit', handleRecordSubmit);
-            document.getElementById('resetFormBtn').addEventListener('click', resetForm);
-            document.getElementById('cancelEditBtn').addEventListener('click', () => {
-                exitEditMode();
-                document.querySelector('[data-tab="records"]').click(); // 取消後回列表
-            });
-
-            document.getElementById('applyFilterBtn').addEventListener('click', () => {
-                filterRecords();
-                document.getElementById('filterSection').classList.add('collapsed');
-            });
-            document.getElementById('clearFilterBtn').addEventListener('click', () => {
-                document.querySelectorAll('#records-tab select').forEach(s => s.value = '');
-                document.getElementById('filterKeyword').value = '';
-                filterRecords();
-            });
-
-            document.getElementById('showAddBookModalBtn').addEventListener('click', () => {
-                appState.editingBookId = null;
-                document.getElementById('bookForm').reset();
-                document.getElementById('bookModalTitle').textContent = '新增帳冊';
-                document.getElementById('bookCurrency').disabled = false;
-                document.getElementById('bookModal').classList.add('show');
-            });
-            document.getElementById('bookForm').addEventListener('submit', handleBookSubmit);
-
-            document.getElementById('addMainCatBtn').addEventListener('click', () => {
-                const val = document.getElementById('newMainCatInput').value.trim();
-                if(val && !appState.categories[val]) {
-                    appState.categories[val] = [];
-                    utils.save();
-                    renderCategoryManagement();
-                    renderSelects();
-                    document.getElementById('newMainCatInput').value = '';
-                    utils.showNotify('主科目已新增');
-                }
-            });
-            document.getElementById('addSubCatBtn').addEventListener('click', () => {
-                const val = document.getElementById('newSubCatInput').value.trim();
-                if(val && appState.currentMainCat) {
-                    if(!appState.categories[appState.currentMainCat].includes(val)) {
-                        appState.categories[appState.currentMainCat].push(val);
-                        utils.save();
-                        selectMainCatForEdit(appState.currentMainCat);
-                        document.getElementById('newSubCatInput').value = '';
-                        utils.showNotify('子科目已新增');
-                    }
-                }
-            });
-
-            document.getElementById('runSummaryBtn').addEventListener('click', runSummary);
-            
-            // Firebase 相關事件
-            document.getElementById('cloudSyncBtn').addEventListener('click', openFirebaseSettings);
-            document.getElementById('saveFirebaseSettingsBtn').addEventListener('click', handleSaveFirebaseSettings);
-            document.getElementById('syncNowBtn').addEventListener('click', syncToFirebase);
-            document.getElementById('clearCloudDataBtn').addEventListener('click', clearFirebaseData);
-            document.getElementById('disconnectFirebaseBtn').addEventListener('click', handleDisconnectFirebase);
-
-            document.getElementById('editDetailBtn').addEventListener('click', () => {
-                document.getElementById('detailModal').classList.remove('show');
-                editRecord(appState.currentDetailId);
-            });
-            document.getElementById('deleteDetailBtn').addEventListener('click', () => {
-                document.getElementById('detailModal').classList.remove('show');
-                deleteRecord(appState.currentDetailId);
-            });
-            
-            // 自動嘗試解析 Firebase 配置
-            document.getElementById('firebaseConfigJson').addEventListener('input', function() {
-                try {
-                    const config = JSON.parse(this.value);
-                    if (config.apiKey && config.projectId) {
-                        document.getElementById('firebasePath').value = config.databaseURL ? 
-                            config.databaseURL.split('/').pop() + '/moneyTracker' : '/moneyTracker';
-                    }
-                } catch (e) {
-                    // 解析失敗，不做任何事
-                }
-            });
-        }
-
-        // --- 核心邏輯 ---
-        function handleRecordSubmit(e) {
-            e.preventDefault();
-            const bookId = document.getElementById('recordBook').value;
-            const book = appState.accountBooks.find(b => b.id === bookId);
-            
-            const record = {
-                id: appState.editingRecordId || utils.uuid(),
-                bookId: bookId,
-                date: document.getElementById('recordDate').value,
-                time: document.getElementById('recordTime').value,
-                type: document.getElementById('recordType').value,
-                mainCategory: document.getElementById('recordMainCategory').value,
-                subCategory: document.getElementById('recordSubCategory').value,
-                currency: book.currency,
-                exchangeRate: parseFloat(document.getElementById('recordRate').value),
-                amount: parseFloat(document.getElementById('recordAmount').value),
-                summary: document.getElementById('recordSummary').value,
-                excludeFromStats: document.getElementById('recordExclude').checked,
-                updatedAt: new Date().toISOString()
-            };
-
-            if (appState.editingRecordId) {
-                const idx = appState.records.findIndex(r => r.id === appState.editingRecordId);
-                if (idx !== -1) appState.records[idx] = record;
-                utils.showNotify('已更新');
-            } else {
-                appState.records.unshift(record);
-                utils.showNotify('已儲存');
-            }
-            
-            utils.save();
-            updateHeaderStats();
-            resetForm();
-            
-            // 儲存後回到列表頁
-            document.querySelector('[data-tab="records"]').click();
-            filterRecords(true);
-            
-            // 自動同步到 Firebase
-            if (firebaseDB) {
-                setTimeout(() => uploadToFirebase(), 1000);
-            }
-        }
-
-        function handleBookSubmit(e) {
-            e.preventDefault();
-            const name = document.getElementById('bookName').value;
-            const purpose = document.getElementById('bookPurpose').value;
-            const currency = document.getElementById('bookCurrency').value;
-            const initialBalance = parseFloat(document.getElementById('bookInitialBalance').value) || 0;
-
-            if (appState.editingBookId) {
-                const book = appState.accountBooks.find(b => b.id === appState.editingBookId);
-                book.name = name;
-                book.purpose = purpose;
-                book.initialBalance = initialBalance;
-                utils.showNotify('帳冊已更新');
-            } else {
-                appState.accountBooks.push({
-                    id: utils.uuid(), name, purpose, currency, initialBalance, createdAt: new Date().toISOString()
-                });
-                utils.showNotify('帳冊已建立');
-            }
-            utils.save();
-            renderBookList();
-            renderSelects();
-            document.getElementById('bookModal').classList.remove('show');
-            
-            // 自動同步到 Firebase
-            if (firebaseDB) {
-                setTimeout(() => uploadToFirebase(), 1000);
-            }
-        }
-
-        function filterRecords(isDefaultLoad = false) {
-            const y = document.getElementById('filterYear').value;
-            const m = document.getElementById('filterMonth').value;
-            const b = document.getElementById('filterBook').value;
-            const t = document.getElementById('filterType').value;
-            const mc = document.getElementById('filterMainCategory').value;
-            const sc = document.getElementById('filterSubCategory').value;
-            const k = document.getElementById('filterKeyword').value.toLowerCase();
-
-            const isFilterEmpty = !y && !m && !b && !t && !mc && !sc && !k;
-            let dateThreshold = null;
-            
-            if (isDefaultLoad && isFilterEmpty) {
-                const d = new Date();
-                d.setMonth(d.getMonth() - 1);
-                dateThreshold = d.toISOString().split('T')[0];
-                document.getElementById('recordsInfoText').textContent = `顯示最近一個月的記錄`;
-            } else {
-                document.getElementById('recordsInfoText').textContent = isFilterEmpty ? `顯示全部記錄` : `搜尋結果`;
-            }
-
-            const filtered = appState.records.filter(r => {
-                if (dateThreshold && r.date < dateThreshold) return false;
-                if (y && r.date.substring(0, 4) !== y) return false;
-                if (m && r.date.substring(5, 7) !== m) return false;
-                if (b && r.bookId !== b) return false;
-                if (t && r.type !== t) return false;
-                if (mc && r.mainCategory !== mc) return false;
-                if (sc && r.subCategory !== sc) return false;
-                if (k && (!r.summary || !r.summary.toLowerCase().includes(k))) return false;
-                return true;
-            });
-
-            renderRecordList(filtered);
-        }
-
-        function renderRecordList(data) {
-            const container = document.getElementById('recordsList');
-            container.innerHTML = '';
-            if (data.length === 0) {
-                container.innerHTML = '<div style="text-align:center; padding:30px; color:#999;">沒有記錄</div>';
-                return;
-            }
-            data.sort((a, b) => new Date(b.date + 'T' + b.time) - new Date(a.date + 'T' + a.time));
-            data.forEach(r => {
-                const book = appState.accountBooks.find(b => b.id === r.bookId);
-                const sign = r.type === 'income' ? '+' : '-';
-                let twdInfo = '';
-                if (r.currency !== 'TWD') {
-                    twdInfo = `<div class="record-twd">≈ TWD ${utils.formatMoney(Math.round(r.amount * r.exchangeRate))}</div>`;
-                }
-                const div = document.createElement('div');
-                div.className = `record-card ${r.type} ${r.excludeFromStats ? 'excluded' : ''}`;
-                div.onclick = () => openDetail(r.id);
-                div.innerHTML = `
-                    ${r.excludeFromStats ? '<span class="exclude-badge">不計統計</span>' : ''}
-                    <div class="record-header">
-                        <div class="record-date-block">
-                            <div class="record-date">${r.date.substring(5)} ${r.time}</div>
-                            <div class="record-time-book">📒 ${book ? book.name : '?'}</div>
-                        </div>
-                        <div class="record-amount-block">
-                            <div class="record-amount ${r.type}">${sign} ${utils.formatMoney(r.amount, r.currency)} <small style="font-size:0.7rem; color:#888;">${r.currency}</small></div>
-                            ${twdInfo}
-                        </div>
-                    </div>
-                    <div class="record-cat">${r.mainCategory} > ${r.subCategory}</div>
-                    ${r.summary ? `<div class="record-summary-text">${r.summary}</div>` : ''}
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function runSummary() {
-            const y = document.getElementById('summaryYear').value;
-            const m = document.getElementById('summaryMonth').value;
-            const b = document.getElementById('summaryBook').value;
-            let inc = 0, exp = 0;
-            const expCats = {}, incCats = {};
-
-            appState.records.forEach(r => {
-                if (r.excludeFromStats) return;
-                if (y && r.date.substring(0, 4) !== y) return;
-                if (m && r.date.substring(5, 7) !== m) return;
-                if (b && r.bookId !== b) return;
-                const twd = r.amount * r.exchangeRate;
-                if (r.type === 'income') {
-                    inc += twd; incCats[r.mainCategory] = (incCats[r.mainCategory] || 0) + twd;
-                } else {
-                    exp += twd; expCats[r.mainCategory] = (expCats[r.mainCategory] || 0) + twd;
-                }
-            });
-
-            document.getElementById('sumIncome').textContent = utils.formatMoney(inc);
-            document.getElementById('sumExpense').textContent = utils.formatMoney(exp);
-            document.getElementById('sumNet').textContent = utils.formatMoney(inc - exp);
-            document.getElementById('sumNet').style.color = (inc - exp) >= 0 ? 'var(--success-color)' : 'var(--accent-color)';
-            renderBarChart('expenseCatChart', expCats, exp, 'var(--accent-color)');
-            renderBarChart('incomeCatChart', incCats, inc, 'var(--success-color)');
-            document.getElementById('summaryResults').classList.remove('hidden');
-        }
-
-        function renderBookList() {
-            const el = document.getElementById('bookListContainer');
-            el.innerHTML = '';
-            appState.accountBooks.forEach(b => {
-                let balance = parseFloat(b.initialBalance || 0);
-                appState.records.forEach(r => {
-                    if (r.bookId === b.id) {
-                        if (r.type === 'income') balance += r.amount;
-                        else balance -= r.amount;
-                    }
-                });
-
-                const div = document.createElement('div');
-                div.className = 'book-card';
-                const colorMap = {'TWD':'#4a6fa5', 'USD':'#28a745', 'JPY':'#ff6b6b', 'CNY':'#ffc107', 'EUR':'#17a2b8'};
-                div.style.borderLeftColor = colorMap[b.currency] || '#4a6fa5';
-                
-                // 點選卡片跳轉到列表頁並篩選該帳冊
-                div.onclick = (e) => {
-                    // 避免點擊到編輯/刪除按鈕也觸發跳轉
-                    if (e.target.tagName === 'BUTTON') return;
-                    viewBookRecords(b.id);
-                };
-
-                div.innerHTML = `
-                    <div class="book-currency-tag">${b.currency}</div>
-                    <div>
-                        <div class="book-title">${b.name}</div>
-                        <div style="font-size:0.7rem; color:#999; line-height:1.2;">${b.purpose || ''}</div>
-                    </div>
-                    <div>
-                        <div class="book-balance-label">目前餘額</div>
-                        <div class="book-balance-val">${utils.formatMoney(balance, b.currency)}</div>
-                    </div>
-                    <div class="book-actions">
-                        <button class="btn btn-warning" onclick="editBook('${b.id}')">編輯</button>
-                        <button class="btn btn-danger" onclick="deleteBook('${b.id}')">刪除</button>
-                    </div>
-                `;
-                el.appendChild(div);
-            });
-        }
-
-        // --- 跳轉帳冊列表功能 ---
-        function viewBookRecords(bookId) {
-            document.getElementById('filterBook').value = bookId;
-            document.getElementById('filterYear').value = "";
-            document.getElementById('filterMonth').value = "";
-            document.getElementById('filterType').value = "";
-            document.getElementById('filterMainCategory').value = "";
-            document.getElementById('filterSubCategory').value = "";
-            document.getElementById('filterKeyword').value = "";
-            
-            filterRecords();
-            document.querySelector('[data-tab="records"]').click();
-            utils.showNotify('已顯示該帳冊記錄');
-        }
-
-        // --- 更新頁首統計 ---
-        function updateHeaderStats() {
-            const ym = new Date().toISOString().substring(0, 7);
-            let income = 0, expense = 0;
-            
-            // 計算本月收入與支出（排除不列入統計項目）
-            appState.records.forEach(r => {
-                if (r.excludeFromStats) return;
-                if (r.date.startsWith(ym)) {
-                    const twd = r.amount * r.exchangeRate;
-                    if (r.type === 'income') income += twd;
-                    else expense += twd;
-                }
-            });
-            
-            const balance = income - expense;
-            
-            // 更新頁首統計
-            document.getElementById('headerIncome').textContent = utils.formatMoney(income);
-            document.getElementById('headerExpense').textContent = utils.formatMoney(expense);
-            
-            const balanceElement = document.getElementById('headerBalance');
-            balanceElement.textContent = utils.formatMoney(balance);
-            
-            // 根據結餘值設置顏色
-            if (balance >= 0) {
-                balanceElement.className = 'stat-value balance-positive';
-            } else {
-                balanceElement.className = 'stat-value balance-negative';
-            }
-            
-            // 計算帳冊總結餘（所有帳冊餘額轉台幣加總）
-            const bookTotalBalance = calculateTotalBookBalanceInTWD();
-            document.getElementById('bookTotalBalance').textContent = `帳冊結餘: ${utils.formatMoney(bookTotalBalance)}`;
-        }
-        
-        // --- 計算所有帳冊總餘額（轉台幣） ---
-        function calculateTotalBookBalanceInTWD() {
-            let total = 0;
-            appState.accountBooks.forEach(book => {
-                let balance = parseFloat(book.initialBalance || 0);
-                appState.records.forEach(r => {
-                    if (r.bookId === book.id) {
-                        if (r.type === 'income') balance += r.amount;
-                        else balance -= r.amount;
-                    }
-                });
-                // 轉換為台幣
-                const rate = BASE_RATES[book.currency] || 1;
-                total += balance * rate;
-            });
-            return total;
-        }
-
-        function resetForm() {
-            document.getElementById('recordForm').reset();
-            // 只有在新增模式時才設定為當前時間，編輯模式保留原時間
-            if (!appState.editingRecordId) {
-                document.getElementById('recordDate').value = utils.getToday();
-                document.getElementById('recordTime').value = utils.getTime();
-            }
-            document.querySelectorAll('.type-option').forEach(o => o.classList.remove('selected'));
-            document.querySelector('.type-option.expense').classList.add('selected');
-            document.getElementById('recordType').value = 'expense';
-            document.getElementById('recordExclude').checked = false;
-            if (appState.accountBooks.length > 0) {
-                document.getElementById('recordBook').value = appState.accountBooks[0].id;
-                document.getElementById('recordBook').dispatchEvent(new Event('change'));
-            }
-            document.getElementById('recordSubCategory').innerHTML = '<option value="">...</option>';
-        }
-
-        window.editRecord = (id) => {
-            const r = appState.records.find(i => i.id === id);
-            if (!r) return;
-            appState.editingRecordId = id;
-            
-            // 顯示標籤並跳轉
-            const recordBtn = document.getElementById('recordTabBtn');
-            recordBtn.classList.remove('hidden');
-            recordBtn.click();
-
-            document.getElementById('formModeTitle').textContent = '編輯記錄';
-            document.getElementById('recordBook').value = r.bookId;
-            document.getElementById('recordDate').value = r.date;
-            document.getElementById('recordTime').value = r.time;
-            document.querySelectorAll('.type-option').forEach(o => o.classList.remove('selected'));
-            document.querySelector(`.type-option.${r.type}`).classList.add('selected');
-            document.getElementById('recordType').value = r.type;
-            document.getElementById('recordMainCategory').value = r.mainCategory;
-            updateSubSelect('recordSubCategory', r.mainCategory);
-            document.getElementById('recordSubCategory').value = r.subCategory;
-            document.getElementById('recordBook').dispatchEvent(new Event('change'));
-            document.getElementById('recordRate').value = r.exchangeRate; 
-            document.getElementById('recordAmount').value = r.amount;
-            document.getElementById('recordSummary').value = r.summary || '';
-            document.getElementById('recordExclude').checked = r.excludeFromStats || false;
-        };
-
-        window.exitEditMode = () => {
-            appState.editingRecordId = null;
-            document.getElementById('formModeTitle').textContent = '新增記錄';
-            resetForm();
-        };
-
-        window.deleteRecord = (id) => {
-            if (confirm('確定刪除？')) {
-                appState.records = appState.records.filter(r => r.id !== id);
-                utils.save(); filterRecords(); updateHeaderStats();
-                utils.showNotify('已刪除', 'error');
-                
-                // 同步到 Firebase
-                if (firebaseDB) {
-                    setTimeout(() => uploadToFirebase(), 1000);
-                }
-            }
-        };
-
-        window.editBook = (id) => {
-            const b = appState.accountBooks.find(i => i.id === id);
-            appState.editingBookId = id;
-            document.getElementById('bookName').value = b.name;
-            document.getElementById('bookPurpose').value = b.purpose;
-            document.getElementById('bookCurrency').value = b.currency;
-            document.getElementById('bookInitialBalance').value = b.initialBalance || 0;
-            document.getElementById('bookCurrency').disabled = true;
-            document.getElementById('bookModalTitle').textContent = '編輯帳冊';
-            document.getElementById('bookModal').classList.add('show');
-        };
-
-        window.deleteBook = (id) => {
-            if (appState.records.some(r => r.bookId === id)) { alert('帳冊內有記錄，無法刪除'); return; }
-            if (confirm('確定刪除？')) {
-                appState.accountBooks = appState.accountBooks.filter(b => b.id !== id);
-                utils.save(); renderBookList(); renderSelects(); updateHeaderStats();
-                
-                // 同步到 Firebase
-                if (firebaseDB) {
-                    setTimeout(() => uploadToFirebase(), 1000);
-                }
-            }
-        };
-
-        function openDetail(id) {
-            const r = appState.records.find(i => i.id === id);
-            if (!r) return;
-            appState.currentDetailId = id;
-            const book = appState.accountBooks.find(b => b.id === r.bookId);
-            const color = r.type === 'income' ? 'var(--success-color)' : 'var(--accent-color)';
-            document.getElementById('detailContent').innerHTML = `
-                <div class="detail-amount" style="color:${color}">${r.type === 'income' ? '+' : '-'} ${utils.formatMoney(r.amount, r.currency)}</div>
-                ${r.excludeFromStats ? '<div style="text-align:center; color:#999; font-size:0.8rem; margin-top:-10px;">(不列入收支統計)</div>' : ''}
-                <div class="detail-row"><span class="detail-label">類型</span><span class="detail-val">${r.type === 'income' ? '收入' : '支出'}</span></div>
-                <div class="detail-row"><span class="detail-label">日期</span><span class="detail-val">${r.date} ${r.time}</span></div>
-                <div class="detail-row"><span class="detail-label">帳冊</span><span class="detail-val">${book ? book.name : '未知'}</span></div>
-                <div class="detail-row"><span class="detail-label">科目</span><span class="detail-val">${r.mainCategory} - ${r.subCategory}</span></div>
-                ${r.summary ? `<div style="margin-top:10px;"><div class="detail-label">備註</div><div style="background:#f8f9fa;padding:10px;border-radius:8px;margin-top:5px;">${r.summary}</div></div>` : ''}
-            `;
-            document.getElementById('detailModal').classList.add('show');
-        }
-
-        function renderSelects() {
-            const bookOpts = appState.accountBooks.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
-            document.getElementById('recordBook').innerHTML = bookOpts;
-            document.getElementById('filterBook').innerHTML = '<option value="">全部</option>' + bookOpts;
-            document.getElementById('summaryBook').innerHTML = '<option value="">全部</option>' + bookOpts;
-            const catOpts = Object.keys(appState.categories).map(c => `<option value="${c}">${c}</option>`).join('');
-            document.getElementById('recordMainCategory').innerHTML = '<option value="">請選擇</option>' + catOpts;
-            document.getElementById('filterMainCategory').innerHTML = '<option value="">全部</option>' + catOpts;
-            if (appState.accountBooks.length > 0) document.getElementById('recordBook').dispatchEvent(new Event('change'));
-        }
-
-        function updateSubSelect(id, main) {
-            const el = document.getElementById(id);
-            const isFilter = id.includes('filter');
-            el.innerHTML = isFilter ? '<option value="">全部</option>' : '<option value="">...</option>';
-            if (main && appState.categories[main]) {
-                appState.categories[main].forEach(s => el.innerHTML += `<option value="${s}">${s}</option>`);
-            }
-        }
-
-        function renderYearSelects() {
-            const years = new Set(appState.records.map(r => r.date.substring(0, 4)));
-            years.add(new Date().getFullYear().toString());
-            const opts = '<option value="">全部</option>' + Array.from(years).sort().reverse().map(y => `<option value="${y}">${y}年</option>`).join('');
-            document.getElementById('filterYear').innerHTML = opts;
-            document.getElementById('summaryYear').innerHTML = opts;
-        }
-
-        function renderCategoryManagement() {
-            const el = document.getElementById('mainCatList'); el.innerHTML = '';
-            Object.keys(appState.categories).forEach(c => {
-                const btn = document.createElement('button');
-                btn.className = 'btn'; btn.style.width = 'auto'; btn.style.padding = '5px 10px'; btn.style.fontSize = '0.9rem'; btn.style.backgroundColor = '#e3f2fd'; btn.style.color = '#333';
-                btn.textContent = c; btn.onclick = () => selectMainCatForEdit(c); el.appendChild(btn);
-            });
-        }
-
-        function selectMainCatForEdit(c) {
-            appState.currentMainCat = c;
-            document.getElementById('selectedMainCatLabel').textContent = `已選擇：${c}`;
-            document.getElementById('newSubCatInput').disabled = false;
-            document.getElementById('addSubCatBtn').disabled = false;
-            const el = document.getElementById('subCatList'); el.innerHTML = '';
-            appState.categories[c].forEach(s => {
-                const tag = document.createElement('span'); tag.style.background = '#eee'; tag.style.padding = '4px 8px'; tag.style.borderRadius = '4px'; tag.style.fontSize = '0.85rem'; tag.textContent = s; el.appendChild(tag);
-            });
-        }
-
-        function renderBarChart(id, data, total, color) {
-            const el = document.getElementById(id); el.innerHTML = '';
-            if (total === 0) { el.innerHTML = '<p style="color:#999;font-size:0.9rem;">無數據</p>'; return; }
-            Object.entries(data).sort((a,b)=>b[1]-a[1]).forEach(([k, v]) => {
-                const pct = Math.round((v/total)*100);
-                el.innerHTML += `
-                    <div style="margin-bottom:8px;">
-                        <div style="display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:2px;"><span>${k}</span><span>${utils.formatMoney(v)} (${pct}%)</span></div>
-                        <div style="height:6px; background:#eee; border-radius:3px; overflow:hidden;"><div style="height:100%; width:${pct}%; background:${color};"></div></div>
-                    </div>`;
-            });
-        }
-
-        // --- Firebase 設定處理 ---
-        function openFirebaseSettings() {
-            document.getElementById('firebaseConfigJson').value = appState.firebaseConfig ? 
-                JSON.stringify(appState.firebaseConfig, null, 2) : '';
-            document.getElementById('firebasePath').value = appState.firebasePath;
-            document.getElementById('cloudModal').classList.add('show');
-            updateFirebaseStatus(!!firebaseDB, firebaseDB ? '已連線' : '未連線');
-        }
-
-        async function handleSaveFirebaseSettings() {
-            const configJson = document.getElementById('firebaseConfigJson').value.trim();
-            const path = document.getElementById('firebasePath').value.trim() || '/moneyTracker';
-            const btn = document.getElementById('saveFirebaseSettingsBtn');
-            const statusDiv = document.getElementById('syncStatus');
-            
-            if (!configJson) {
-                statusDiv.textContent = '❌ 請輸入 Firebase 配置';
-                return;
-            }
-            
-            try {
-                const config = JSON.parse(configJson);
-                
-                // 驗證必要的 Firebase 配置欄位
-                if (!config.apiKey || !config.authDomain || !config.databaseURL || !config.projectId) {
-                    statusDiv.textContent = '❌ Firebase 配置不完整';
-                    return;
-                }
-                
-                btn.disabled = true;
-                btn.innerHTML = '連線中... <span class="spinner"></span>';
-                
-                // 儲存配置
-                appState.firebaseConfig = config;
-                appState.firebasePath = path;
-                utils.save();
-                
-                // 初始化 Firebase
-                initFirebase();
-                
-                // 嘗試同步資料
-                await syncToFirebase();
-                
-                btn.disabled = false;
-                btn.textContent = '儲存並連線';
-                
-            } catch (error) {
-                console.error('Firebase 設定失敗:', error);
-                statusDiv.textContent = '❌ 配置格式錯誤: ' + error.message;
-                btn.disabled = false;
-                btn.textContent = '儲存並連線';
-            }
-        }
-
-        function handleDisconnectFirebase() {
-            if (confirm('確定要中斷 Firebase 連線嗎？')) {
-                appState.firebaseConfig = null;
-                utils.save();
-                
-                if (firebaseApp) {
-                    try {
-                        firebaseApp.delete();
-                    } catch (e) {
-                        console.error('Firebase 刪除失敗:', e);
-                    }
-                }
-                
-                firebaseApp = null;
-                firebaseDB = null;
-                updateFirebaseStatus(false, '未連線');
-                utils.showNotify('Firebase 連線已中斷', 'success');
-                document.getElementById('cloudModal').classList.remove('show');
-            }
-        }
-
-        function updateFirebaseIconStatus() {
-            const icon = document.getElementById('cloudSyncBtn');
-            icon.className = firebaseDB ? 'cloud-icon cloud-status-on' : 'cloud-icon cloud-status-off';
-        }
-
-        // --- 資料匯入/匯出 ---
-        document.getElementById('exportDataBtn').addEventListener('click', () => {
-            const blob = new Blob([JSON.stringify(appState)], {type: "application/json"});
-            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `backup_${utils.getToday()}.json`; a.click();
+    <!-- 設定頁籤 -->
+    <div class="tab-content" id="data-tab"><h3>資料維護</h3><div class="btn-group" style="flex-direction:column;"><button class="btn btn-info" id="exportDataBtn">📤 匯出資料 (JSON)</button><button class="btn btn-warning" onclick="document.getElementById('importFile').click()">📥 匯入資料 (JSON)</button><input type="file" id="importFile" accept=".json" class="hidden"><button class="btn btn-danger" id="clearAllDataBtn" style="margin-top:20px;">⚠️ 清除所有資料</button></div></div>
+</div>
+<!-- 各種 Modal -->
+<div id="bookModal" class="modal"><div class="modal-content"><div style="display:flex; justify-content:space-between;"><h3 id="bookModalTitle">新增帳冊</h3><span class="close-modal" style="font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('bookModal').classList.remove('show')">&times;</span></div><form id="bookForm"><input type="hidden" id="bookId"><div class="form-group"><label>名稱</label><input type="text" id="bookName" required></div><div class="form-group"><label>用途</label><input type="text" id="bookPurpose"></div><div class="form-row"><div class="form-group"><label>幣別</label><select id="bookCurrency" required><option value="TWD">台幣 (TWD)</option><option value="USD">美金 (USD)</option><option value="JPY">日圓 (JPY)</option><option value="CNY">人民幣 (CNY)</option><option value="EUR">歐元 (EUR)</option></select></div><div class="form-group"><label>期初金額</label><input type="number" id="bookInitialBalance" step="0.01" value="0"></div></div><button type="submit" class="btn btn-success">儲存</button></form></div></div>
+<div id="cloudModal" class="modal"><div class="modal-content"><div style="display:flex; justify-content:space-between;"><h3>☁️ Firebase 雲端同步設定</h3><span class="close-modal" style="font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('cloudModal').classList.remove('show')">&times;</span></div><div class="firebase-status"><div id="firebaseStatusDot" class="status-dot status-disconnected"></div><span id="firebaseStatusText">未連線</span></div><div class="firebase-info"><p><strong>如何設定：</strong></p><p>1. 前往 Firebase 控制台</p><p>2. 建立專案並取得設定</p><p>3. 貼到下方文字框</p></div><div class="form-group"><label>Firebase 配置 JSON</label><textarea id="firebaseConfigJson" class="config-textarea" placeholder='{"apiKey":"...","authDomain":"...","databaseURL":"...","projectId":"..."}'></textarea></div><div class="form-group"><label>資料庫路徑</label><input type="text" id="firebasePath" value="/moneyTracker"></div><div id="syncStatus" style="margin-bottom:10px;"></div><div class="btn-group" style="flex-direction:column;"><button class="btn btn-success" id="saveFirebaseSettingsBtn">儲存並連線</button><button class="btn btn-info" id="syncNowBtn">立即同步</button><button class="btn btn-warning" id="clearCloudDataBtn">清空雲端資料</button><button class="btn btn-danger" id="disconnectFirebaseBtn">中斷連線</button></div></div></div>
+<div id="conflictModal" class="modal"><div class="modal-content"><h3>⚠️ 資料同步衝突</h3><p>雲端與本地端皆有資料，請選擇同步方式：</p><div class="btn-group" style="flex-direction:column;"><button class="btn btn-danger" onclick="resolveConflict('overwrite_local')">下載雲端資料 (覆蓋本地)</button><button class="btn btn-warning" onclick="resolveConflict('overwrite_cloud')">上傳本地資料 (覆蓋雲端)</button><button class="btn btn-info" onclick="resolveConflict('merge')">合併資料 (保留兩邊)</button></div></div></div>
+<div id="detailModal" class="modal"><div class="modal-content"><div style="display:flex; justify-content:space-between;"><h3 id="detailTitle">記錄詳情</h3><span class="close-modal" style="font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('detailModal').classList.remove('show')">&times;</span></div><div id="detailContent"></div><div class="btn-group"><button class="btn btn-warning" id="editDetailBtn">編輯</button><button class="btn btn-danger" id="deleteDetailBtn">刪除</button></div></div></div>
+<div id="notification" class="notification"></div>
+
+<script>
+// ---------- 核心資料 ----------
+const DEFAULT_CATEGORIES = {
+    '飲食': ['早餐', '午餐', '晚餐', '飲料', '零食'],
+    '交通': ['公車', '捷運', '計程車', '油資', '停車費'],
+    '娛樂': ['電影', 'KTV', '旅遊', '運動', '遊戲'],
+    '生活': ['房租', '水電', '網路', '手機', '日用品'],
+    '收入': ['薪水', '獎金', '投資', '兼職', '其他'],
+    '其他': ['醫療', '教育', '禮物', '捐款']
+};
+const BASE_RATES = { 'TWD':1, 'USD':32.5, 'CNY':4.5, 'JPY':0.22, 'EUR':35.0 };
+const appState = { records: [], categories: {}, categoriesOrder: [], accountBooks: [], editingRecordId: null, editingBookId: null, currentMainCat: null, firebaseConfig: null, firebasePath: '/moneyTracker', currentDetailId: null };
+let firebaseApp = null, firebaseDB = null, pendingCloudData = null;
+
+// ---------- 工具函數 ----------
+const utils = {
+    uuid: () => Date.now().toString(36) + Math.random().toString(36).substr(2),
+    getToday: () => { const now = new Date(); return `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`; },
+    getTime: () => new Date().toLocaleTimeString('zh-TW', { hour12: false }).substr(0,5),
+    formatMoney: (amount, currency='TWD') => new Intl.NumberFormat('zh-TW', { minimumFractionDigits: currency==='JPY'?0:2, maximumFractionDigits:2 }).format(amount),
+    showNotify: (msg, type='success') => { let el=document.getElementById('notification'); el.textContent=msg; el.className=`notification show ${type}`; setTimeout(()=>el.classList.remove('show'),2500); },
+    save: () => { 
+        localStorage.setItem('acc_records',JSON.stringify(appState.records)); 
+        localStorage.setItem('acc_categories',JSON.stringify(appState.categories)); 
+        localStorage.setItem('acc_categories_order',JSON.stringify(appState.categoriesOrder));
+        localStorage.setItem('acc_books',JSON.stringify(appState.accountBooks)); 
+        localStorage.setItem('acc_firebase_config',JSON.stringify(appState.firebaseConfig)); 
+        localStorage.setItem('acc_firebase_path',appState.firebasePath); 
+    },
+    getTodayString: () => utils.getToday()
+};
+function isFutureRecord(dateStr) { return dateStr > utils.getTodayString(); }
+function calculateBookBalance(bookId, includeInitial=true) {
+    const book = appState.accountBooks.find(b=>b.id===bookId);
+    if(!book) return 0;
+    let balance = includeInitial ? (parseFloat(book.initialBalance)||0) : 0;
+    const today = utils.getTodayString();
+    appState.records.forEach(r=>{ if(r.bookId===bookId && r.date<=today) { if(r.type==='income') balance+=r.amount; else balance-=r.amount; } });
+    return balance;
+}
+function calculateTotalBookBalanceInTWD() {
+    let total=0;
+    appState.accountBooks.forEach(book=>{ let bal=calculateBookBalance(book.id,true); total+=bal*(BASE_RATES[book.currency]||1); });
+    return total;
+}
+function updateHeaderStats() {
+    const ym = utils.getToday().substring(0,7);
+    let inc=0, exp=0;
+    appState.records.forEach(r=>{ if(!r.excludeFromStats && r.date.startsWith(ym)) { let twd=r.amount*r.exchangeRate; if(r.type==='income') inc+=twd; else exp+=twd; } });
+    document.getElementById('headerIncome').textContent=utils.formatMoney(inc);
+    document.getElementById('headerExpense').textContent=utils.formatMoney(exp);
+    let bal=inc-exp;
+    let el=document.getElementById('headerBalance');
+    el.textContent=utils.formatMoney(bal);
+    el.className=bal>=0?'stat-value balance-positive':'stat-value balance-negative';
+    document.getElementById('bookTotalBalance').textContent=`帳冊結餘: ${utils.formatMoney(calculateTotalBookBalanceInTWD())}`;
+}
+function renderBookList() {
+    let container=document.getElementById('bookListContainer');
+    container.innerHTML='';
+    appState.accountBooks.forEach(b=>{
+        let balance=calculateBookBalance(b.id,true);
+        let div=document.createElement('div');
+        div.className='book-card';
+        div.style.borderLeftColor={TWD:'#4a6fa5',USD:'#28a745',JPY:'#ff6b6b',CNY:'#ffc107',EUR:'#17a2b8'}[b.currency]||'#4a6fa5';
+        div.onclick=(e)=>{ if(e.target.tagName!=='BUTTON') viewBookRecords(b.id); };
+        div.innerHTML=`<div class="book-currency-tag">${b.currency}</div><div><div class="book-title">${b.name}</div><div style="font-size:0.7rem;color:#999;">${b.purpose||''}</div></div><div><div class="book-balance-label">目前餘額 (已生效)</div><div class="book-balance-val">${utils.formatMoney(balance,b.currency)}</div></div><div class="book-actions"><button class="btn btn-warning" onclick="editBook('${b.id}')">編輯</button><button class="btn btn-danger" onclick="deleteBook('${b.id}')">刪除</button></div>`;
+        container.appendChild(div);
+    });
+}
+function renderRecordList(data) {
+    let container=document.getElementById('recordsList');
+    container.innerHTML='';
+    if(data.length===0){ container.innerHTML='<div style="text-align:center;padding:30px;color:#999;">沒有記錄</div>'; return; }
+    const today=utils.getTodayString();
+    data.sort((a,b)=>new Date(b.date+'T'+b.time)-new Date(a.date+'T'+a.time));
+    data.forEach(r=>{
+        let book=appState.accountBooks.find(b=>b.id===r.bookId);
+        let sign=r.type==='income'?'+':'-';
+        let twdInfo='';
+        if(r.currency!=='TWD') twdInfo=`<div class="record-twd">≈ TWD ${utils.formatMoney(Math.round(r.amount*r.exchangeRate))}</div>`;
+        let isFuture=isFutureRecord(r.date);
+        let futureLabel=isFuture ? (r.type==='expense'?'<span class="future-badge">(預支)</span>':'<span class="future-badge">(預收)</span>') : '';
+        let div=document.createElement('div');
+        div.className=`record-card ${r.type} ${r.excludeFromStats?'excluded':''}`;
+        div.onclick=()=>openDetail(r.id);
+        div.innerHTML=`${r.excludeFromStats?'<span class="exclude-badge">不計統計</span>':''}<div class="record-header"><div class="record-date-block"><div class="record-date">${r.date.substring(5)} ${r.time} ${futureLabel}</div><div class="record-time-book">📒 ${book?book.name:'?'}</div></div><div class="record-amount-block"><div class="record-amount ${r.type}">${sign} ${utils.formatMoney(r.amount,r.currency)} <small style="font-size:0.7rem;">${r.currency}</small></div>${twdInfo}</div></div><div class="record-cat">${r.mainCategory} > ${r.subCategory}</div>${r.summary?`<div class="record-summary-text">${r.summary}</div>`:''}`;
+        container.appendChild(div);
+    });
+}
+function filterRecords(isDefaultLoad=false) {
+    let y=document.getElementById('filterYear').value, m=document.getElementById('filterMonth').value, b=document.getElementById('filterBook').value, t=document.getElementById('filterType').value, mc=document.getElementById('filterMainCategory').value, sc=document.getElementById('filterSubCategory').value, k=document.getElementById('filterKeyword').value.toLowerCase();
+    let isFilterEmpty=!y&&!m&&!b&&!t&&!mc&&!sc&&!k;
+    let dateThreshold=null;
+    if(isDefaultLoad&&isFilterEmpty){
+        let d=new Date(); d.setMonth(d.getMonth()-1);
+        dateThreshold=d.toISOString().split('T')[0];
+        document.getElementById('recordsInfoText').textContent='顯示最近一個月的記錄';
+    } else document.getElementById('recordsInfoText').textContent=isFilterEmpty?'顯示全部記錄':'搜尋結果';
+    let filtered=appState.records.filter(r=>{
+        if(dateThreshold&&r.date<dateThreshold) return false;
+        if(y&&r.date.substring(0,4)!==y) return false;
+        if(m&&r.date.substring(5,7)!==m) return false;
+        if(b&&r.bookId!==b) return false;
+        if(t&&r.type!==t) return false;
+        if(mc&&r.mainCategory!==mc) return false;
+        if(sc&&r.subCategory!==sc) return false;
+        if(k&&(!r.summary||!r.summary.toLowerCase().includes(k))) return false;
+        return true;
+    });
+    renderRecordList(filtered);
+}
+function renderSelects() {
+    let bookOpts=appState.accountBooks.map(b=>`<option value="${b.id}">${b.name}</option>`).join('');
+    document.getElementById('recordBook').innerHTML=bookOpts;
+    document.getElementById('filterBook').innerHTML='<option value="">全部</option>'+bookOpts;
+    document.getElementById('summaryBook').innerHTML='<option value="">全部</option>'+bookOpts;
+    let catOpts=Object.keys(appState.categories).map(c=>`<option value="${c}">${c}</option>`).join('');
+    document.getElementById('recordMainCategory').innerHTML='<option value="">請選擇</option>'+catOpts;
+    document.getElementById('filterMainCategory').innerHTML='<option value="">全部</option>'+catOpts;
+    if(appState.accountBooks.length) document.getElementById('recordBook').dispatchEvent(new Event('change'));
+}
+function updateSubSelect(id,main){
+    let el=document.getElementById(id);
+    let isFilter=id.includes('filter');
+    el.innerHTML=isFilter?'<option value="">全部</option>':'<option value="">...</option>';
+    if(main&&appState.categories[main]) appState.categories[main].forEach(s=>el.innerHTML+=`<option value="${s}">${s}</option>`);
+}
+function renderYearSelects(){
+    let years=new Set(appState.records.map(r=>r.date.substring(0,4)));
+    years.add(new Date().getFullYear().toString());
+    let opts='<option value="">全部</option>'+Array.from(years).sort().reverse().map(y=>`<option value="${y}">${y}年</option>`).join('');
+    document.getElementById('filterYear').innerHTML=opts;
+    document.getElementById('summaryYear').innerHTML=opts;
+}
+function resetForm(){
+    document.getElementById('recordForm').reset();
+    if(!appState.editingRecordId){ document.getElementById('recordDate').value=utils.getToday(); document.getElementById('recordTime').value=utils.getTime(); }
+    document.querySelectorAll('.type-option').forEach(o=>o.classList.remove('selected'));
+    document.querySelector('.type-option.expense').classList.add('selected');
+    document.getElementById('recordType').value='expense';
+    document.getElementById('recordExclude').checked=false;
+    if(appState.accountBooks.length){ document.getElementById('recordBook').value=appState.accountBooks[0].id; document.getElementById('recordBook').dispatchEvent(new Event('change')); }
+    document.getElementById('recordSubCategory').innerHTML='<option value="">...</option>';
+}
+function exitEditMode(){ appState.editingRecordId=null; document.getElementById('formModeTitle').textContent='新增記錄'; resetForm(); }
+function handleRecordSubmit(e){
+    e.preventDefault();
+    let bookId=document.getElementById('recordBook').value;
+    let book=appState.accountBooks.find(b=>b.id===bookId);
+    let record={
+        id: appState.editingRecordId||utils.uuid(),
+        bookId, date:document.getElementById('recordDate').value, time:document.getElementById('recordTime').value,
+        type:document.getElementById('recordType').value, mainCategory:document.getElementById('recordMainCategory').value,
+        subCategory:document.getElementById('recordSubCategory').value, currency:book.currency,
+        exchangeRate:parseFloat(document.getElementById('recordRate').value), amount:parseFloat(document.getElementById('recordAmount').value),
+        summary:document.getElementById('recordSummary').value, excludeFromStats:document.getElementById('recordExclude').checked,
+        updatedAt:new Date().toISOString()
+    };
+    if(appState.editingRecordId){ let idx=appState.records.findIndex(r=>r.id===appState.editingRecordId); if(idx!==-1) appState.records[idx]=record; utils.showNotify('已更新'); }
+    else{ appState.records.unshift(record); utils.showNotify('已儲存'); }
+    utils.save(); updateHeaderStats(); resetForm(); document.querySelector('[data-tab="records"]').click(); filterRecords(true);
+    if(firebaseDB) setTimeout(()=>uploadToFirebase(),1000);
+}
+function handleBookSubmit(e){
+    e.preventDefault();
+    let id=document.getElementById('bookId').value;
+    let name=document.getElementById('bookName').value, purpose=document.getElementById('bookPurpose').value, currency=document.getElementById('bookCurrency').value, initialBalance=parseFloat(document.getElementById('bookInitialBalance').value)||0;
+    if(id){ let book=appState.accountBooks.find(b=>b.id===id); book.name=name; book.purpose=purpose; book.initialBalance=initialBalance; utils.showNotify('帳冊已更新'); }
+    else{ appState.accountBooks.push({id:utils.uuid(),name,purpose,currency,initialBalance,createdAt:new Date().toISOString()}); utils.showNotify('帳冊已建立'); }
+    utils.save(); renderBookList(); renderSelects(); document.getElementById('bookModal').classList.remove('show');
+    if(firebaseDB) setTimeout(()=>uploadToFirebase(),1000);
+}
+function viewBookRecords(bookId){ document.getElementById('filterBook').value=bookId; filterRecords(); document.querySelector('[data-tab="records"]').click(); utils.showNotify('已顯示該帳冊記錄'); }
+function openDetail(id){ let r=appState.records.find(i=>i.id===id); if(!r) return; appState.currentDetailId=id; let book=appState.accountBooks.find(b=>b.id===r.bookId); let color=r.type==='income'?'var(--success-color)':'var(--accent-color)'; document.getElementById('detailContent').innerHTML=`<div class="detail-amount" style="color:${color}">${r.type==='income'?'+':'-'} ${utils.formatMoney(r.amount,r.currency)}</div>${r.excludeFromStats?'<div style="text-align:center;color:#999;">(不列入收支統計)</div>':''}<div class="detail-row"><span class="detail-label">類型</span><span class="detail-val">${r.type==='income'?'收入':'支出'}</span></div><div class="detail-row"><span class="detail-label">日期</span><span class="detail-val">${r.date} ${r.time}</span></div><div class="detail-row"><span class="detail-label">帳冊</span><span class="detail-val">${book?book.name:'未知'}</span></div><div class="detail-row"><span class="detail-label">科目</span><span class="detail-val">${r.mainCategory} - ${r.subCategory}</span></div>${r.summary?`<div style="margin-top:10px;"><div class="detail-label">備註</div><div style="background:#f8f9fa;padding:10px;border-radius:8px;">${r.summary}</div></div>`:''}`;
+    document.getElementById('detailModal').classList.add('show');
+}
+window.editRecord=(id)=>{ let r=appState.records.find(i=>i.id===id); if(!r) return; appState.editingRecordId=id; document.getElementById('recordTabBtn').classList.remove('hidden'); document.getElementById('recordTabBtn').click(); document.getElementById('formModeTitle').textContent='編輯記錄'; document.getElementById('recordBook').value=r.bookId; document.getElementById('recordDate').value=r.date; document.getElementById('recordTime').value=r.time; document.querySelectorAll('.type-option').forEach(o=>o.classList.remove('selected')); document.querySelector(`.type-option.${r.type}`).classList.add('selected'); document.getElementById('recordType').value=r.type; document.getElementById('recordMainCategory').value=r.mainCategory; updateSubSelect('recordSubCategory',r.mainCategory); document.getElementById('recordSubCategory').value=r.subCategory; document.getElementById('recordBook').dispatchEvent(new Event('change')); document.getElementById('recordRate').value=r.exchangeRate; document.getElementById('recordAmount').value=r.amount; document.getElementById('recordSummary').value=r.summary||''; document.getElementById('recordExclude').checked=r.excludeFromStats||false; };
+window.deleteRecord=(id)=>{ if(confirm('確定刪除？')){ appState.records=appState.records.filter(r=>r.id!==id); utils.save(); filterRecords(); updateHeaderStats(); utils.showNotify('已刪除','error'); if(firebaseDB) setTimeout(()=>uploadToFirebase(),1000); } };
+window.editBook=(id)=>{ let b=appState.accountBooks.find(i=>i.id===id); appState.editingBookId=id; document.getElementById('bookId').value=b.id; document.getElementById('bookName').value=b.name; document.getElementById('bookPurpose').value=b.purpose; document.getElementById('bookCurrency').value=b.currency; document.getElementById('bookInitialBalance').value=b.initialBalance||0; document.getElementById('bookCurrency').disabled=true; document.getElementById('bookModalTitle').textContent='編輯帳冊'; document.getElementById('bookModal').classList.add('show'); };
+window.deleteBook=(id)=>{ if(appState.records.some(r=>r.bookId===id)){ alert('帳冊內有記錄，無法刪除'); return; } if(confirm('確定刪除？')){ appState.accountBooks=appState.accountBooks.filter(b=>b.id!==id); utils.save(); renderBookList(); renderSelects(); updateHeaderStats(); if(firebaseDB) setTimeout(()=>uploadToFirebase(),1000); } };
+function runSummary(){
+    let y=document.getElementById('summaryYear').value, m=document.getElementById('summaryMonth').value, b=document.getElementById('summaryBook').value;
+    let inc=0, exp=0, expCats={}, incCats={};
+    appState.records.forEach(r=>{ if(r.excludeFromStats) return; if(y&&r.date.substring(0,4)!==y) return; if(m&&r.date.substring(5,7)!==m) return; if(b&&r.bookId!==b) return; let twd=r.amount*r.exchangeRate; if(r.type==='income'){ inc+=twd; incCats[r.mainCategory]=(incCats[r.mainCategory]||0)+twd; } else { exp+=twd; expCats[r.mainCategory]=(expCats[r.mainCategory]||0)+twd; } });
+    document.getElementById('sumIncome').textContent=utils.formatMoney(inc); document.getElementById('sumExpense').textContent=utils.formatMoney(exp); let net=inc-exp; document.getElementById('sumNet').textContent=utils.formatMoney(net); document.getElementById('sumNet').style.color=net>=0?'var(--success-color)':'var(--accent-color)';
+    let renderChart=(id,data,total,color)=>{ let el=document.getElementById(id); el.innerHTML=''; if(total===0){ el.innerHTML='<p style="color:#999;">無數據</p>'; return; } Object.entries(data).sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>{ let pct=Math.round((v/total)*100); el.innerHTML+=`<div style="margin-bottom:8px;"><div style="display:flex; justify-content:space-between;"><span>${k}</span><span>${utils.formatMoney(v)} (${pct}%)</span></div><div style="height:6px; background:#eee; border-radius:3px;"><div style="height:100%; width:${pct}%; background:${color};"></div></div></div>`; }); };
+    renderChart('expenseCatChart',expCats,exp,'var(--accent-color)'); renderChart('incomeCatChart',incCats,inc,'var(--success-color)'); document.getElementById('summaryResults').classList.remove('hidden');
+}
+// ---------- Firebase 函數 ----------
+function initFirebase(){ try{ if(!firebase.apps.length){ firebaseApp=firebase.initializeApp(appState.firebaseConfig); firebaseDB=firebase.database(); } else{ firebaseApp=firebase.apps[0]; firebaseDB=firebase.database(); } updateFirebaseStatus(true,'已連線'); utils.showNotify('Firebase連線成功','success'); }catch(e){ updateFirebaseStatus(false,'連線失敗'); utils.showNotify('連線失敗','error'); } }
+function updateFirebaseStatus(conn,msg){ let dot=document.getElementById('firebaseStatusDot'),txt=document.getElementById('firebaseStatusText'); if(conn){ dot.className='status-dot status-connected'; txt.textContent=msg; document.getElementById('cloudSyncBtn').className='cloud-icon cloud-status-on'; } else{ dot.className='status-dot status-disconnected'; txt.textContent=msg; document.getElementById('cloudSyncBtn').className='cloud-icon cloud-status-off'; } }
+async function syncToFirebase(){ if(!firebaseDB){ utils.showNotify('Firebase未連線','error'); return; } let statusDiv=document.getElementById('syncStatus'); statusDiv.innerHTML='🔄 同步中... <span class="spinner"></span>'; try{ let snap=await firebaseDB.ref(appState.firebasePath).once('value'); let cloud=snap.val(); if(!cloud){ await uploadToFirebase(); statusDiv.innerHTML='✅ 已上傳'; utils.showNotify('已同步至雲端','success'); } else{ let localHas=appState.records.length>0, cloudHas=cloud.records?.length>0; if(localHas&&cloudHas){ pendingCloudData=cloud; document.getElementById('cloudModal').classList.remove('show'); document.getElementById('conflictModal').classList.add('show'); } else if(cloudHas){ appState.records=cloud.records||[]; appState.categories=cloud.categories||DEFAULT_CATEGORIES; appState.accountBooks=cloud.accountBooks||[]; utils.save(); statusDiv.innerHTML='✅ 已下載'; utils.showNotify('已從雲端同步','success'); location.reload(); } else{ await uploadToFirebase(); statusDiv.innerHTML='✅ 已上傳'; } } }catch(e){ statusDiv.innerHTML='❌ 失敗: '+e.message; utils.showNotify('同步失敗','error'); } }
+async function uploadToFirebase(){ if(!firebaseDB) return; let data={ records:appState.records, categories:appState.categories, accountBooks:appState.accountBooks, lastSync:new Date().toISOString() }; await firebaseDB.ref(appState.firebasePath).set(data); }
+async function clearFirebaseData(){ if(!firebaseDB) return; if(confirm('清空雲端資料？')){ await firebaseDB.ref(appState.firebasePath).remove(); utils.showNotify('雲端已清空','success'); } }
+window.resolveConflict=async(action)=>{ let statusDiv=document.getElementById('syncStatus'); statusDiv.innerHTML='🔄 處理中...'; try{ if(action==='overwrite_local'){ appState.records=pendingCloudData.records||[]; appState.categories=pendingCloudData.categories||DEFAULT_CATEGORIES; appState.accountBooks=pendingCloudData.accountBooks||[]; utils.save(); location.reload(); } else if(action==='overwrite_cloud'){ await uploadToFirebase(); statusDiv.innerHTML='✅ 已覆蓋雲端'; document.getElementById('conflictModal').classList.remove('show'); } else if(action==='merge'){ let localMap=new Map(appState.records.map(r=>[r.id,r])); (pendingCloudData.records||[]).forEach(cr=>{ if(localMap.has(cr.id)){ let local=localMap.get(cr.id), cloudDate=new Date(cr.updatedAt||0), localDate=new Date(local.updatedAt||0); if(cloudDate>localDate) localMap.set(cr.id,cr); } else localMap.set(cr.id,cr); }); appState.records=Array.from(localMap.values()); if(pendingCloudData.categories) Object.keys(pendingCloudData.categories).forEach(k=>{ if(!appState.categories[k]) appState.categories[k]=pendingCloudData.categories[k]; }); if(pendingCloudData.accountBooks){ let ids=new Set(appState.accountBooks.map(b=>b.id)); pendingCloudData.accountBooks.forEach(b=>{ if(!ids.has(b.id)) appState.accountBooks.push(b); }); } utils.save(); await uploadToFirebase(); location.reload(); } }catch(e){ statusDiv.innerHTML='❌ 失敗'; utils.showNotify('衝突處理失敗','error'); } };
+function handleDisconnectFirebase(){ if(confirm('中斷連線？')){ appState.firebaseConfig=null; utils.save(); if(firebaseApp) firebaseApp.delete(); firebaseApp=null; firebaseDB=null; updateFirebaseStatus(false,'未連線'); utils.showNotify('已中斷','success'); document.getElementById('cloudModal').classList.remove('show'); } }
+async function handleSaveFirebaseSettings(){ let json=document.getElementById('firebaseConfigJson').value.trim(); let path=document.getElementById('firebasePath').value.trim()||'/moneyTracker'; if(!json){ document.getElementById('syncStatus').innerHTML='❌ 請輸入配置'; return; } try{ let config=JSON.parse(json); if(!config.apiKey||!config.databaseURL||!config.projectId) throw new Error('配置不完整'); appState.firebaseConfig=config; appState.firebasePath=path; utils.save(); initFirebase(); await syncToFirebase(); document.getElementById('cloudModal').classList.remove('show'); }catch(e){ document.getElementById('syncStatus').innerHTML='❌ 配置錯誤'; utils.showNotify('設定失敗','error'); } }
+// ---------- 科目管理增強函數 (左右佈局、圖示操作、自訂排序) ----------
+function initCategoriesOrder() {
+    if (!appState.categoriesOrder || appState.categoriesOrder.length === 0) {
+        appState.categoriesOrder = Object.keys(appState.categories).sort();
+    } else {
+        appState.categoriesOrder = appState.categoriesOrder.filter(c => appState.categories[c]);
+        Object.keys(appState.categories).forEach(c => {
+            if (!appState.categoriesOrder.includes(c)) appState.categoriesOrder.push(c);
         });
-        
-        document.getElementById('importFile').addEventListener('change', (e) => {
-            const file = e.target.files[0]; if (!file) return;
-            const r = new FileReader();
-            r.onload = (evt) => {
-                try {
-                    const d = JSON.parse(evt.target.result);
-                    if (confirm('確定匯入並覆蓋？')) { 
-                        Object.assign(appState, d); 
-                        utils.save(); 
-                        location.reload(); 
-                    }
-                } catch(err) { alert('格式錯誤'); }
-            }; r.readAsText(file);
-        });
-        
-        document.getElementById('clearAllDataBtn').addEventListener('click', () => { 
-            if(confirm('警告：確定清除所有資料？')) { 
-                localStorage.clear(); 
-                location.reload(); 
-            } 
-        });
-
-        initApp();
-    </script>
+    }
+}
+function moveMainCategory(fromIndex, toIndex) {
+    if (toIndex < 0 || toIndex >= appState.categoriesOrder.length) return;
+    const item = appState.categoriesOrder[fromIndex];
+    appState.categoriesOrder.splice(fromIndex, 1);
+    appState.categoriesOrder.splice(toIndex, 0, item);
+    utils.save();
+    renderMainCategoryList();
+}
+function moveSubCategory(mainCat, fromIndex, toIndex) {
+    let subs = appState.categories[mainCat];
+    if (!subs || toIndex < 0 || toIndex >= subs.length) return;
+    const item = subs[fromIndex];
+    subs.splice(fromIndex, 1);
+    subs.splice(toIndex, 0, item);
+    utils.save();
+    if (appState.currentMainCat === mainCat) renderSubCategoryList();
+    renderSelects();
+}
+function renderMainCategoryList() {
+    const container = document.getElementById('mainCatList');
+    container.innerHTML = '';
+    appState.categoriesOrder.forEach((main, idx) => {
+        const div = document.createElement('div');
+        div.className = `main-cat-item ${appState.currentMainCat === main ? 'active' : ''}`;
+        div.innerHTML = `
+            <span class="main-cat-name">${escapeHtml(main)}</span>
+            <div class="main-cat-actions">
+                <button class="icon-btn" data-action="moveUp" title="上移">⬆️</button>
+                <button class="icon-btn" data-action="moveDown" title="下移">⬇️</button>
+                <button class="icon-btn" data-action="rename" title="重新命名">✏️</button>
+                <button class="icon-btn" data-action="delete" title="刪除">🗑️</button>
+            </div>
+        `;
+        div.querySelector('.main-cat-name').onclick = () => selectMainCategory(main);
+        div.querySelector('[data-action="moveUp"]').onclick = (e) => { e.stopPropagation(); if (idx > 0) moveMainCategory(idx, idx-1); };
+        div.querySelector('[data-action="moveDown"]').onclick = (e) => { e.stopPropagation(); if (idx < appState.categoriesOrder.length-1) moveMainCategory(idx, idx+1); };
+        div.querySelector('[data-action="rename"]').onclick = (e) => { e.stopPropagation(); renameMainCategory(main); };
+        div.querySelector('[data-action="delete"]').onclick = (e) => { e.stopPropagation(); deleteMainCategory(main); };
+        container.appendChild(div);
+    });
+}
+function selectMainCategory(main) {
+    appState.currentMainCat = main;
+    renderMainCategoryList();
+    renderSubCategoryList();
+    document.getElementById('selectedMainTitle').innerHTML = ` - ${escapeHtml(main)}`;
+    document.getElementById('newSubCatInput').disabled = false;
+    document.getElementById('addSubCatBtn').disabled = false;
+}
+function renameMainCategory(oldName) {
+    let newName = prompt('輸入新的主科目名稱', oldName);
+    if (!newName || newName === oldName) return;
+    if (appState.categories[newName]) { utils.showNotify('科目已存在', 'error'); return; }
+    appState.records.forEach(r => { if (r.mainCategory === oldName) r.mainCategory = newName; });
+    appState.categories[newName] = appState.categories[oldName];
+    delete appState.categories[oldName];
+    const idx = appState.categoriesOrder.indexOf(oldName);
+    if (idx !== -1) appState.categoriesOrder[idx] = newName;
+    if (appState.currentMainCat === oldName) appState.currentMainCat = newName;
+    utils.save();
+    renderMainCategoryList();
+    renderSelects();
+    if (appState.currentMainCat) renderSubCategoryList();
+    utils.showNotify('主科目已更名並同步記錄');
+}
+function deleteMainCategory(main) {
+    if (appState.records.some(r => r.mainCategory === main)) {
+        utils.showNotify(`無法刪除「${main}」，已有收支記錄使用此科目`, 'error');
+        return;
+    }
+    if (confirm(`確定刪除主科目「${main}」及其所有子科目？`)) {
+        delete appState.categories[main];
+        appState.categoriesOrder = appState.categoriesOrder.filter(c => c !== main);
+        if (appState.currentMainCat === main) {
+            appState.currentMainCat = null;
+            document.getElementById('selectedMainTitle').innerHTML = '';
+            document.getElementById('newSubCatInput').disabled = true;
+            document.getElementById('addSubCatBtn').disabled = true;
+            document.getElementById('subCatList').innerHTML = '<div class="empty-hint">請選擇主科目</div>';
+        }
+        utils.save();
+        renderMainCategoryList();
+        renderSelects();
+        utils.showNotify('已刪除');
+    }
+}
+function renderSubCategoryList() {
+    const container = document.getElementById('subCatList');
+    if (!appState.currentMainCat) {
+        container.innerHTML = '<div class="empty-hint">請從左側選擇主科目</div>';
+        return;
+    }
+    const subs = appState.categories[appState.currentMainCat] || [];
+    if (subs.length === 0) {
+        container.innerHTML = '<div class="empty-hint">尚無子科目，請新增</div>';
+        return;
+    }
+    container.innerHTML = '';
+    subs.forEach((sub, idx) => {
+        const div = document.createElement('div');
+        div.className = 'sub-cat-item';
+        div.innerHTML = `
+            <span class="sub-cat-name">${escapeHtml(sub)}</span>
+            <div class="sub-cat-actions">
+                <button class="icon-btn" data-action="moveUp" title="上移">⬆️</button>
+                <button class="icon-btn" data-action="moveDown" title="下移">⬇️</button>
+                <button class="icon-btn" data-action="rename" title="重新命名">✏️</button>
+                <button class="icon-btn" data-action="delete" title="刪除">🗑️</button>
+            </div>
+        `;
+        div.querySelector('[data-action="moveUp"]').onclick = (e) => { e.stopPropagation(); if (idx > 0) moveSubCategory(appState.currentMainCat, idx, idx-1); };
+        div.querySelector('[data-action="moveDown"]').onclick = (e) => { e.stopPropagation(); if (idx < subs.length-1) moveSubCategory(appState.currentMainCat, idx, idx+1); };
+        div.querySelector('[data-action="rename"]').onclick = (e) => { e.stopPropagation(); renameSubCategory(sub); };
+        div.querySelector('[data-action="delete"]').onclick = (e) => { e.stopPropagation(); deleteSubCategory(sub); };
+        container.appendChild(div);
+    });
+}
+function renameSubCategory(oldSub) {
+    let newSub = prompt('輸入新的子科目名稱', oldSub);
+    if (!newSub || newSub === oldSub) return;
+    let main = appState.currentMainCat;
+    if (appState.categories[main].includes(newSub)) { utils.showNotify('子科目已存在', 'error'); return; }
+    let idx = appState.categories[main].indexOf(oldSub);
+    if (idx !== -1) {
+        appState.categories[main][idx] = newSub;
+        appState.records.forEach(r => { if (r.mainCategory === main && r.subCategory === oldSub) r.subCategory = newSub; });
+        utils.save();
+        renderSubCategoryList();
+        renderSelects();
+        filterRecords();
+        utils.showNotify('子科目已更名並同步記錄');
+    }
+}
+function deleteSubCategory(sub) {
+    let main = appState.currentMainCat;
+    if (appState.records.some(r => r.mainCategory === main && r.subCategory === sub)) {
+        utils.showNotify(`無法刪除「${sub}」，已有收支記錄使用此子科目`, 'error');
+        return;
+    }
+    if (confirm(`確定刪除子科目「${sub}」？`)) {
+        let idx = appState.categories[main].indexOf(sub);
+        if (idx !== -1) appState.categories[main].splice(idx, 1);
+        utils.save();
+        renderSubCategoryList();
+        renderSelects();
+        utils.showNotify('已刪除');
+    }
+}
+function addMainCategory() {
+    let val = document.getElementById('newMainCatInput').value.trim();
+    if (!val) return;
+    if (appState.categories[val]) { utils.showNotify('科目已存在', 'error'); return; }
+    appState.categories[val] = [];
+    appState.categoriesOrder.push(val);
+    utils.save();
+    renderMainCategoryList();
+    renderSelects();
+    document.getElementById('newMainCatInput').value = '';
+    utils.showNotify('主科目已新增');
+}
+function addSubCategory() {
+    let val = document.getElementById('newSubCatInput').value.trim();
+    if (!val || !appState.currentMainCat) return;
+    if (appState.categories[appState.currentMainCat].includes(val)) { utils.showNotify('子科目已存在', 'error'); return; }
+    appState.categories[appState.currentMainCat].push(val);
+    utils.save();
+    renderSubCategoryList();
+    renderSelects();
+    document.getElementById('newSubCatInput').value = '';
+    utils.showNotify('子科目已新增');
+}
+function escapeHtml(str) {
+    return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+    });
+}
+// ---------- 事件綁定與初始化 ----------
+function initEvents() {
+    document.querySelectorAll('.tab-btn').forEach(btn=>btn.addEventListener('click',()=>{ let target=btn.dataset.tab; if(target==='books'){ document.getElementById('filterYear').value=''; document.getElementById('filterMonth').value=''; document.getElementById('filterBook').value=''; document.getElementById('filterType').value=''; document.getElementById('filterMainCategory').value=''; document.getElementById('filterSubCategory').value=''; document.getElementById('filterKeyword').value=''; } if(target!=='record') document.getElementById('recordTabBtn').classList.add('hidden'); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active')); btn.classList.add('active'); document.getElementById(target+'-tab').classList.add('active'); if(target==='records') filterRecords(true); if(target==='books') renderBookList(); if(target==='categories') { renderMainCategoryList(); if(appState.currentMainCat) { renderSubCategoryList(); document.getElementById('selectedMainTitle').innerHTML=` - ${escapeHtml(appState.currentMainCat)}`; document.getElementById('newSubCatInput').disabled=false; document.getElementById('addSubCatBtn').disabled=false; } else { document.getElementById('selectedMainTitle').innerHTML=''; document.getElementById('subCatList').innerHTML='<div class="empty-hint">請從左側選擇主科目</div>'; document.getElementById('newSubCatInput').disabled=true; document.getElementById('addSubCatBtn').disabled=true; } } }));
+    document.getElementById('listAddNewBtn').addEventListener('click',()=>{ document.getElementById('recordTabBtn').classList.remove('hidden'); document.getElementById('recordTabBtn').click(); exitEditMode(); document.getElementById('recordDate').value=utils.getToday(); document.getElementById('recordTime').value=utils.getTime(); });
+    document.getElementById('filterHeader').addEventListener('click',()=>document.getElementById('filterSection').classList.toggle('collapsed'));
+    document.querySelectorAll('.type-option').forEach(opt=>opt.addEventListener('click',function(){ document.querySelectorAll('.type-option').forEach(o=>o.classList.remove('selected')); this.classList.add('selected'); document.getElementById('recordType').value=this.dataset.type; }));
+    document.getElementById('recordBook').addEventListener('change',function(){ let book=appState.accountBooks.find(b=>b.id===this.value); if(book){ document.getElementById('recordCurrency').value=book.currency; document.getElementById('recordRate').value=BASE_RATES[book.currency]||1; document.getElementById('recordRate').readOnly=(book.currency==='TWD'); } });
+    document.getElementById('recordMainCategory').addEventListener('change',e=>updateSubSelect('recordSubCategory',e.target.value));
+    document.getElementById('filterMainCategory').addEventListener('change',e=>updateSubSelect('filterSubCategory',e.target.value));
+    document.getElementById('recordForm').addEventListener('submit',handleRecordSubmit);
+    document.getElementById('resetFormBtn').addEventListener('click',resetForm);
+    document.getElementById('cancelEditBtn').addEventListener('click',()=>{ exitEditMode(); document.querySelector('[data-tab="records"]').click(); });
+    document.getElementById('applyFilterBtn').addEventListener('click',()=>{ filterRecords(); document.getElementById('filterSection').classList.add('collapsed'); });
+    document.getElementById('clearFilterBtn').addEventListener('click',()=>{ document.querySelectorAll('#records-tab select').forEach(s=>s.value=''); document.getElementById('filterKeyword').value=''; filterRecords(); });
+    document.getElementById('showAddBookModalBtn').addEventListener('click',()=>{ appState.editingBookId=null; document.getElementById('bookForm').reset(); document.getElementById('bookId').value=''; document.getElementById('bookModalTitle').textContent='新增帳冊'; document.getElementById('bookCurrency').disabled=false; document.getElementById('bookModal').classList.add('show'); });
+    document.getElementById('bookForm').addEventListener('submit',handleBookSubmit);
+    document.getElementById('addMainCatBtn').addEventListener('click',addMainCategory);
+    document.getElementById('addSubCatBtn').addEventListener('click',addSubCategory);
+    document.getElementById('runSummaryBtn').addEventListener('click',runSummary);
+    document.getElementById('cloudSyncBtn').addEventListener('click',()=>{ document.getElementById('firebaseConfigJson').value=appState.firebaseConfig?JSON.stringify(appState.firebaseConfig,null,2):''; document.getElementById('firebasePath').value=appState.firebasePath; document.getElementById('cloudModal').classList.add('show'); });
+    document.getElementById('saveFirebaseSettingsBtn').addEventListener('click',handleSaveFirebaseSettings);
+    document.getElementById('syncNowBtn').addEventListener('click',syncToFirebase);
+    document.getElementById('clearCloudDataBtn').addEventListener('click',clearFirebaseData);
+    document.getElementById('disconnectFirebaseBtn').addEventListener('click',handleDisconnectFirebase);
+    document.getElementById('editDetailBtn').addEventListener('click',()=>{ document.getElementById('detailModal').classList.remove('show'); editRecord(appState.currentDetailId); });
+    document.getElementById('deleteDetailBtn').addEventListener('click',()=>{ document.getElementById('detailModal').classList.remove('show'); deleteRecord(appState.currentDetailId); });
+    document.getElementById('exportDataBtn').addEventListener('click',()=>{ let blob=new Blob([JSON.stringify({records:appState.records, categories:appState.categories, accountBooks:appState.accountBooks, categoriesOrder:appState.categoriesOrder})],{type:'application/json'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`backup_${utils.getToday()}.json`; a.click(); });
+    document.getElementById('importFile').addEventListener('change',e=>{ let file=e.target.files[0]; if(!file) return; let r=new FileReader(); r.onload=evt=>{ try{ let d=JSON.parse(evt.target.result); if(confirm('匯入並覆蓋？')){ appState.records=d.records||[]; appState.categories=d.categories||DEFAULT_CATEGORIES; appState.categoriesOrder=d.categoriesOrder||[]; appState.accountBooks=d.accountBooks||[]; initCategoriesOrder(); utils.save(); location.reload(); } }catch(err){ alert('格式錯誤'); } }; r.readAsText(file); });
+    document.getElementById('clearAllDataBtn').addEventListener('click',()=>{ if(confirm('清除所有資料？')){ localStorage.clear(); location.reload(); } });
+}
+function initApp(){
+    let storedRecords=localStorage.getItem('acc_records'), storedCats=localStorage.getItem('acc_categories'), storedOrder=localStorage.getItem('acc_categories_order'), storedBooks=localStorage.getItem('acc_books'), storedFirebaseConfig=localStorage.getItem('acc_firebase_config'), storedFirebasePath=localStorage.getItem('acc_firebase_path');
+    appState.categories=storedCats?JSON.parse(storedCats):JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
+    appState.categoriesOrder=storedOrder?JSON.parse(storedOrder):[];
+    initCategoriesOrder();
+    appState.accountBooks=storedBooks?JSON.parse(storedBooks):[];
+    appState.records=storedRecords?JSON.parse(storedRecords):[];
+    if(storedFirebaseConfig) try{ appState.firebaseConfig=JSON.parse(storedFirebaseConfig); }catch(e){}
+    if(storedFirebasePath) appState.firebasePath=storedFirebasePath;
+    if(appState.accountBooks.length===0) appState.accountBooks.push({id:'default_book',name:'預設帳本',purpose:'系統自動建立',currency:'TWD',initialBalance:0,createdAt:new Date().toISOString()});
+    document.getElementById('currentDateText').textContent=new Date().toLocaleDateString('zh-TW',{month:'long',day:'numeric',weekday:'short'});
+    initEvents(); renderSelects(); renderBookList(); renderYearSelects();
+    document.getElementById('recordDate').value=utils.getToday();
+    document.getElementById('recordTime').value=utils.getTime();
+    filterRecords(true); updateHeaderStats();
+    if(appState.firebaseConfig) initFirebase();
+}
+initApp();
+</script>
 </body>
 </html>
