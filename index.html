@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#4a6fa5">
-    <title>多帳冊智能記帳程式 (預支預收版) v20260331-final</title>
+    <title>多帳冊智能記帳程式 (預支預收版) v20260924-final</title>
     <style>
         :root {
             --primary-color: #4a6fa5;
@@ -105,7 +105,9 @@
         }
         .cloud-icon:active { transform: scale(0.9); }
         .cloud-status-off { color: #ff6b6b; } 
-        .cloud-status-on { color: #51cf66; }  
+        .cloud-status-on { color: #51cf66; }
+        .cloud-status-syncing { color: #ffd43b; animation: pulse 0.8s infinite alternate; }
+        @keyframes pulse { from { opacity: 0.4; } to { opacity: 1; } }
         .header-stats {
             display: flex;
             justify-content: space-between;
@@ -620,7 +622,7 @@
         <div class="header-content">
             <div class="header-top">
                 <div style="flex: 1;">
-                    <h1>📒 智能記帳 <span style="font-size: 0.8rem; font-weight: normal; opacity: 0.8;">預支版</span> <span class="app-version">v20260331</span></h1>
+                    <h1>📒 智能記帳 <span style="font-size: 0.8rem; font-weight: normal; opacity: 0.8;">預支版</span> <span class="app-version">v20260924</span></h1>
                     <div class="date-display" id="currentDate">
                         <div class="date-left"><span id="currentDateText"></span></div>
                         <div class="book-total-balance" id="bookTotalBalance">帳冊結餘: 0</div>
@@ -709,8 +711,7 @@
 </div>
 <!-- 各種 Modal -->
 <div id="bookModal" class="modal"><div class="modal-content"><div style="display:flex; justify-content:space-between;"><h3 id="bookModalTitle">新增帳冊</h3><span class="close-modal" style="font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('bookModal').classList.remove('show')">&times;</span></div><form id="bookForm"><input type="hidden" id="bookId"><div class="form-group"><label>名稱</label><input type="text" id="bookName" required></div><div class="form-group"><label>用途</label><input type="text" id="bookPurpose"></div><div class="form-row"><div class="form-group"><label>幣別</label><select id="bookCurrency" required><option value="TWD">台幣 (TWD)</option><option value="USD">美金 (USD)</option><option value="JPY">日圓 (JPY)</option><option value="CNY">人民幣 (CNY)</option><option value="EUR">歐元 (EUR)</option></select></div><div class="form-group"><label>期初金額</label><input type="number" id="bookInitialBalance" step="0.01" value="0"></div></div><button type="submit" class="btn btn-success">儲存</button></form></div></div>
-<div id="cloudModal" class="modal"><div class="modal-content"><div style="display:flex; justify-content:space-between;"><h3>☁️ Firebase 雲端同步設定</h3><span class="close-modal" style="font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('cloudModal').classList.remove('show')">&times;</span></div><div class="firebase-status"><div id="firebaseStatusDot" class="status-dot status-disconnected"></div><span id="firebaseStatusText">未連線</span></div><div class="firebase-info"><p><strong>如何設定：</strong></p><p>1. 前往 Firebase 控制台</p><p>2. 建立專案並取得設定</p><p>3. 貼到下方文字框</p></div><div class="form-group"><label>Firebase 配置 JSON</label><textarea id="firebaseConfigJson" class="config-textarea" placeholder='{"apiKey":"...","authDomain":"...","databaseURL":"...","projectId":"..."}'></textarea></div><div class="form-group"><label>資料庫路徑</label><input type="text" id="firebasePath" value="/moneyTracker"></div><div id="syncStatus" style="margin-bottom:10px;"></div><div class="btn-group" style="flex-direction:column;"><button class="btn btn-success" id="saveFirebaseSettingsBtn">儲存並連線</button><button class="btn btn-info" id="syncNowBtn">立即同步</button><button class="btn btn-warning" id="clearCloudDataBtn">清空雲端資料</button><button class="btn btn-danger" id="disconnectFirebaseBtn">中斷連線</button></div></div></div>
-<div id="conflictModal" class="modal"><div class="modal-content"><h3>⚠️ 資料同步衝突</h3><p>雲端與本地端皆有資料，請選擇同步方式：</p><div class="btn-group" style="flex-direction:column;"><button class="btn btn-danger" onclick="resolveConflict('overwrite_local')">下載雲端資料 (覆蓋本地)</button><button class="btn btn-warning" onclick="resolveConflict('overwrite_cloud')">上傳本地資料 (覆蓋雲端)</button><button class="btn btn-info" onclick="resolveConflict('merge')">合併資料 (保留兩邊)</button></div></div></div>
+<div id="cloudModal" class="modal"><div class="modal-content"><div style="display:flex; justify-content:space-between;"><h3>☁️ Firebase 雲端同步設定</h3><span class="close-modal" style="font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('cloudModal').classList.remove('show')">&times;</span></div><div class="firebase-status"><div id="firebaseStatusDot" class="status-dot status-disconnected"></div><span id="firebaseStatusText">未連線</span></div><div class="firebase-info"><p><strong>如何設定：</strong></p><p>1. 前往 Firebase 控制台</p><p>2. 建立專案並取得設定</p><p>3. 貼到下方文字框</p><p style="color:#4a6fa5;">✅ 連線後：開啟程式自動下載雲端資料，任何異動立即同步上傳。</p></div><div class="form-group"><label>Firebase 配置 JSON</label><textarea id="firebaseConfigJson" class="config-textarea" placeholder='{"apiKey":"...","authDomain":"...","databaseURL":"...","projectId":"..."}'></textarea></div><div class="form-group"><label>資料庫路徑</label><input type="text" id="firebasePath" value="/moneyTracker"></div><div id="syncStatus" style="margin-bottom:10px;"></div><div class="btn-group" style="flex-direction:column;"><button class="btn btn-success" id="saveFirebaseSettingsBtn">儲存並連線</button><button class="btn btn-info" id="syncNowBtn">立即同步</button><button class="btn btn-warning" id="clearCloudDataBtn">清空雲端資料</button><button class="btn btn-danger" id="disconnectFirebaseBtn">中斷連線</button></div></div></div>
 <div id="detailModal" class="modal"><div class="modal-content"><div style="display:flex; justify-content:space-between;"><h3 id="detailTitle">記錄詳情</h3><span class="close-modal" style="font-size:1.5rem; cursor:pointer;" onclick="document.getElementById('detailModal').classList.remove('show')">&times;</span></div><div id="detailContent"></div><div class="btn-group"><button class="btn btn-warning" id="editDetailBtn">編輯</button><button class="btn btn-danger" id="deleteDetailBtn">刪除</button></div></div></div>
 <div id="notification" class="notification"></div>
 
@@ -726,7 +727,12 @@ const DEFAULT_CATEGORIES = {
 };
 const BASE_RATES = { 'TWD':1, 'USD':32.5, 'CNY':4.5, 'JPY':0.22, 'EUR':35.0 };
 const appState = { records: [], categories: {}, categoriesOrder: [], accountBooks: [], editingRecordId: null, editingBookId: null, currentMainCat: null, firebaseConfig: null, firebasePath: '/moneyTracker', currentDetailId: null };
-let firebaseApp = null, firebaseDB = null, pendingCloudData = null;
+let firebaseApp = null, firebaseDB = null;
+
+// ---------- 雲端自動同步狀態 ----------
+let cloudSyncTimer = null;      // 異動後延遲上傳計時器
+let cloudUploading = false;     // 上傳中旗標
+let cloudUploadPending = false; // 上傳中又有異動，結束後補傳
 
 // ---------- 工具函數 ----------
 const utils = {
@@ -735,13 +741,16 @@ const utils = {
     getTime: () => new Date().toLocaleTimeString('zh-TW', { hour12: false }).substr(0,5),
     formatMoney: (amount, currency='TWD') => new Intl.NumberFormat('zh-TW', { minimumFractionDigits: currency==='JPY'?0:2, maximumFractionDigits:2 }).format(amount),
     showNotify: (msg, type='success') => { let el=document.getElementById('notification'); el.textContent=msg; el.className=`notification show ${type}`; setTimeout(()=>el.classList.remove('show'),2500); },
-    save: () => { 
-        localStorage.setItem('acc_records',JSON.stringify(appState.records)); 
-        localStorage.setItem('acc_categories',JSON.stringify(appState.categories)); 
+    // skipCloud = true 時只寫本地（用於雲端資料套用時避免回傳迴圈）
+    save: (skipCloud = false) => {
+        localStorage.setItem('acc_records',JSON.stringify(appState.records));
+        localStorage.setItem('acc_categories',JSON.stringify(appState.categories));
         localStorage.setItem('acc_categories_order',JSON.stringify(appState.categoriesOrder));
-        localStorage.setItem('acc_books',JSON.stringify(appState.accountBooks)); 
-        localStorage.setItem('acc_firebase_config',JSON.stringify(appState.firebaseConfig)); 
-        localStorage.setItem('acc_firebase_path',appState.firebasePath); 
+        localStorage.setItem('acc_books',JSON.stringify(appState.accountBooks));
+        localStorage.setItem('acc_firebase_config',JSON.stringify(appState.firebaseConfig));
+        localStorage.setItem('acc_firebase_path',appState.firebasePath);
+        // 任何資料異動 → 立即排程同步到雲端
+        if (!skipCloud && firebaseDB) scheduleCloudSync();
     },
     getTodayString: () => utils.getToday()
 };
@@ -780,7 +789,7 @@ function renderBookList() {
         div.className='book-card';
         div.style.borderLeftColor={TWD:'#4a6fa5',USD:'#28a745',JPY:'#ff6b6b',CNY:'#ffc107',EUR:'#17a2b8'}[b.currency]||'#4a6fa5';
         div.onclick=(e)=>{ if(e.target.tagName!=='BUTTON') viewBookRecords(b.id); };
-        div.innerHTML=`<div class="book-currency-tag">${b.currency}</div><div><div class="book-title">${b.name}</div><div style="font-size:0.7rem;color:#999;">${b.purpose||''}</div></div><div><div class="book-balance-label">目前餘額 (已生效)</div><div class="book-balance-val">${utils.formatMoney(balance,b.currency)}</div></div><div class="book-actions"><button class="btn btn-warning" onclick="editBook('${b.id}')">編輯</button><button class="btn btn-danger" onclick="deleteBook('${b.id}')">刪除</button></div>`;
+        div.innerHTML=`<div class="book-currency-tag">${b.currency}</div><div><div class="book-title">${escapeHtml(b.name)}</div><div style="font-size:0.7rem;color:#999;">${escapeHtml(b.purpose||'')}</div></div><div><div class="book-balance-label">目前餘額 (已生效)</div><div class="book-balance-val">${utils.formatMoney(balance,b.currency)}</div></div><div class="book-actions"><button class="btn btn-warning" onclick="editBook('${b.id}')">編輯</button><button class="btn btn-danger" onclick="deleteBook('${b.id}')">刪除</button></div>`;
         container.appendChild(div);
     });
 }
@@ -800,7 +809,7 @@ function renderRecordList(data) {
         let div=document.createElement('div');
         div.className=`record-card ${r.type} ${r.excludeFromStats?'excluded':''}`;
         div.onclick=()=>openDetail(r.id);
-        div.innerHTML=`${r.excludeFromStats?'<span class="exclude-badge">不計統計</span>':''}<div class="record-header"><div class="record-date-block"><div class="record-date">${r.date.substring(5)} ${r.time} ${futureLabel}</div><div class="record-time-book">📒 ${book?book.name:'?'}</div></div><div class="record-amount-block"><div class="record-amount ${r.type}">${sign} ${utils.formatMoney(r.amount,r.currency)} <small style="font-size:0.7rem;">${r.currency}</small></div>${twdInfo}</div></div><div class="record-cat">${r.mainCategory} > ${r.subCategory}</div>${r.summary?`<div class="record-summary-text">${r.summary}</div>`:''}`;
+        div.innerHTML=`${r.excludeFromStats?'<span class="exclude-badge">不計統計</span>':''}<div class="record-header"><div class="record-date-block"><div class="record-date">${r.date.substring(5)} ${r.time} ${futureLabel}</div><div class="record-time-book">📒 ${book?escapeHtml(book.name):'?'}</div></div><div class="record-amount-block"><div class="record-amount ${r.type}">${sign} ${utils.formatMoney(r.amount,r.currency)} <small style="font-size:0.7rem;">${r.currency}</small></div>${twdInfo}</div></div><div class="record-cat">${escapeHtml(r.mainCategory)} > ${escapeHtml(r.subCategory)}</div>${r.summary?`<div class="record-summary-text">${escapeHtml(r.summary)}</div>`:''}`;
         container.appendChild(div);
     });
 }
@@ -827,11 +836,11 @@ function filterRecords(isDefaultLoad=false) {
     renderRecordList(filtered);
 }
 function renderSelects() {
-    let bookOpts=appState.accountBooks.map(b=>`<option value="${b.id}">${b.name}</option>`).join('');
+    let bookOpts=appState.accountBooks.map(b=>`<option value="${b.id}">${escapeHtml(b.name)}</option>`).join('');
     document.getElementById('recordBook').innerHTML=bookOpts;
     document.getElementById('filterBook').innerHTML='<option value="">全部</option>'+bookOpts;
     document.getElementById('summaryBook').innerHTML='<option value="">全部</option>'+bookOpts;
-    let catOpts=Object.keys(appState.categories).map(c=>`<option value="${c}">${c}</option>`).join('');
+    let catOpts=Object.keys(appState.categories).map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
     document.getElementById('recordMainCategory').innerHTML='<option value="">請選擇</option>'+catOpts;
     document.getElementById('filterMainCategory').innerHTML='<option value="">全部</option>'+catOpts;
     if(appState.accountBooks.length) document.getElementById('recordBook').dispatchEvent(new Event('change'));
@@ -840,7 +849,7 @@ function updateSubSelect(id,main){
     let el=document.getElementById(id);
     let isFilter=id.includes('filter');
     el.innerHTML=isFilter?'<option value="">全部</option>':'<option value="">...</option>';
-    if(main&&appState.categories[main]) appState.categories[main].forEach(s=>el.innerHTML+=`<option value="${s}">${s}</option>`);
+    if(main&&appState.categories[main]) appState.categories[main].forEach(s=>el.innerHTML+=`<option value="${escapeHtml(s)}">${escapeHtml(s)}</option>`);
 }
 function renderYearSelects(){
     let years=new Set(appState.records.map(r=>r.date.substring(0,4)));
@@ -864,6 +873,7 @@ function handleRecordSubmit(e){
     e.preventDefault();
     let bookId=document.getElementById('recordBook').value;
     let book=appState.accountBooks.find(b=>b.id===bookId);
+    if(!book){ utils.showNotify('請先建立帳冊','error'); return; }
     let record={
         id: appState.editingRecordId||utils.uuid(),
         bookId, date:document.getElementById('recordDate').value, time:document.getElementById('recordTime').value,
@@ -875,8 +885,8 @@ function handleRecordSubmit(e){
     };
     if(appState.editingRecordId){ let idx=appState.records.findIndex(r=>r.id===appState.editingRecordId); if(idx!==-1) appState.records[idx]=record; utils.showNotify('已更新'); }
     else{ appState.records.unshift(record); utils.showNotify('已儲存'); }
-    utils.save(); updateHeaderStats(); resetForm(); document.querySelector('[data-tab="records"]').click(); filterRecords(true);
-    if(firebaseDB) setTimeout(()=>uploadToFirebase(),1000);
+    utils.save();               // ← 自動同步雲端
+    updateHeaderStats(); resetForm(); document.querySelector('[data-tab="records"]').click(); filterRecords(true);
 }
 function handleBookSubmit(e){
     e.preventDefault();
@@ -884,34 +894,215 @@ function handleBookSubmit(e){
     let name=document.getElementById('bookName').value, purpose=document.getElementById('bookPurpose').value, currency=document.getElementById('bookCurrency').value, initialBalance=parseFloat(document.getElementById('bookInitialBalance').value)||0;
     if(id){ let book=appState.accountBooks.find(b=>b.id===id); book.name=name; book.purpose=purpose; book.initialBalance=initialBalance; utils.showNotify('帳冊已更新'); }
     else{ appState.accountBooks.push({id:utils.uuid(),name,purpose,currency,initialBalance,createdAt:new Date().toISOString()}); utils.showNotify('帳冊已建立'); }
-    utils.save(); renderBookList(); renderSelects(); document.getElementById('bookModal').classList.remove('show');
-    if(firebaseDB) setTimeout(()=>uploadToFirebase(),1000);
+    utils.save();               // ← 自動同步雲端
+    renderBookList(); renderSelects(); document.getElementById('bookModal').classList.remove('show');
 }
 function viewBookRecords(bookId){ document.getElementById('filterBook').value=bookId; filterRecords(); document.querySelector('[data-tab="records"]').click(); utils.showNotify('已顯示該帳冊記錄'); }
-function openDetail(id){ let r=appState.records.find(i=>i.id===id); if(!r) return; appState.currentDetailId=id; let book=appState.accountBooks.find(b=>b.id===r.bookId); let color=r.type==='income'?'var(--success-color)':'var(--accent-color)'; document.getElementById('detailContent').innerHTML=`<div class="detail-amount" style="color:${color}">${r.type==='income'?'+':'-'} ${utils.formatMoney(r.amount,r.currency)}</div>${r.excludeFromStats?'<div style="text-align:center;color:#999;">(不列入收支統計)</div>':''}<div class="detail-row"><span class="detail-label">類型</span><span class="detail-val">${r.type==='income'?'收入':'支出'}</span></div><div class="detail-row"><span class="detail-label">日期</span><span class="detail-val">${r.date} ${r.time}</span></div><div class="detail-row"><span class="detail-label">帳冊</span><span class="detail-val">${book?book.name:'未知'}</span></div><div class="detail-row"><span class="detail-label">科目</span><span class="detail-val">${r.mainCategory} - ${r.subCategory}</span></div>${r.summary?`<div style="margin-top:10px;"><div class="detail-label">備註</div><div style="background:#f8f9fa;padding:10px;border-radius:8px;">${r.summary}</div></div>`:''}`;
+function openDetail(id){ let r=appState.records.find(i=>i.id===id); if(!r) return; appState.currentDetailId=id; let book=appState.accountBooks.find(b=>b.id===r.bookId); let color=r.type==='income'?'var(--success-color)':'var(--accent-color)'; document.getElementById('detailContent').innerHTML=`<div class="detail-amount" style="color:${color}">${r.type==='income'?'+':'-'} ${utils.formatMoney(r.amount,r.currency)}</div>${r.excludeFromStats?'<div style="text-align:center;color:#999;">(不列入收支統計)</div>':''}<div class="detail-row"><span class="detail-label">類型</span><span class="detail-val">${r.type==='income'?'收入':'支出'}</span></div><div class="detail-row"><span class="detail-label">日期</span><span class="detail-val">${r.date} ${r.time}</span></div><div class="detail-row"><span class="detail-label">帳冊</span><span class="detail-val">${book?escapeHtml(book.name):'未知'}</span></div><div class="detail-row"><span class="detail-label">科目</span><span class="detail-val">${escapeHtml(r.mainCategory)} - ${escapeHtml(r.subCategory)}</span></div>${r.summary?`<div style="margin-top:10px;"><div class="detail-label">備註</div><div style="background:#f8f9fa;padding:10px;border-radius:8px;">${escapeHtml(r.summary)}</div></div>`:''}`;
     document.getElementById('detailModal').classList.add('show');
 }
 window.editRecord=(id)=>{ let r=appState.records.find(i=>i.id===id); if(!r) return; appState.editingRecordId=id; document.getElementById('recordTabBtn').classList.remove('hidden'); document.getElementById('recordTabBtn').click(); document.getElementById('formModeTitle').textContent='編輯記錄'; document.getElementById('recordBook').value=r.bookId; document.getElementById('recordDate').value=r.date; document.getElementById('recordTime').value=r.time; document.querySelectorAll('.type-option').forEach(o=>o.classList.remove('selected')); document.querySelector(`.type-option.${r.type}`).classList.add('selected'); document.getElementById('recordType').value=r.type; document.getElementById('recordMainCategory').value=r.mainCategory; updateSubSelect('recordSubCategory',r.mainCategory); document.getElementById('recordSubCategory').value=r.subCategory; document.getElementById('recordBook').dispatchEvent(new Event('change')); document.getElementById('recordRate').value=r.exchangeRate; document.getElementById('recordAmount').value=r.amount; document.getElementById('recordSummary').value=r.summary||''; document.getElementById('recordExclude').checked=r.excludeFromStats||false; };
-window.deleteRecord=(id)=>{ if(confirm('確定刪除？')){ appState.records=appState.records.filter(r=>r.id!==id); utils.save(); filterRecords(); updateHeaderStats(); utils.showNotify('已刪除','error'); if(firebaseDB) setTimeout(()=>uploadToFirebase(),1000); } };
+window.deleteRecord=(id)=>{ if(confirm('確定刪除？')){ appState.records=appState.records.filter(r=>r.id!==id); utils.save(); filterRecords(); updateHeaderStats(); utils.showNotify('已刪除','error'); } };
 window.editBook=(id)=>{ let b=appState.accountBooks.find(i=>i.id===id); appState.editingBookId=id; document.getElementById('bookId').value=b.id; document.getElementById('bookName').value=b.name; document.getElementById('bookPurpose').value=b.purpose; document.getElementById('bookCurrency').value=b.currency; document.getElementById('bookInitialBalance').value=b.initialBalance||0; document.getElementById('bookCurrency').disabled=true; document.getElementById('bookModalTitle').textContent='編輯帳冊'; document.getElementById('bookModal').classList.add('show'); };
-window.deleteBook=(id)=>{ if(appState.records.some(r=>r.bookId===id)){ alert('帳冊內有記錄，無法刪除'); return; } if(confirm('確定刪除？')){ appState.accountBooks=appState.accountBooks.filter(b=>b.id!==id); utils.save(); renderBookList(); renderSelects(); updateHeaderStats(); if(firebaseDB) setTimeout(()=>uploadToFirebase(),1000); } };
+window.deleteBook=(id)=>{ if(appState.records.some(r=>r.bookId===id)){ alert('帳冊內有記錄，無法刪除'); return; } if(confirm('確定刪除？')){ appState.accountBooks=appState.accountBooks.filter(b=>b.id!==id); utils.save(); renderBookList(); renderSelects(); updateHeaderStats(); } };
 function runSummary(){
     let y=document.getElementById('summaryYear').value, m=document.getElementById('summaryMonth').value, b=document.getElementById('summaryBook').value;
     let inc=0, exp=0, expCats={}, incCats={};
     appState.records.forEach(r=>{ if(r.excludeFromStats) return; if(y&&r.date.substring(0,4)!==y) return; if(m&&r.date.substring(5,7)!==m) return; if(b&&r.bookId!==b) return; let twd=r.amount*r.exchangeRate; if(r.type==='income'){ inc+=twd; incCats[r.mainCategory]=(incCats[r.mainCategory]||0)+twd; } else { exp+=twd; expCats[r.mainCategory]=(expCats[r.mainCategory]||0)+twd; } });
     document.getElementById('sumIncome').textContent=utils.formatMoney(inc); document.getElementById('sumExpense').textContent=utils.formatMoney(exp); let net=inc-exp; document.getElementById('sumNet').textContent=utils.formatMoney(net); document.getElementById('sumNet').style.color=net>=0?'var(--success-color)':'var(--accent-color)';
-    let renderChart=(id,data,total,color)=>{ let el=document.getElementById(id); el.innerHTML=''; if(total===0){ el.innerHTML='<p style="color:#999;">無數據</p>'; return; } Object.entries(data).sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>{ let pct=Math.round((v/total)*100); el.innerHTML+=`<div style="margin-bottom:8px;"><div style="display:flex; justify-content:space-between;"><span>${k}</span><span>${utils.formatMoney(v)} (${pct}%)</span></div><div style="height:6px; background:#eee; border-radius:3px;"><div style="height:100%; width:${pct}%; background:${color};"></div></div></div>`; }); };
+    let renderChart=(id,data,total,color)=>{ let el=document.getElementById(id); el.innerHTML=''; if(total===0){ el.innerHTML='<p style="color:#999;">無數據</p>'; return; } Object.entries(data).sort((a,b)=>b[1]-a[1]).forEach(([k,v])=>{ let pct=Math.round((v/total)*100); el.innerHTML+=`<div style="margin-bottom:8px;"><div style="display:flex; justify-content:space-between;"><span>${escapeHtml(k)}</span><span>${utils.formatMoney(v)} (${pct}%)</span></div><div style="height:6px; background:#eee; border-radius:3px;"><div style="height:100%; width:${pct}%; background:${color};"></div></div></div>`; }); };
     renderChart('expenseCatChart',expCats,exp,'var(--accent-color)'); renderChart('incomeCatChart',incCats,inc,'var(--success-color)'); document.getElementById('summaryResults').classList.remove('hidden');
 }
-// ---------- Firebase 函數 ----------
-function initFirebase(){ try{ if(!firebase.apps.length){ firebaseApp=firebase.initializeApp(appState.firebaseConfig); firebaseDB=firebase.database(); } else{ firebaseApp=firebase.apps[0]; firebaseDB=firebase.database(); } updateFirebaseStatus(true,'已連線'); utils.showNotify('Firebase連線成功','success'); }catch(e){ updateFirebaseStatus(false,'連線失敗'); utils.showNotify('連線失敗','error'); } }
-function updateFirebaseStatus(conn,msg){ let dot=document.getElementById('firebaseStatusDot'),txt=document.getElementById('firebaseStatusText'); if(conn){ dot.className='status-dot status-connected'; txt.textContent=msg; document.getElementById('cloudSyncBtn').className='cloud-icon cloud-status-on'; } else{ dot.className='status-dot status-disconnected'; txt.textContent=msg; document.getElementById('cloudSyncBtn').className='cloud-icon cloud-status-off'; } }
-async function syncToFirebase(){ if(!firebaseDB){ utils.showNotify('Firebase未連線','error'); return; } let statusDiv=document.getElementById('syncStatus'); statusDiv.innerHTML='🔄 同步中... <span class="spinner"></span>'; try{ let snap=await firebaseDB.ref(appState.firebasePath).once('value'); let cloud=snap.val(); if(!cloud){ await uploadToFirebase(); statusDiv.innerHTML='✅ 已上傳'; utils.showNotify('已同步至雲端','success'); } else{ let localHas=appState.records.length>0, cloudHas=cloud.records?.length>0; if(localHas&&cloudHas){ pendingCloudData=cloud; document.getElementById('cloudModal').classList.remove('show'); document.getElementById('conflictModal').classList.add('show'); } else if(cloudHas){ appState.records=cloud.records||[]; appState.categories=cloud.categories||DEFAULT_CATEGORIES; appState.accountBooks=cloud.accountBooks||[]; utils.save(); statusDiv.innerHTML='✅ 已下載'; utils.showNotify('已從雲端同步','success'); location.reload(); } else{ await uploadToFirebase(); statusDiv.innerHTML='✅ 已上傳'; } } }catch(e){ statusDiv.innerHTML='❌ 失敗: '+e.message; utils.showNotify('同步失敗','error'); } }
-async function uploadToFirebase(){ if(!firebaseDB) return; let data={ records:appState.records, categories:appState.categories, accountBooks:appState.accountBooks, lastSync:new Date().toISOString() }; await firebaseDB.ref(appState.firebasePath).set(data); }
-async function clearFirebaseData(){ if(!firebaseDB) return; if(confirm('清空雲端資料？')){ await firebaseDB.ref(appState.firebasePath).remove(); utils.showNotify('雲端已清空','success'); } }
-window.resolveConflict=async(action)=>{ let statusDiv=document.getElementById('syncStatus'); statusDiv.innerHTML='🔄 處理中...'; try{ if(action==='overwrite_local'){ appState.records=pendingCloudData.records||[]; appState.categories=pendingCloudData.categories||DEFAULT_CATEGORIES; appState.accountBooks=pendingCloudData.accountBooks||[]; utils.save(); location.reload(); } else if(action==='overwrite_cloud'){ await uploadToFirebase(); statusDiv.innerHTML='✅ 已覆蓋雲端'; document.getElementById('conflictModal').classList.remove('show'); } else if(action==='merge'){ let localMap=new Map(appState.records.map(r=>[r.id,r])); (pendingCloudData.records||[]).forEach(cr=>{ if(localMap.has(cr.id)){ let local=localMap.get(cr.id), cloudDate=new Date(cr.updatedAt||0), localDate=new Date(local.updatedAt||0); if(cloudDate>localDate) localMap.set(cr.id,cr); } else localMap.set(cr.id,cr); }); appState.records=Array.from(localMap.values()); if(pendingCloudData.categories) Object.keys(pendingCloudData.categories).forEach(k=>{ if(!appState.categories[k]) appState.categories[k]=pendingCloudData.categories[k]; }); if(pendingCloudData.accountBooks){ let ids=new Set(appState.accountBooks.map(b=>b.id)); pendingCloudData.accountBooks.forEach(b=>{ if(!ids.has(b.id)) appState.accountBooks.push(b); }); } utils.save(); await uploadToFirebase(); location.reload(); } }catch(e){ statusDiv.innerHTML='❌ 失敗'; utils.showNotify('衝突處理失敗','error'); } };
-function handleDisconnectFirebase(){ if(confirm('中斷連線？')){ appState.firebaseConfig=null; utils.save(); if(firebaseApp) firebaseApp.delete(); firebaseApp=null; firebaseDB=null; updateFirebaseStatus(false,'未連線'); utils.showNotify('已中斷','success'); document.getElementById('cloudModal').classList.remove('show'); } }
-async function handleSaveFirebaseSettings(){ let json=document.getElementById('firebaseConfigJson').value.trim(); let path=document.getElementById('firebasePath').value.trim()||'/moneyTracker'; if(!json){ document.getElementById('syncStatus').innerHTML='❌ 請輸入配置'; return; } try{ let config=JSON.parse(json); if(!config.apiKey||!config.databaseURL||!config.projectId) throw new Error('配置不完整'); appState.firebaseConfig=config; appState.firebasePath=path; utils.save(); initFirebase(); await syncToFirebase(); document.getElementById('cloudModal').classList.remove('show'); }catch(e){ document.getElementById('syncStatus').innerHTML='❌ 配置錯誤'; utils.showNotify('設定失敗','error'); } }
+
+// ============================================================
+// ---------- Firebase：自動下載 + 即時同步 ----------
+// ============================================================
+function setCloudIcon(state){
+    const el = document.getElementById('cloudSyncBtn');
+    if(!el) return;
+    el.className = 'cloud-icon ' + (state==='on' ? 'cloud-status-on' : state==='syncing' ? 'cloud-status-syncing' : 'cloud-status-off');
+}
+
+function initFirebase(){
+    try{
+        if(!firebase.apps.length){ firebaseApp = firebase.initializeApp(appState.firebaseConfig); }
+        else { firebaseApp = firebase.apps[0]; }
+        firebaseDB = firebase.database();
+        updateFirebaseStatus(true,'已連線');
+        utils.showNotify('Firebase 連線成功','success');
+        return true;
+    }catch(e){
+        firebaseDB = null;
+        updateFirebaseStatus(false,'連線失敗');
+        utils.showNotify('連線失敗: '+e.message,'error');
+        return false;
+    }
+}
+function updateFirebaseStatus(conn,msg){
+    let dot=document.getElementById('firebaseStatusDot'),txt=document.getElementById('firebaseStatusText');
+    if(conn){ dot.className='status-dot status-connected'; txt.textContent=msg; setCloudIcon('on'); }
+    else{ dot.className='status-dot status-disconnected'; txt.textContent=msg; setCloudIcon('off'); }
+}
+
+// ---- 異動後「立即」排程上傳（極短防抖，避免連續寫入） ----
+function scheduleCloudSync(delay = 250){
+    if(!firebaseDB) return;
+    clearTimeout(cloudSyncTimer);
+    cloudSyncTimer = setTimeout(()=>{ uploadToFirebase(); }, delay);
+}
+
+// ---- 上傳本地資料到雲端 ----
+async function uploadToFirebase(){
+    if(!firebaseDB) return;
+    if(cloudUploading){ cloudUploadPending = true; return; }
+    cloudUploading = true;
+    setCloudIcon('syncing');
+    try{
+        const data = {
+            records: appState.records,
+            categories: appState.categories,
+            categoriesOrder: appState.categoriesOrder,
+            accountBooks: appState.accountBooks,
+            lastSync: new Date().toISOString()
+        };
+        await firebaseDB.ref(appState.firebasePath).set(data);
+        setCloudIcon('on');
+    }catch(e){
+        setCloudIcon('off');
+        utils.showNotify('雲端上傳失敗: '+e.message,'error');
+    }finally{
+        cloudUploading = false;
+        if(cloudUploadPending){ cloudUploadPending = false; uploadToFirebase(); }
+    }
+}
+
+// ---- 套用雲端資料（本地無資料時直接採用） ----
+function applyCloudData(cloud){
+    appState.records = cloud.records || [];
+    if(cloud.categories && Object.keys(cloud.categories).length) appState.categories = cloud.categories;
+    appState.categoriesOrder = Array.isArray(cloud.categoriesOrder) ? cloud.categoriesOrder.slice() : [];
+    initCategoriesOrder();
+    if(cloud.accountBooks && cloud.accountBooks.length) appState.accountBooks = cloud.accountBooks;
+}
+
+// ---- 合併雲端資料（本地與雲端都有資料時，以 updatedAt 較新者為準） ----
+function mergeCloudData(cloud){
+    // 1) 記錄
+    const localMap = new Map(appState.records.map(r=>[r.id, r]));
+    (cloud.records||[]).forEach(cr=>{
+        const lr = localMap.get(cr.id);
+        if(!lr){ localMap.set(cr.id, cr); return; }
+        const ct = cr.updatedAt ? new Date(cr.updatedAt).getTime() : 0;
+        const lt = lr.updatedAt ? new Date(lr.updatedAt).getTime() : 0;
+        if(ct > lt) localMap.set(cr.id, cr);
+    });
+    appState.records = Array.from(localMap.values());
+
+    // 2) 科目（聯集）
+    const cloudCats = cloud.categories || {};
+    Object.keys(cloudCats).forEach(k=>{
+        if(!Array.isArray(cloudCats[k])) return;
+        if(!appState.categories[k]) appState.categories[k] = cloudCats[k].slice();
+        else cloudCats[k].forEach(s=>{ if(!appState.categories[k].includes(s)) appState.categories[k].push(s); });
+    });
+
+    // 3) 科目排序
+    if(Array.isArray(cloud.categoriesOrder)){
+        cloud.categoriesOrder.forEach(c=>{
+            if(appState.categories[c] && !appState.categoriesOrder.includes(c)) appState.categoriesOrder.push(c);
+        });
+    }
+    initCategoriesOrder();
+
+    // 4) 帳冊（聯集）
+    const bookIds = new Set(appState.accountBooks.map(b=>b.id));
+    (cloud.accountBooks||[]).forEach(b=>{ if(!bookIds.has(b.id)) appState.accountBooks.push(b); });
+}
+
+// ---- 重新渲染全部畫面 ----
+function refreshAllUI(){
+    renderSelects();
+    renderBookList();
+    renderYearSelects();
+    filterRecords(true);
+    updateHeaderStats();
+    renderMainCategoryList();
+    if(appState.currentMainCat) renderSubCategoryList();
+}
+
+// ---- 開啟程式時：自動下載雲端資料 ----
+async function autoDownloadFromCloud(silent = false){
+    if(!firebaseDB) return;
+    setCloudIcon('syncing');
+    try{
+        const snap = await firebaseDB.ref(appState.firebasePath).once('value');
+        const cloud = snap.val();
+
+        // 雲端完全沒有資料 → 把本地資料推上去
+        if(!cloud){
+            await uploadToFirebase();
+            if(!silent) utils.showNotify('已將本地資料上傳雲端','success');
+            return;
+        }
+
+        const localHasData = appState.records.length > 0;
+        if(!localHasData){
+            applyCloudData(cloud);          // 本地空 → 直接採用雲端
+        } else {
+            mergeCloudData(cloud);          // 兩邊都有 → 合併
+        }
+
+        utils.save(true);                   // 只寫本地，避免回傳迴圈
+        refreshAllUI();
+        await uploadToFirebase();           // 把合併結果回寫雲端
+
+        if(!silent) utils.showNotify('已從雲端同步資料','success');
+    }catch(e){
+        setCloudIcon('off');
+        console.error(e);
+        if(!silent) utils.showNotify('雲端下載失敗: '+e.message,'error');
+    }
+}
+
+async function clearFirebaseData(){
+    if(!firebaseDB) return;
+    if(confirm('清空雲端資料？')){ await firebaseDB.ref(appState.firebasePath).remove(); utils.showNotify('雲端已清空','success'); }
+}
+function handleDisconnectFirebase(){
+    if(confirm('中斷連線？')){
+        clearTimeout(cloudSyncTimer);
+        appState.firebaseConfig=null; utils.save(true);
+        try{ if(firebaseApp) firebaseApp.delete(); }catch(e){}
+        firebaseApp=null; firebaseDB=null;
+        updateFirebaseStatus(false,'未連線');
+        utils.showNotify('已中斷','success');
+        document.getElementById('cloudModal').classList.remove('show');
+    }
+}
+async function handleSaveFirebaseSettings(){
+    let json=document.getElementById('firebaseConfigJson').value.trim();
+    let path=document.getElementById('firebasePath').value.trim()||'/moneyTracker';
+    if(!json){ document.getElementById('syncStatus').innerHTML='❌ 請輸入配置'; return; }
+    try{
+        let config=JSON.parse(json);
+        if(!config.apiKey||!config.databaseURL||!config.projectId) throw new Error('配置不完整');
+        appState.firebaseConfig=config;
+        appState.firebasePath=path;
+        utils.save(true);
+        const ok = initFirebase();
+        if(ok){
+            document.getElementById('syncStatus').innerHTML='🔄 同步中... <span class="spinner"></span>';
+            await autoDownloadFromCloud(true);
+            document.getElementById('syncStatus').innerHTML='✅ 已連線並完成同步';
+            utils.showNotify('已連線，之後將自動同步','success');
+        }
+        document.getElementById('cloudModal').classList.remove('show');
+    }catch(e){
+        document.getElementById('syncStatus').innerHTML='❌ 配置錯誤';
+        utils.showNotify('設定失敗','error');
+    }
+}
+
 // ---------- 科目管理增強函數 (左右佈局、圖示操作、自訂排序) ----------
 function initCategoriesOrder() {
     if (!appState.categoriesOrder || appState.categoriesOrder.length === 0) {
@@ -943,6 +1134,7 @@ function moveSubCategory(mainCat, fromIndex, toIndex) {
 }
 function renderMainCategoryList() {
     const container = document.getElementById('mainCatList');
+    if(!container) return;
     container.innerHTML = '';
     appState.categoriesOrder.forEach((main, idx) => {
         const div = document.createElement('div');
@@ -1011,6 +1203,7 @@ function deleteMainCategory(main) {
 }
 function renderSubCategoryList() {
     const container = document.getElementById('subCatList');
+    if (!container) return;
     if (!appState.currentMainCat) {
         container.innerHTML = '<div class="empty-hint">請從左側選擇主科目</div>';
         return;
@@ -1095,13 +1288,15 @@ function addSubCategory() {
     utils.showNotify('子科目已新增');
 }
 function escapeHtml(str) {
-    return str.replace(/[&<>]/g, function(m) {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/[&<>]/g, function(m) {
         if (m === '&') return '&amp;';
         if (m === '<') return '&lt;';
         if (m === '>') return '&gt;';
         return m;
     });
 }
+
 // ---------- 事件綁定與初始化 ----------
 function initEvents() {
     document.querySelectorAll('.tab-btn').forEach(btn=>btn.addEventListener('click',()=>{ let target=btn.dataset.tab; if(target==='books'){ document.getElementById('filterYear').value=''; document.getElementById('filterMonth').value=''; document.getElementById('filterBook').value=''; document.getElementById('filterType').value=''; document.getElementById('filterMainCategory').value=''; document.getElementById('filterSubCategory').value=''; document.getElementById('filterKeyword').value=''; } if(target!=='record') document.getElementById('recordTabBtn').classList.add('hidden'); document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active')); document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active')); btn.classList.add('active'); document.getElementById(target+'-tab').classList.add('active'); if(target==='records') filterRecords(true); if(target==='books') renderBookList(); if(target==='categories') { renderMainCategoryList(); if(appState.currentMainCat) { renderSubCategoryList(); document.getElementById('selectedMainTitle').innerHTML=` - ${escapeHtml(appState.currentMainCat)}`; document.getElementById('newSubCatInput').disabled=false; document.getElementById('addSubCatBtn').disabled=false; } else { document.getElementById('selectedMainTitle').innerHTML=''; document.getElementById('subCatList').innerHTML='<div class="empty-hint">請從左側選擇主科目</div>'; document.getElementById('newSubCatInput').disabled=true; document.getElementById('addSubCatBtn').disabled=true; } } }));
@@ -1123,15 +1318,19 @@ function initEvents() {
     document.getElementById('runSummaryBtn').addEventListener('click',runSummary);
     document.getElementById('cloudSyncBtn').addEventListener('click',()=>{ document.getElementById('firebaseConfigJson').value=appState.firebaseConfig?JSON.stringify(appState.firebaseConfig,null,2):''; document.getElementById('firebasePath').value=appState.firebasePath; document.getElementById('cloudModal').classList.add('show'); });
     document.getElementById('saveFirebaseSettingsBtn').addEventListener('click',handleSaveFirebaseSettings);
-    document.getElementById('syncNowBtn').addEventListener('click',syncToFirebase);
+    document.getElementById('syncNowBtn').addEventListener('click',()=>autoDownloadFromCloud(false));
     document.getElementById('clearCloudDataBtn').addEventListener('click',clearFirebaseData);
     document.getElementById('disconnectFirebaseBtn').addEventListener('click',handleDisconnectFirebase);
     document.getElementById('editDetailBtn').addEventListener('click',()=>{ document.getElementById('detailModal').classList.remove('show'); editRecord(appState.currentDetailId); });
     document.getElementById('deleteDetailBtn').addEventListener('click',()=>{ document.getElementById('detailModal').classList.remove('show'); deleteRecord(appState.currentDetailId); });
     document.getElementById('exportDataBtn').addEventListener('click',()=>{ let blob=new Blob([JSON.stringify({records:appState.records, categories:appState.categories, accountBooks:appState.accountBooks, categoriesOrder:appState.categoriesOrder})],{type:'application/json'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`backup_${utils.getToday()}.json`; a.click(); });
     document.getElementById('importFile').addEventListener('change',e=>{ let file=e.target.files[0]; if(!file) return; let r=new FileReader(); r.onload=evt=>{ try{ let d=JSON.parse(evt.target.result); if(confirm('匯入並覆蓋？')){ appState.records=d.records||[]; appState.categories=d.categories||DEFAULT_CATEGORIES; appState.categoriesOrder=d.categoriesOrder||[]; appState.accountBooks=d.accountBooks||[]; initCategoriesOrder(); utils.save(); location.reload(); } }catch(err){ alert('格式錯誤'); } }; r.readAsText(file); });
-    document.getElementById('clearAllDataBtn').addEventListener('click',()=>{ if(confirm('清除所有資料？')){ localStorage.clear(); location.reload(); } });
+    document.getElementById('clearAllDataBtn').addEventListener('click',()=>{ if(confirm('清除所有資料？')){ clearTimeout(cloudSyncTimer); localStorage.clear(); location.reload(); } });
+
+    // 網路恢復時自動補同步
+    window.addEventListener('online', ()=>{ if(firebaseDB) scheduleCloudSync(500); });
 }
+
 function initApp(){
     let storedRecords=localStorage.getItem('acc_records'), storedCats=localStorage.getItem('acc_categories'), storedOrder=localStorage.getItem('acc_categories_order'), storedBooks=localStorage.getItem('acc_books'), storedFirebaseConfig=localStorage.getItem('acc_firebase_config'), storedFirebasePath=localStorage.getItem('acc_firebase_path');
     appState.categories=storedCats?JSON.parse(storedCats):JSON.parse(JSON.stringify(DEFAULT_CATEGORIES));
@@ -1147,7 +1346,15 @@ function initApp(){
     document.getElementById('recordDate').value=utils.getToday();
     document.getElementById('recordTime').value=utils.getTime();
     filterRecords(true); updateHeaderStats();
-    if(appState.firebaseConfig) initFirebase();
+
+    // ★ 開啟程式即自動連線並下載雲端資料（無需手動）
+    if(appState.firebaseConfig){
+        const ok = initFirebase();
+        if(ok){
+            setCloudIcon('syncing');
+            autoDownloadFromCloud(true);
+        }
+    }
 }
 initApp();
 </script>
